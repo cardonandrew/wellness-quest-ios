@@ -1,0 +1,3682 @@
+usPageParam?.(e[0], e, r[0], r) : void 0;
+}
+var uw = class extends mf {
+  #t;
+  #e;
+  #r;
+  #n;
+  #i;
+  #a;
+  #l;
+  #o;
+  constructor(t) {
+    super();
+    this.#o = !1, this.#l = t.defaultOptions, this.setOptions(t.options), this.observers = [], this.#i = t.client, this.#n = this.#i.getQueryCache(), this.queryKey = t.queryKey, this.queryHash = t.queryHash, this.#e = lw(this.options), this.state = t.state ?? this.#e, this.scheduleGc();
+  }
+  get meta() {
+    return this.options.meta;
+  }
+  get queryType() {
+    return this.#t;
+  }
+  get promise() {
+    return this.#a?.promise;
+  }
+  setOptions(t) {
+    if (this.options = {
+      ...this.#l,
+      ...t
+    }, t?._type) this.#t = t._type;
+    if (this.updateGcTime(this.options.gcTime), this.state && this.state.data === void 0) {
+      let e = lw(this.options);
+      if (e.data !== void 0) this.setState(ow(e.data, e.dataUpdatedAt)), this.#e = e;
+    }
+  }
+  optionalRemove() {
+    if (!this.observers.length && this.state.fetchStatus === "idle") this.#n.remove(this);
+  }
+  setData(t, e) {
+    let r = xu(this.state.data, t, this.options);
+    return this.#u({
+      data: r,
+      type: "success",
+      dataUpdatedAt: e?.updatedAt,
+      manual: e?.manual
+    }), r;
+  }
+  setState(t) {
+    this.#u({
+      type: "setState",
+      state: t
+    });
+  }
+  cancel(t) {
+    let e = this.#a?.promise;
+    return this.#a?.cancel(t), e ? e.then(Qt).catch(Qt) : Promise.resolve();
+  }
+  destroy() {
+    super.destroy(), this.cancel({
+      silent: !0
+    });
+  }
+  get resetState() {
+    return this.#e;
+  }
+  reset() {
+    this.destroy(), this.setState(this.resetState);
+  }
+  isActive() {
+    return this.observers.some(t => Re(t.options.enabled, this) !== !1);
+  }
+  isDisabled() {
+    if (this.getObserversCount() > 0) return !this.isActive();
+    return this.options.queryFn === lo || !this.isFetched();
+  }
+  isFetched() {
+    return this.state.dataUpdateCount + this.state.errorUpdateCount > 0;
+  }
+  isStatic() {
+    if (this.getObserversCount() > 0) return this.observers.some(t => Ur(t.options.staleTime, this) === "static");
+    return !1;
+  }
+  isStale() {
+    if (this.getObserversCount() > 0) return this.observers.some(t => t.getCurrentResult().isStale);
+    return this.state.data === void 0 || this.state.isInvalidated;
+  }
+  isStaleByTime(t = 0) {
+    if (this.state.data === void 0) return !0;
+    if (t === "static") return !1;
+    if (this.state.isInvalidated) return !0;
+    return !sf(this.state.dataUpdatedAt, t);
+  }
+  onFocus() {
+    this.observers.find(e => e.shouldFetchOnWindowFocus())?.refetch({
+      cancelRefetch: !1
+    }), this.#a?.continue();
+  }
+  onOnline() {
+    this.observers.find(e => e.shouldFetchOnReconnect())?.refetch({
+      cancelRefetch: !1
+    }), this.#a?.continue();
+  }
+  addObserver(t) {
+    if (!this.observers.includes(t)) this.observers.push(t), this.clearGcTimeout(), this.#n.notify({
+      type: "observerAdded",
+      query: this,
+      observer: t
+    });
+  }
+  removeObserver(t) {
+    if (this.observers.includes(t)) {
+      if (this.observers = this.observers.filter(e => e !== t), !this.observers.length) {
+        if (this.#a) if (this.#o || this.#c()) this.#a.cancel({
+          revert: !0
+        });else this.#a.cancelRetry();
+        this.scheduleGc();
+      }
+      this.#n.notify({
+        type: "observerRemoved",
+        query: this,
+        observer: t
+      });
+    }
+  }
+  getObserversCount() {
+    return this.observers.length;
+  }
+  #c() {
+    return this.state.fetchStatus === "paused" && this.state.status === "pending";
+  }
+  invalidate() {
+    if (!this.state.isInvalidated) this.#u({
+      type: "invalidate"
+    });
+  }
+  async fetch(t, e) {
+    if (this.state.fetchStatus !== "idle" && this.#a?.status() !== "rejected") {
+      if (this.state.data !== void 0 && e?.cancelRefetch) this.cancel({
+        silent: !0
+      });else if (this.#a) return this.#a.continueRetry(), this.#a.promise;
+    }
+    if (t) this.setOptions(t);
+    if (!this.options.queryFn) {
+      let u = this.observers.find(s => s.options.queryFn);
+      if (u) this.setOptions(u.options);
+    }
+    let r = new AbortController(),
+      n = u => {
+        Object.defineProperty(u, "signal", {
+          enumerable: !0,
+          get: () => (this.#o = !0, r.signal)
+        });
+      },
+      a = () => {
+        let u = pf(this.options, e),
+          f = (() => {
+            let c = {
+              client: this.#i,
+              queryKey: this.queryKey,
+              meta: this.meta
+            };
+            return n(c), c;
+          })();
+        if (this.#o = !1, this.options.persister) return this.options.persister(u, f, this);
+        return u(f);
+      },
+      o = (() => {
+        let u = {
+          fetchOptions: e,
+          options: this.options,
+          queryKey: this.queryKey,
+          client: this.#i,
+          state: this.state,
+          fetchFn: a
+        };
+        return n(u), u;
+      })();
+    if ((this.#t === "infinite" ? iw(this.options.pages) : this.options.behavior)?.onFetch(o, this), this.#r = this.state, this.state.fetchStatus === "idle" || this.state.fetchMeta !== o.fetchOptions?.meta) this.#u({
+      type: "fetch",
+      meta: o.fetchOptions?.meta
+    });
+    this.#a = hf({
+      initialPromise: e?.initialPromise,
+      fn: o.fetchFn,
+      onCancel: u => {
+        if (u instanceof df && u.revert) this.setState({
+          ...this.#r,
+          fetchStatus: "idle"
+        });
+        r.abort();
+      },
+      onFail: (u, s) => {
+        this.#u({
+          type: "failed",
+          failureCount: u,
+          error: s
+        });
+      },
+      onPause: () => {
+        this.#u({
+          type: "pause"
+        });
+      },
+      onContinue: () => {
+        this.#u({
+          type: "continue"
+        });
+      },
+      retry: o.options.retry,
+      retryDelay: o.options.retryDelay,
+      networkMode: o.options.networkMode,
+      canRun: () => !0
+    });
+    try {
+      let u = await this.#a.start();
+      if (u === void 0) throw Error(`${this.queryHash} data is undefined`);
+      return this.setData(u), this.#n.config.onSuccess?.(u, this), this.#n.config.onSettled?.(u, this.state.error, this), u;
+    } catch (u) {
+      if (u instanceof df) {
+        if (u.silent) return this.#a.promise;else if (u.revert) {
+          if (this.state.data === void 0) throw u;
+          return this.state.data;
+        }
+      }
+      throw this.#u({
+        type: "error",
+        error: u
+      }), this.#n.config.onError?.(u, this), this.#n.config.onSettled?.(this.state.data, u, this), u;
+    } finally {
+      this.scheduleGc();
+    }
+  }
+  #u(t) {
+    let e = r => {
+      switch (t.type) {
+        case "failed":
+          return {
+            ...r,
+            fetchFailureCount: t.failureCount,
+            fetchFailureReason: t.error
+          };
+        case "pause":
+          return {
+            ...r,
+            fetchStatus: "paused"
+          };
+        case "continue":
+          return {
+            ...r,
+            fetchStatus: "fetching"
+          };
+        case "fetch":
+          return {
+            ...r,
+            ...Gm(r.data, this.options),
+            fetchMeta: t.meta ?? null
+          };
+        case "success":
+          let n = {
+            ...r,
+            ...ow(t.data, t.dataUpdatedAt),
+            dataUpdateCount: r.dataUpdateCount + 1,
+            ...(!t.manual && {
+              fetchStatus: "idle",
+              fetchFailureCount: 0,
+              fetchFailureReason: null
+            })
+          };
+          return this.#r = t.manual ? n : void 0, n;
+        case "error":
+          let a = t.error;
+          return {
+            ...r,
+            error: a,
+            errorUpdateCount: r.errorUpdateCount + 1,
+            errorUpdatedAt: Date.now(),
+            fetchFailureCount: r.fetchFailureCount + 1,
+            fetchFailureReason: a,
+            fetchStatus: "idle",
+            status: "error",
+            isInvalidated: !0
+          };
+        case "invalidate":
+          return {
+            ...r,
+            isInvalidated: !0
+          };
+        case "setState":
+          return {
+            ...r,
+            ...t.state
+          };
+      }
+    };
+    this.state = e(this.state), Ct.batch(() => {
+      this.observers.forEach(r => {
+        r.onQueryUpdate();
+      }), this.#n.notify({
+        query: this,
+        type: "updated",
+        action: t
+      });
+    });
+  }
+};
+function Gm(t, e) {
+  return {
+    fetchFailureCount: 0,
+    fetchFailureReason: null,
+    fetchStatus: Wm(e.networkMode) ? "fetching" : "paused",
+    ...(t === void 0 && {
+      error: null,
+      status: "pending"
+    })
+  };
+}
+function ow(t, e) {
+  return {
+    data: t,
+    dataUpdatedAt: e ?? Date.now(),
+    error: null,
+    isInvalidated: !1,
+    status: "success"
+  };
+}
+function lw(t) {
+  let e = typeof t.initialData === "function" ? t.initialData() : t.initialData,
+    r = e !== void 0,
+    n = r ? typeof t.initialDataUpdatedAt === "function" ? t.initialDataUpdatedAt() : t.initialDataUpdatedAt : 0;
+  return {
+    data: e,
+    dataUpdateCount: 0,
+    dataUpdatedAt: r ? n ?? Date.now() : 0,
+    error: null,
+    errorUpdateCount: 0,
+    errorUpdatedAt: 0,
+    fetchFailureCount: 0,
+    fetchFailureReason: null,
+    fetchMeta: null,
+    isInvalidated: !1,
+    status: r ? "success" : "pending",
+    fetchStatus: "idle"
+  };
+}
+var Xm = class extends br {
+  constructor(t, e) {
+    super();
+    this.options = e, this.#t = t, this.#o = null, this.#l = wu(), this.bindMethods(), this.setOptions(e);
+  }
+  #t;
+  #e = void 0;
+  #r = void 0;
+  #n = void 0;
+  #i;
+  #a;
+  #l;
+  #o;
+  #c;
+  #u;
+  #h;
+  #f;
+  #p;
+  #s;
+  #m = new Set();
+  bindMethods() {
+    this.refetch = this.refetch.bind(this);
+  }
+  onSubscribe() {
+    if (this.listeners.size === 1) {
+      if (this.#e.addObserver(this), sw(this.#e, this.options)) this.#d();else this.updateResult();
+      this.#b();
+    }
+  }
+  onUnsubscribe() {
+    if (!this.hasListeners()) this.destroy();
+  }
+  shouldFetchOnReconnect() {
+    return Ym(this.#e, this.options, this.options.refetchOnReconnect);
+  }
+  shouldFetchOnWindowFocus() {
+    return Ym(this.#e, this.options, this.options.refetchOnWindowFocus);
+  }
+  destroy() {
+    this.listeners = new Set(), this.#x(), this.#w(), this.#e.removeObserver(this);
+  }
+  setOptions(t) {
+    let e = this.options,
+      r = this.#e;
+    if (this.options = this.#t.defaultQueryOptions(t), this.options.enabled !== void 0 && typeof this.options.enabled !== "boolean" && typeof this.options.enabled !== "function" && typeof Re(this.options.enabled, this.#e) !== "boolean") throw Error("Expected enabled to be a boolean or a callback that returns a boolean");
+    if (this.#S(), this.#e.setOptions(this.options), e._defaulted && !oo(this.options, e)) this.#t.getQueryCache().notify({
+      type: "observerOptionsUpdated",
+      query: this.#e,
+      observer: this
+    });
+    let n = this.hasListeners();
+    if (n && cw(this.#e, r, this.options, e)) this.#d();
+    if (this.updateResult(), n && (this.#e !== r || Re(this.options.enabled, this.#e) !== Re(e.enabled, this.#e) || Ur(this.options.staleTime, this.#e) !== Ur(e.staleTime, this.#e))) this.#y();
+    let a = this.#g();
+    if (n && (this.#e !== r || Re(this.options.enabled, this.#e) !== Re(e.enabled, this.#e) || a !== this.#s)) this.#v(a);
+  }
+  getOptimisticResult(t) {
+    let e = this.#t.getQueryCache().build(this.#t, t),
+      r = this.createResult(e, t);
+    if (S8(this, r)) this.#n = r, this.#a = this.options, this.#i = this.#e.state;
+    return r;
+  }
+  getCurrentResult() {
+    return this.#n;
+  }
+  trackResult(t, e) {
+    return new Proxy(t, {
+      get: (r, n) => {
+        if (this.trackProp(n), e?.(n), n === "promise") {
+          if (this.trackProp("data"), !this.options.experimental_prefetchInRender && this.#l.status === "pending") this.#l.reject(Error("experimental_prefetchInRender feature flag is not enabled"));
+        }
+        return Reflect.get(r, n);
+      }
+    });
+  }
+  trackProp(t) {
+    this.#m.add(t);
+  }
+  getCurrentQuery() {
+    return this.#e;
+  }
+  refetch({
+    ...t
+  } = {}) {
+    return this.fetch({
+      ...t
+    });
+  }
+  fetchOptimistic(t) {
+    let e = this.#t.defaultQueryOptions(t),
+      r = this.#t.getQueryCache().build(this.#t, e);
+    return r.fetch().then(() => this.createResult(r, e));
+  }
+  fetch(t) {
+    return this.#d({
+      ...t,
+      cancelRefetch: t.cancelRefetch ?? !0
+    }).then(() => (this.updateResult(), this.#n));
+  }
+  #d(t) {
+    this.#S();
+    let e = this.#e.fetch(this.options, t);
+    if (!t?.throwOnError) e = e.catch(Qt);
+    return e;
+  }
+  #y() {
+    this.#x();
+    let t = Ur(this.options.staleTime, this.#e);
+    if (sn.isServer() || this.#n.isStale || !vu(t)) return;
+    let r = sf(this.#n.dataUpdatedAt, t) + 1;
+    this.#f = ln.setTimeout(() => {
+      if (!this.#n.isStale) this.updateResult();
+    }, r);
+  }
+  #g() {
+    return (typeof this.options.refetchInterval === "function" ? this.options.refetchInterval(this.#e) : this.options.refetchInterval) ?? !1;
+  }
+  #v(t) {
+    if (this.#w(), this.#s = t, sn.isServer() || Re(this.options.enabled, this.#e) === !1 || !vu(this.#s) || this.#s === 0) return;
+    this.#p = ln.setInterval(() => {
+      if (this.options.refetchIntervalInBackground || io.isFocused()) this.#d();
+    }, this.#s);
+  }
+  #b() {
+    this.#y(), this.#v(this.#g());
+  }
+  #x() {
+    if (this.#f !== void 0) ln.clearTimeout(this.#f), this.#f = void 0;
+  }
+  #w() {
+    if (this.#p !== void 0) ln.clearInterval(this.#p), this.#p = void 0;
+  }
+  createResult(t, e) {
+    let r = this.#e,
+      n = this.options,
+      a = this.#n,
+      i = this.#i,
+      o = this.#a,
+      u = t !== r ? t.state : this.#r,
+      {
+        state: s
+      } = t,
+      f = {
+        ...s
+      },
+      c = !1,
+      p;
+    if (e._optimisticResults) {
+      let M = this.hasListeners(),
+        N = !M && sw(t, e),
+        R = M && cw(t, r, e, n);
+      if (N || R) f = {
+        ...f,
+        ...Gm(s.data, t.options)
+      };
+      if (e._optimisticResults === "isRestoring") f.fetchStatus = "idle";
+    }
+    let {
+      error: d,
+      errorUpdatedAt: b,
+      status: y
+    } = f;
+    p = f.data;
+    let w = !1;
+    if (e.placeholderData !== void 0 && p === void 0 && y === "pending") {
+      let M;
+      if (a?.isPlaceholderData && e.placeholderData === o?.placeholderData) M = a.data, w = !0;else M = typeof e.placeholderData === "function" ? e.placeholderData(this.#h?.state.data, this.#h) : e.placeholderData;
+      if (M !== void 0) y = "success", p = xu(a?.data, M, e), c = !0;
+    }
+    if (e.select && p !== void 0 && !w) if (a && p === i?.data && e.select === this.#c) p = this.#u;else try {
+      this.#c = e.select, p = e.select(p), p = xu(a?.data, p, e), this.#u = p, this.#o = null;
+    } catch (M) {
+      this.#o = M;
+    }
+    if (this.#o) d = this.#o, p = this.#u, b = Date.now(), y = "error";
+    let m = f.fetchStatus === "fetching",
+      h = y === "pending",
+      g = y === "error",
+      x = h && m,
+      v = p !== void 0,
+      A = {
+        status: y,
+        fetchStatus: f.fetchStatus,
+        isPending: h,
+        isSuccess: y === "success",
+        isError: g,
+        isInitialLoading: x,
+        isLoading: x,
+        data: p,
+        dataUpdatedAt: f.dataUpdatedAt,
+        error: d,
+        errorUpdatedAt: b,
+        failureCount: f.fetchFailureCount,
+        failureReason: f.fetchFailureReason,
+        errorUpdateCount: f.errorUpdateCount,
+        isFetched: t.isFetched(),
+        isFetchedAfterMount: f.dataUpdateCount > u.dataUpdateCount || f.errorUpdateCount > u.errorUpdateCount,
+        isFetching: m,
+        isRefetching: m && !h,
+        isLoadingError: g && !v,
+        isPaused: f.fetchStatus === "paused",
+        isPlaceholderData: c,
+        isRefetchError: g && v,
+        isStale: Qm(t, e),
+        refetch: this.refetch,
+        promise: this.#l,
+        isEnabled: Re(e.enabled, t) !== !1
+      };
+    if (this.options.experimental_prefetchInRender) {
+      let M = A.data !== void 0,
+        N = A.status === "error" && !M,
+        R = z => {
+          if (N) z.reject(A.error);else if (M) z.resolve(A.data);
+        },
+        H = () => {
+          let z = this.#l = A.promise = wu();
+          R(z);
+        },
+        L = this.#l;
+      switch (L.status) {
+        case "pending":
+          if (t.queryHash === r.queryHash) R(L);
+          break;
+        case "fulfilled":
+          if (N || A.data !== L.value) H();
+          break;
+        case "rejected":
+          if (!N || A.error !== L.reason) H();
+          break;
+      }
+    }
+    return A;
+  }
+  updateResult() {
+    let t = this.#n,
+      e = this.createResult(this.#e, this.options);
+    if (this.#i = this.#e.state, this.#a = this.options, this.#i.data !== void 0) this.#h = this.#e;
+    if (oo(e, t)) return;
+    this.#n = e;
+    let r = () => {
+      if (!t) return !0;
+      let {
+          notifyOnChangeProps: n
+        } = this.options,
+        a = typeof n === "function" ? n() : n;
+      if (a === "all" || !a && !this.#m.size) return !0;
+      let i = new Set(a ?? this.#m);
+      if (this.options.throwOnError) i.add("error");
+      return Object.keys(this.#n).some(o => {
+        let l = o;
+        return this.#n[l] !== t[l] && i.has(l);
+      });
+    };
+    this.#O({
+      listeners: r()
+    });
+  }
+  #S() {
+    let t = this.#t.getQueryCache().build(this.#t, this.options);
+    if (t === this.#e) return;
+    let e = this.#e;
+    if (this.#e = t, this.#r = t.state, this.hasListeners()) e?.removeObserver(this), t.addObserver(this);
+  }
+  onQueryUpdate() {
+    if (this.updateResult(), this.hasListeners()) this.#b();
+  }
+  #O(t) {
+    Ct.batch(() => {
+      if (t.listeners) this.listeners.forEach(e => {
+        e(this.#n);
+      });
+      this.#t.getQueryCache().notify({
+        query: this.#e,
+        type: "observerResultsUpdated"
+      });
+    });
+  }
+};
+function w8(t, e) {
+  return Re(e.enabled, t) !== !1 && t.state.data === void 0 && !(t.state.status === "error" && Re(e.retryOnMount, t) === !1);
+}
+function sw(t, e) {
+  return w8(t, e) || t.state.data !== void 0 && Ym(t, e, e.refetchOnMount);
+}
+function Ym(t, e, r) {
+  if (Re(e.enabled, t) !== !1 && Ur(e.staleTime, t) !== "static") {
+    let n = typeof r === "function" ? r(t) : r;
+    return n === "always" || n !== !1 && Qm(t, e);
+  }
+  return !1;
+}
+function cw(t, e, r, n) {
+  return (t !== e || Re(n.enabled, t) === !1) && (!r.suspense || t.state.status !== "error") && Qm(t, r);
+}
+function Qm(t, e) {
+  return Re(e.enabled, t) !== !1 && t.isStaleByTime(Ur(e.staleTime, t));
+}
+function S8(t, e) {
+  if (!oo(t.getCurrentResult(), e)) return !0;
+  return !1;
+}
+var fw = class extends mf {
+  #t;
+  #e;
+  #r;
+  #n;
+  constructor(t) {
+    super();
+    this.#t = t.client, this.mutationId = t.mutationId, this.#r = t.mutationCache, this.#e = [], this.state = t.state || Km(), this.setOptions(t.options), this.scheduleGc();
+  }
+  setOptions(t) {
+    this.options = t, this.updateGcTime(this.options.gcTime);
+  }
+  get meta() {
+    return this.options.meta;
+  }
+  addObserver(t) {
+    if (!this.#e.includes(t)) this.#e.push(t), this.clearGcTimeout(), this.#r.notify({
+      type: "observerAdded",
+      mutation: this,
+      observer: t
+    });
+  }
+  removeObserver(t) {
+    this.#e = this.#e.filter(e => e !== t), this.scheduleGc(), this.#r.notify({
+      type: "observerRemoved",
+      mutation: this,
+      observer: t
+    });
+  }
+  optionalRemove() {
+    if (!this.#e.length) if (this.state.status === "pending") this.scheduleGc();else this.#r.remove(this);
+  }
+  continue() {
+    return this.#n?.continue() ?? this.execute(this.state.variables);
+  }
+  async execute(t) {
+    let e = () => {
+        this.#i({
+          type: "continue"
+        });
+      },
+      r = {
+        client: this.#t,
+        meta: this.options.meta,
+        mutationKey: this.options.mutationKey
+      };
+    this.#n = hf({
+      fn: () => {
+        if (!this.options.mutationFn) return Promise.reject(Error("No mutationFn found"));
+        return this.options.mutationFn(t, r);
+      },
+      onFail: (i, o) => {
+        this.#i({
+          type: "failed",
+          failureCount: i,
+          error: o
+        });
+      },
+      onPause: () => {
+        this.#i({
+          type: "pause"
+        });
+      },
+      onContinue: e,
+      retry: this.options.retry ?? 0,
+      retryDelay: this.options.retryDelay,
+      networkMode: this.options.networkMode,
+      canRun: () => this.#r.canRun(this)
+    });
+    let n = this.state.status === "pending",
+      a = !this.#n.canStart();
+    try {
+      if (n) e();else {
+        if (this.#i({
+          type: "pending",
+          variables: t,
+          isPaused: a
+        }), this.#r.config.onMutate) await this.#r.config.onMutate(t, this, r);
+        let o = await this.options.onMutate?.(t, r);
+        if (o !== this.state.context) this.#i({
+          type: "pending",
+          context: o,
+          variables: t,
+          isPaused: a
+        });
+      }
+      let i = await this.#n.start();
+      return await this.#r.config.onSuccess?.(i, t, this.state.context, this, r), await this.options.onSuccess?.(i, t, this.state.context, r), await this.#r.config.onSettled?.(i, null, this.state.variables, this.state.context, this, r), await this.options.onSettled?.(i, null, t, this.state.context, r), this.#i({
+        type: "success",
+        data: i
+      }), i;
+    } catch (i) {
+      try {
+        await this.#r.config.onError?.(i, t, this.state.context, this, r);
+      } catch (o) {
+        Promise.reject(o);
+      }
+      try {
+        await this.options.onError?.(i, t, this.state.context, r);
+      } catch (o) {
+        Promise.reject(o);
+      }
+      try {
+        await this.#r.config.onSettled?.(void 0, i, this.state.variables, this.state.context, this, r);
+      } catch (o) {
+        Promise.reject(o);
+      }
+      try {
+        await this.options.onSettled?.(void 0, i, t, this.state.context, r);
+      } catch (o) {
+        Promise.reject(o);
+      }
+      throw this.#i({
+        type: "error",
+        error: i
+      }), i;
+    } finally {
+      this.#r.runNext(this);
+    }
+  }
+  #i(t) {
+    let e = r => {
+      switch (t.type) {
+        case "failed":
+          return {
+            ...r,
+            failureCount: t.failureCount,
+            failureReason: t.error
+          };
+        case "pause":
+          return {
+            ...r,
+            isPaused: !0
+          };
+        case "continue":
+          return {
+            ...r,
+            isPaused: !1
+          };
+        case "pending":
+          return {
+            ...r,
+            context: t.context,
+            data: void 0,
+            failureCount: 0,
+            failureReason: null,
+            error: null,
+            isPaused: t.isPaused,
+            status: "pending",
+            variables: t.variables,
+            submittedAt: Date.now()
+          };
+        case "success":
+          return {
+            ...r,
+            data: t.data,
+            failureCount: 0,
+            failureReason: null,
+            error: null,
+            status: "success",
+            isPaused: !1
+          };
+        case "error":
+          return {
+            ...r,
+            data: void 0,
+            error: t.error,
+            failureCount: r.failureCount + 1,
+            failureReason: t.error,
+            isPaused: !1,
+            status: "error"
+          };
+      }
+    };
+    this.state = e(this.state), Ct.batch(() => {
+      this.#e.forEach(r => {
+        r.onMutationUpdate(t);
+      }), this.#r.notify({
+        mutation: this,
+        type: "updated",
+        action: t
+      });
+    });
+  }
+};
+function Km() {
+  return {
+    context: void 0,
+    data: void 0,
+    error: null,
+    failureCount: 0,
+    failureReason: null,
+    isPaused: !1,
+    status: "idle",
+    variables: void 0,
+    submittedAt: 0
+  };
+}
+var pw = class extends br {
+  constructor(t = {}) {
+    super();
+    this.config = t, this.#t = new Set(), this.#e = new Map(), this.#r = 0;
+  }
+  #t;
+  #e;
+  #r;
+  build(t, e, r) {
+    let n = new fw({
+      client: t,
+      mutationCache: this,
+      mutationId: ++this.#r,
+      options: t.defaultMutationOptions(e),
+      state: r
+    });
+    return this.add(n), n;
+  }
+  add(t) {
+    this.#t.add(t);
+    let e = yf(t);
+    if (typeof e === "string") {
+      let r = this.#e.get(e);
+      if (r) r.push(t);else this.#e.set(e, [t]);
+    }
+    this.notify({
+      type: "added",
+      mutation: t
+    });
+  }
+  remove(t) {
+    if (this.#t.delete(t)) {
+      let e = yf(t);
+      if (typeof e === "string") {
+        let r = this.#e.get(e);
+        if (r) {
+          if (r.length > 1) {
+            let n = r.indexOf(t);
+            if (n !== -1) r.splice(n, 1);
+          } else if (r[0] === t) this.#e.delete(e);
+        }
+      }
+    }
+    this.notify({
+      type: "removed",
+      mutation: t
+    });
+  }
+  canRun(t) {
+    let e = yf(t);
+    if (typeof e === "string") {
+      let n = this.#e.get(e)?.find(a => a.state.status === "pending");
+      return !n || n === t;
+    } else return !0;
+  }
+  runNext(t) {
+    let e = yf(t);
+    if (typeof e === "string") return this.#e.get(e)?.find(n => n !== t && n.state.isPaused)?.continue() ?? Promise.resolve();else return Promise.resolve();
+  }
+  clear() {
+    Ct.batch(() => {
+      this.#t.forEach(t => {
+        this.notify({
+          type: "removed",
+          mutation: t
+        });
+      }), this.#t.clear(), this.#e.clear();
+    });
+  }
+  getAll() {
+    return Array.from(this.#t);
+  }
+  find(t) {
+    let e = {
+      exact: !0,
+      ...t
+    };
+    return this.getAll().find(r => ff(e, r));
+  }
+  findAll(t = {}) {
+    return this.getAll().filter(e => ff(t, e));
+  }
+  notify(t) {
+    Ct.batch(() => {
+      this.listeners.forEach(e => {
+        e(t);
+      });
+    });
+  }
+  resumePausedMutations() {
+    let t = this.getAll().filter(e => e.state.isPaused);
+    return Ct.batch(() => Promise.all(t.map(e => e.continue().catch(Qt))));
+  }
+};
+function yf(t) {
+  return t.options.scope?.id;
+}
+var Vm = class extends br {
+  #t;
+  #e = void 0;
+  #r;
+  #n;
+  constructor(t, e) {
+    super();
+    this.#t = t, this.setOptions(e), this.bindMethods(), this.#i();
+  }
+  bindMethods() {
+    this.mutate = this.mutate.bind(this), this.reset = this.reset.bind(this);
+  }
+  setOptions(t) {
+    let e = this.options;
+    if (this.options = this.#t.defaultMutationOptions(t), !oo(this.options, e)) this.#t.getMutationCache().notify({
+      type: "observerOptionsUpdated",
+      mutation: this.#r,
+      observer: this
+    });
+    if (e?.mutationKey && this.options.mutationKey && un(e.mutationKey) !== un(this.options.mutationKey)) this.reset();else if (this.#r?.state.status === "pending") this.#r.setOptions(this.options);
+  }
+  onUnsubscribe() {
+    if (!this.hasListeners()) this.#r?.removeObserver(this);
+  }
+  onMutationUpdate(t) {
+    this.#i(), this.#a(t);
+  }
+  getCurrentResult() {
+    return this.#e;
+  }
+  reset() {
+    this.#r?.removeObserver(this), this.#r = void 0, this.#i(), this.#a();
+  }
+  mutate(t, e) {
+    return this.#n = e, this.#r?.removeObserver(this), this.#r = this.#t.getMutationCache().build(this.#t, this.options), this.#r.addObserver(this), this.#r.execute(t);
+  }
+  #i() {
+    let t = this.#r?.state ?? Km();
+    this.#e = {
+      ...t,
+      isPending: t.status === "pending",
+      isSuccess: t.status === "success",
+      isError: t.status === "error",
+      isIdle: t.status === "idle",
+      mutate: this.mutate,
+      reset: this.reset
+    };
+  }
+  #a(t) {
+    Ct.batch(() => {
+      if (this.#n && this.hasListeners()) {
+        let e = this.#e.variables,
+          r = this.#e.context,
+          n = {
+            client: this.#t,
+            meta: this.options.meta,
+            mutationKey: this.options.mutationKey
+          };
+        if (t?.type === "success") {
+          try {
+            this.#n.onSuccess?.(t.data, e, r, n);
+          } catch (a) {
+            Promise.reject(a);
+          }
+          try {
+            this.#n.onSettled?.(t.data, null, e, r, n);
+          } catch (a) {
+            Promise.reject(a);
+          }
+        } else if (t?.type === "error") {
+          try {
+            this.#n.onError?.(t.error, e, r, n);
+          } catch (a) {
+            Promise.reject(a);
+          }
+          try {
+            this.#n.onSettled?.(void 0, t.error, e, r, n);
+          } catch (a) {
+            Promise.reject(a);
+          }
+        }
+      }
+      this.listeners.forEach(e => {
+        e(this.#e);
+      });
+    });
+  }
+};
+var dw = class extends br {
+  constructor(t = {}) {
+    super();
+    this.config = t, this.#t = new Map();
+  }
+  #t;
+  build(t, e, r) {
+    let n = e.queryKey,
+      a = e.queryHash ?? bu(n, e),
+      i = this.get(a);
+    if (!i) i = new uw({
+      client: t,
+      queryKey: n,
+      queryHash: a,
+      options: t.defaultQueryOptions(e),
+      state: r,
+      defaultOptions: t.getQueryDefaults(n)
+    }), this.add(i);
+    return i;
+  }
+  add(t) {
+    if (!this.#t.has(t.queryHash)) this.#t.set(t.queryHash, t), this.notify({
+      type: "added",
+      query: t
+    });
+  }
+  remove(t) {
+    let e = this.#t.get(t.queryHash);
+    if (e) {
+      if (t.destroy(), e === t) this.#t.delete(t.queryHash);
+      this.notify({
+        type: "removed",
+        query: t
+      });
+    }
+  }
+  clear() {
+    Ct.batch(() => {
+      this.getAll().forEach(t => {
+        this.remove(t);
+      });
+    });
+  }
+  get(t) {
+    return this.#t.get(t);
+  }
+  getAll() {
+    return [...this.#t.values()];
+  }
+  find(t) {
+    let e = {
+      exact: !0,
+      ...t
+    };
+    return this.getAll().find(r => cf(e, r));
+  }
+  findAll(t = {}) {
+    let e = this.getAll();
+    return Object.keys(t).length > 0 ? e.filter(r => cf(t, r)) : e;
+  }
+  notify(t) {
+    Ct.batch(() => {
+      this.listeners.forEach(e => {
+        e(t);
+      });
+    });
+  }
+  onFocus() {
+    Ct.batch(() => {
+      this.getAll().forEach(t => {
+        t.onFocus();
+      });
+    });
+  }
+  onOnline() {
+    Ct.batch(() => {
+      this.getAll().forEach(t => {
+        t.onOnline();
+      });
+    });
+  }
+};
+var Fm = class {
+  #t;
+  #e;
+  #r;
+  #n;
+  #i;
+  #a;
+  #l;
+  #o;
+  constructor(t = {}) {
+    this.#t = t.queryCache || new dw(), this.#e = t.mutationCache || new pw(), this.#r = t.defaultOptions || {}, this.#n = new Map(), this.#i = new Map(), this.#a = 0;
+  }
+  mount() {
+    if (this.#a++, this.#a !== 1) return;
+    this.#l = io.subscribe(async t => {
+      if (t) await this.resumePausedMutations(), this.#t.onFocus();
+    }), this.#o = so.subscribe(async t => {
+      if (t) await this.resumePausedMutations(), this.#t.onOnline();
+    });
+  }
+  unmount() {
+    if (this.#a--, this.#a !== 0) return;
+    this.#l?.(), this.#l = void 0, this.#o?.(), this.#o = void 0;
+  }
+  isFetching(t) {
+    return this.#t.findAll({
+      ...t,
+      fetchStatus: "fetching"
+    }).length;
+  }
+  isMutating(t) {
+    return this.#e.findAll({
+      ...t,
+      status: "pending"
+    }).length;
+  }
+  getQueryData(t) {
+    let e = this.defaultQueryOptions({
+      queryKey: t
+    });
+    return this.#t.get(e.queryHash)?.state.data;
+  }
+  ensureQueryData(t) {
+    let e = this.defaultQueryOptions(t),
+      r = this.#t.build(this, e),
+      n = r.state.data;
+    if (n === void 0) return this.fetchQuery(t);
+    if (t.revalidateIfStale && r.isStaleByTime(Ur(e.staleTime, r))) this.prefetchQuery(e);
+    return Promise.resolve(n);
+  }
+  getQueriesData(t) {
+    return this.#t.findAll(t).map(({
+      queryKey: e,
+      state: r
+    }) => {
+      let n = r.data;
+      return [e, n];
+    });
+  }
+  setQueryData(t, e, r) {
+    let n = this.defaultQueryOptions({
+        queryKey: t
+      }),
+      i = this.#t.get(n.queryHash)?.state.data,
+      o = $1(e, i);
+    if (o === void 0) return;
+    return this.#t.build(this, n).setData(o, {
+      ...r,
+      manual: !0
+    });
+  }
+  setQueriesData(t, e, r) {
+    return Ct.batch(() => this.#t.findAll(t).map(({
+      queryKey: n
+    }) => [n, this.setQueryData(n, e, r)]));
+  }
+  getQueryState(t) {
+    let e = this.defaultQueryOptions({
+      queryKey: t
+    });
+    return this.#t.get(e.queryHash)?.state;
+  }
+  removeQueries(t) {
+    let e = this.#t;
+    Ct.batch(() => {
+      e.findAll(t).forEach(r => {
+        e.remove(r);
+      });
+    });
+  }
+  resetQueries(t, e) {
+    let r = this.#t;
+    return Ct.batch(() => (r.findAll(t).forEach(n => {
+      n.reset();
+    }), this.refetchQueries({
+      type: "active",
+      ...t
+    }, e)));
+  }
+  cancelQueries(t, e = {}) {
+    let r = {
+        revert: !0,
+        ...e
+      },
+      n = Ct.batch(() => this.#t.findAll(t).map(a => a.cancel(r)));
+    return Promise.all(n).then(Qt).catch(Qt);
+  }
+  invalidateQueries(t, e = {}) {
+    return Ct.batch(() => {
+      if (this.#t.findAll(t).forEach(r => {
+        r.invalidate();
+      }), t?.refetchType === "none") return Promise.resolve();
+      return this.refetchQueries({
+        ...t,
+        type: t?.refetchType ?? t?.type ?? "active"
+      }, e);
+    });
+  }
+  refetchQueries(t, e = {}) {
+    let r = {
+        ...e,
+        cancelRefetch: e.cancelRefetch ?? !0
+      },
+      n = Ct.batch(() => this.#t.findAll(t).filter(a => !a.isDisabled() && !a.isStatic()).map(a => {
+        let i = a.fetch(void 0, r);
+        if (!r.throwOnError) i = i.catch(Qt);
+        return a.state.fetchStatus === "paused" ? Promise.resolve() : i;
+      }));
+    return Promise.all(n).then(Qt);
+  }
+  fetchQuery(t) {
+    let e = this.defaultQueryOptions(t);
+    if (e.retry === void 0) e.retry = !1;
+    let r = this.#t.build(this, e);
+    return r.isStaleByTime(Ur(e.staleTime, r)) ? r.fetch(e) : Promise.resolve(r.state.data);
+  }
+  prefetchQuery(t) {
+    return this.fetchQuery(t).then(Qt).catch(Qt);
+  }
+  fetchInfiniteQuery(t) {
+    return t._type = "infinite", this.fetchQuery(t);
+  }
+  prefetchInfiniteQuery(t) {
+    return this.fetchInfiniteQuery(t).then(Qt).catch(Qt);
+  }
+  ensureInfiniteQueryData(t) {
+    return t._type = "infinite", this.ensureQueryData(t);
+  }
+  resumePausedMutations() {
+    if (so.isOnline()) return this.#e.resumePausedMutations();
+    return Promise.resolve();
+  }
+  getQueryCache() {
+    return this.#t;
+  }
+  getMutationCache() {
+    return this.#e;
+  }
+  getDefaultOptions() {
+    return this.#r;
+  }
+  setDefaultOptions(t) {
+    this.#r = t;
+  }
+  setQueryDefaults(t, e) {
+    this.#n.set(un(t), {
+      queryKey: t,
+      defaultOptions: e
+    });
+  }
+  getQueryDefaults(t) {
+    let e = [...this.#n.values()],
+      r = {};
+    return e.forEach(n => {
+      if (Va(t, n.queryKey)) Object.assign(r, n.defaultOptions);
+    }), r;
+  }
+  setMutationDefaults(t, e) {
+    this.#i.set(un(t), {
+      mutationKey: t,
+      defaultOptions: e
+    });
+  }
+  getMutationDefaults(t) {
+    let e = [...this.#i.values()],
+      r = {};
+    return e.forEach(n => {
+      if (Va(t, n.mutationKey)) Object.assign(r, n.defaultOptions);
+    }), r;
+  }
+  defaultQueryOptions(t) {
+    if (t._defaulted) return t;
+    let e = {
+      ...this.#r.queries,
+      ...this.getQueryDefaults(t.queryKey),
+      ...t,
+      _defaulted: !0
+    };
+    if (!e.queryHash) e.queryHash = bu(e.queryKey, e);
+    if (e.refetchOnReconnect === void 0) e.refetchOnReconnect = e.networkMode !== "always";
+    if (e.throwOnError === void 0) e.throwOnError = !!e.suspense;
+    if (!e.networkMode && e.persister) e.networkMode = "offlineFirst";
+    if (e.queryFn === lo) e.enabled = !1;
+    return e;
+  }
+  defaultMutationOptions(t) {
+    if (t?._defaulted) return t;
+    return {
+      ...this.#r.mutations,
+      ...(t?.mutationKey && this.getMutationDefaults(t.mutationKey)),
+      ...t,
+      _defaulted: !0
+    };
+  }
+  clear() {
+    this.#t.clear(), this.#e.clear();
+  }
+};
+var $m = Symbol.for("react.transitional.element"),
+  O8 = Symbol.for("react.portal"),
+  A8 = Symbol.for("react.fragment"),
+  T8 = Symbol.for("react.strict_mode");
+var E8 = Symbol.for("react.consumer"),
+  _8 = Symbol.for("react.context"),
+  M8 = Symbol.for("react.forward_ref");
+var C8 = Symbol.for("react.lazy");
+var hw = Symbol.iterator;
+function j8(t) {
+  if (t === null || typeof t !== "object") return null;
+  return t = hw && t[hw] || t["@@iterator"], typeof t === "function" ? t : null;
+}
+var vw = {
+    isMounted: function () {
+      return !1;
+    },
+    enqueueForceUpdate: function () {},
+    enqueueReplaceState: function () {},
+    enqueueSetState: function () {}
+  },
+  bw = Object.assign,
+  xw = {};
+function fo(t, e, r) {
+  this.props = t, this.context = e, this.refs = xw, this.updater = r || vw;
+}
+fo.prototype.isReactComponent = {};
+fo.prototype.setState = function (t, e) {
+  if (typeof t !== "object" && typeof t !== "function" && t != null) throw Error("takes an object of state variables to update or a function which returns an object of state variables.");
+  this.updater.enqueueSetState(this, t, e, "setState");
+};
+fo.prototype.forceUpdate = function (t) {
+  this.updater.enqueueForceUpdate(this, t, "forceUpdate");
+};
+function ww() {}
+ww.prototype = fo.prototype;
+function Jm(t, e, r) {
+  this.props = t, this.context = e, this.refs = xw, this.updater = r || vw;
+}
+var ty = Jm.prototype = new ww();
+ty.constructor = Jm;
+bw(ty, fo.prototype);
+ty.isPureReactComponent = !0;
+var mw = Array.isArray;
+function yw() {}
+var En = {
+    H: null,
+    A: null,
+    T: null,
+    S: null
+  },
+  Sw = Object.prototype.hasOwnProperty;
+function ey(t, e, r) {
+  var n = r.ref;
+  return {
+    $$typeof: $m,
+    type: t,
+    key: e,
+    ref: n !== void 0 ? n : null,
+    props: r
+  };
+}
+function D8(t, e) {
+  return ey(t.type, e, t.props);
+}
+function ry(t) {
+  return typeof t === "object" && t !== null && t.$$typeof === $m;
+}
+function N8(t) {
+  var e = {
+    "=": "=0",
+    ":": "=2"
+  };
+  return "$" + t.replace(/[=:]/g, function (r) {
+    return e[r];
+  });
+}
+var gw = /\/+/g;
+function Zm(t, e) {
+  return typeof t === "object" && t !== null && t.key != null ? N8("" + t.key) : e.toString(36);
+}
+function k8(t) {
+  switch (t.status) {
+    case "fulfilled":
+      return t.value;
+    case "rejected":
+      throw t.reason;
+    default:
+      switch (typeof t.status === "string" ? t.then(yw, yw) : (t.status = "pending", t.then(function (e) {
+        t.status === "pending" && (t.status = "fulfilled", t.value = e);
+      }, function (e) {
+        t.status === "pending" && (t.status = "rejected", t.reason = e);
+      })), t.status) {
+        case "fulfilled":
+          return t.value;
+        case "rejected":
+          throw t.reason;
+      }
+  }
+  throw t;
+}
+function co(t, e, r, n, a) {
+  var i = typeof t;
+  if (i === "undefined" || i === "boolean") t = null;
+  var o = !1;
+  if (t === null) o = !0;else switch (i) {
+    case "bigint":
+    case "string":
+    case "number":
+      o = !0;
+      break;
+    case "object":
+      switch (t.$$typeof) {
+        case $m:
+        case O8:
+          o = !0;
+          break;
+        case C8:
+          return o = t._init, co(o(t._payload), e, r, n, a);
+      }
+  }
+  if (o) return a = a(t), o = n === "" ? "." + Zm(t, 0) : n, mw(a) ? (r = "", o != null && (r = o.replace(gw, "$&/") + "/"), co(a, e, r, "", function (s) {
+    return s;
+  })) : a != null && (ry(a) && (a = D8(a, r + (a.key == null || t && t.key === a.key ? "" : ("" + a.key).replace(gw, "$&/") + "/") + o)), e.push(a)), 1;
+  o = 0;
+  var l = n === "" ? "." : n + ":";
+  if (mw(t)) for (var u = 0; u < t.length; u++) n = t[u], i = l + Zm(n, u), o += co(n, e, r, i, a);else if (u = j8(t), typeof u === "function") for (t = u.call(t), u = 0; !(n = t.next()).done;) n = n.value, i = l + Zm(n, u++), o += co(n, e, r, i, a);else if (i === "object") {
+    if (typeof t.then === "function") return co(k8(t), e, r, n, a);
+    throw e = String(t), Error("Objects are not valid as a React child (found: " + (e === "[object Object]" ? "object with keys {" + Object.keys(t).join(", ") + "}" : e) + "). If you meant to render a collection of children, use an array instead.");
+  }
+  return o;
+}
+function gf(t, e, r) {
+  if (t == null) return t;
+  var n = [],
+    a = 0;
+  return co(t, n, "", "", function (i) {
+    return e.call(r, i, a++);
+  }), n;
+}
+var P8 = {
+  map: gf,
+  forEach: function (t, e, r) {
+    gf(t, function () {
+      e.apply(this, arguments);
+    }, r);
+  },
+  count: function (t) {
+    var e = 0;
+    return gf(t, function () {
+      e++;
+    }), e;
+  },
+  toArray: function (t) {
+    return gf(t, function (e) {
+      return e;
+    }) || [];
+  },
+  only: function (t) {
+    if (!ry(t)) throw Error("React.Children.only expected to receive a single React element child.");
+    return t;
+  }
+};
+var er = P8,
+  Hr = fo,
+  Ow = A8;
+var ze = Jm,
+  ny = T8;
+var vf = En;
+var mt = function (t, e, r) {
+    if (t === null || t === void 0) throw Error("The argument must be a React element, but you passed " + t + ".");
+    var n = bw({}, t.props),
+      a = t.key;
+    if (e != null) for (i in e.key !== void 0 && (a = "" + e.key), e) !Sw.call(e, i) || i === "key" || i === "__self" || i === "__source" || i === "ref" && e.ref === void 0 || (n[i] = e[i]);
+    var i = arguments.length - 2;
+    if (i === 1) n.children = r;else if (1 < i) {
+      for (var o = Array(i), l = 0; l < i; l++) o[l] = arguments[l + 2];
+      n.children = o;
+    }
+    return ey(t.type, a, n);
+  },
+  qe = function (t) {
+    return t = {
+      $$typeof: _8,
+      _currentValue: t,
+      _currentValue2: t,
+      _threadCount: 0,
+      Provider: null,
+      Consumer: null
+    }, t.Provider = t, t.Consumer = {
+      $$typeof: E8,
+      _context: t
+    }, t;
+  },
+  U = function (t, e, r) {
+    var n,
+      a = {},
+      i = null;
+    if (e != null) for (n in e.key !== void 0 && (i = "" + e.key), e) Sw.call(e, n) && n !== "key" && n !== "__self" && n !== "__source" && (a[n] = e[n]);
+    var o = arguments.length - 2;
+    if (o === 1) a.children = r;else if (1 < o) {
+      for (var l = Array(o), u = 0; u < o; u++) l[u] = arguments[u + 2];
+      a.children = l;
+    }
+    if (t && t.defaultProps) for (n in o = t.defaultProps, o) a[n] === void 0 && (a[n] = o[n]);
+    return ey(t, i, a);
+  };
+var po = function (t) {
+    return {
+      $$typeof: M8,
+      render: t
+    };
+  },
+  _t = ry;
+var ia = function (t, e) {
+    return En.H.useCallback(t, e);
+  },
+  ve = function (t) {
+    return En.H.useContext(t);
+  };
+var Jt = function (t, e) {
+  return En.H.useEffect(t, e);
+};
+var ay = function (t, e, r) {
+  return En.H.useImperativeHandle(t, e, r);
+};
+var Fa = function (t, e) {
+  return En.H.useMemo(t, e);
+};
+var _e = function (t) {
+    return En.H.useRef(t);
+  },
+  jt = function (t) {
+    return En.H.useState(t);
+  },
+  Su = function (t, e, r) {
+    return En.H.useSyncExternalStore(t, e, r);
+  };
+var iy = "19.2.5";
+var R8 = Symbol.for("react.transitional.element"),
+  z8 = Symbol.for("react.fragment");
+function Aw(t, e, r) {
+  var n = null;
+  if (r !== void 0 && (n = "" + r), e.key !== void 0 && (n = "" + e.key), "key" in e) {
+    r = {};
+    for (var a in e) a !== "key" && (r[a] = e[a]);
+  } else r = e;
+  return e = r.ref, {
+    $$typeof: R8,
+    type: t,
+    key: n,
+    ref: e !== void 0 ? e : null,
+    props: r
+  };
+}
+var bf = z8,
+  E = Aw,
+  I = Aw;
+var oy = qe(void 0),
+  Za = t => {
+    let e = ve(oy);
+    if (t) return t;
+    if (!e) throw Error("No QueryClient set, use QueryClientProvider to set one");
+    return e;
+  },
+  ly = ({
+    client: t,
+    children: e
+  }) => (Jt(() => (t.mount(), () => {
+    t.unmount();
+  }), [t]), E(oy.Provider, {
+    value: t,
+    children: e
+  }));
+function q8() {
+  let t = !1;
+  return {
+    clearReset: () => {
+      t = !1;
+    },
+    reset: () => {
+      t = !0;
+    },
+    isReset: () => t
+  };
+}
+var B8 = qe(q8()),
+  Tw = () => ve(B8);
+var Ew = (t, e, r) => {
+    let n = r?.state.error && typeof t.throwOnError === "function" ? uo(t.throwOnError, [r.state.error, r]) : t.throwOnError;
+    if (t.suspense || t.experimental_prefetchInRender || n) {
+      if (!e.isReset()) t.retryOnMount = !1;
+    }
+  },
+  _w = t => {
+    Jt(() => {
+      t.clearReset();
+    }, [t]);
+  },
+  Mw = ({
+    result: t,
+    errorResetBoundary: e,
+    throwOnError: r,
+    query: n,
+    suspense: a
+  }) => t.isError && !e.isReset() && !t.isFetching && n && (a && t.data === void 0 || uo(r, [t.error, n]));
+var Cw = qe(!1),
+  jw = () => ve(Cw),
+  glt = Cw.Provider;
+var Dw = t => {
+    if (t.suspense) {
+      let r = a => a === "static" ? a : Math.max(a ?? 1000, 1000),
+        n = t.staleTime;
+      if (t.staleTime = typeof n === "function" ? (...a) => r(n(...a)) : r(n), typeof t.gcTime === "number") t.gcTime = Math.max(t.gcTime, 1000);
+    }
+  },
+  Nw = (t, e) => t.isLoading && t.isFetching && !e,
+  kw = (t, e) => t?.suspense && e.isPending,
+  uy = (t, e, r) => e.fetchOptimistic(t).catch(() => {
+    r.clearReset();
+  });
+function Pw(t, e, r) {
+  let n = jw(),
+    a = Tw(),
+    i = Za(r),
+    o = i.defaultQueryOptions(t);
+  i.getDefaultOptions().queries?._experimental_beforeQuery?.(o);
+  let l = i.getQueryCache().get(o.queryHash);
+  o._optimisticResults = n ? "isRestoring" : "optimistic", Dw(o), Ew(o, a, l), _w(a);
+  let u = !i.getQueryCache().get(o.queryHash),
+    [s] = jt(() => new e(i, o)),
+    f = s.getOptimisticResult(o),
+    c = !n && t.subscribed !== !1;
+  if (Su(ia(p => {
+    let d = c ? s.subscribe(Ct.batchCalls(p)) : Qt;
+    return s.updateResult(), d;
+  }, [s, c]), () => s.getCurrentResult(), () => s.getCurrentResult()), Jt(() => {
+    s.setOptions(o);
+  }, [o, s]), kw(o, f)) throw uy(o, s, a);
+  if (Mw({
+    result: f,
+    errorResetBoundary: a,
+    throwOnError: o.throwOnError,
+    query: l,
+    suspense: o.suspense
+  })) throw f.error;
+  if (i.getDefaultOptions().queries?._experimental_afterQuery?.(o, f), o.experimental_prefetchInRender && !sn.isServer() && Nw(f, n)) (u ? uy(o, s, a) : l?.promise)?.catch(Qt).finally(() => {
+    s.updateResult();
+  });
+  return !o.notifyOnChangeProps ? s.trackResult(f) : f;
+}
+function sy(t, e) {
+  return Pw(t, Xm, e);
+}
+function Wr(t, e) {
+  let r = Za(e),
+    [n] = jt(() => new Vm(r, t));
+  Jt(() => {
+    n.setOptions(t);
+  }, [n, t]);
+  let a = Su(ia(o => n.subscribe(Ct.batchCalls(o)), [n]), () => n.getCurrentResult(), () => n.getCurrentResult()),
+    i = ia((o, l) => {
+      n.mutate(o, l).catch(Qt);
+    }, [n]);
+  if (a.error && uo(n.options.throwOnError, [a.error])) throw a.error;
+  return {
+    ...a,
+    mutate: i,
+    mutateAsync: a.mutate
+  };
+}
+var L8 = "calc(var(--twsa-safe-area-inset-top) + min(2rem, var(--twsa-safe-area-inset-top)))",
+  I8 = "var(--twsa-safe-area-inset-top)",
+  Rw = "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.99) 10%, rgba(0, 0, 0, 0.96) 20%, rgba(0, 0, 0, 0.90) 30%, rgba(0, 0, 0, 0.80) 40%, rgba(0, 0, 0, 0.67) 50%, rgba(0, 0, 0, 0.52) 60%, rgba(0, 0, 0, 0.36) 70%, rgba(0, 0, 0, 0.20) 80%, rgba(0, 0, 0, 0.08) 90%, rgba(0, 0, 0, 0) 100%)";
+function $a({
+  variant: t = "gradient",
+  backgroundColor: e,
+  zIndex: r = 40,
+  className: n,
+  style: a,
+  ...i
+}) {
+  let o = e ?? a?.backgroundColor ?? "var(--bg)",
+    l = {
+      ...a,
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: r,
+      pointerEvents: "none",
+      height: t === "gradient" ? L8 : I8,
+      backgroundColor: o
+    };
+  if (t === "gradient") l.maskImage = Rw, l.WebkitMaskImage = Rw;else if (t === "blur") l.backdropFilter = a?.backdropFilter ?? "blur(12px)", l.WebkitBackdropFilter = a?.WebkitBackdropFilter ?? "blur(12px)";
+  return U("div", {
+    ...i,
+    "aria-hidden": i["aria-hidden"] ?? !0,
+    className: n,
+    style: l
+  });
+}
+class oa extends Error {
+  status;
+  retryAfterMs;
+  retrySafe;
+  constructor(t, e, r, n = !1) {
+    super(t);
+    this.status = e, this.retryAfterMs = r, this.retrySafe = n, this.name = "SpaceActionError";
+  }
+}
+var U8 = new Set([400, 401, 403, 404, 409, 413, 415, 422]),
+  H8 = 3,
+  W8 = 1000,
+  zw = 30000;
+function G8(t, e) {
+  if (e instanceof oa && U8.has(e.status)) return !1;
+  return e instanceof oa && e.retrySafe && t < H8;
+}
+function Y8(t, e) {
+  let r = Math.min(zw, W8 * 2 ** t);
+  return (e instanceof oa && e.retryAfterMs != null ? Math.min(zw, Math.max(0, e.retryAfterMs)) : 0) + Math.random() * r;
+}
+var cn = new Fm({
+    defaultOptions: {
+      queries: {
+        retry: G8,
+        retryDelay: Y8,
+        staleTime: 30000,
+        refetchOnWindowFocus: !1
+      }
+    }
+  }),
+  qw = "__hatchAuditSettle";
+function X8(t = cn) {
+  if (typeof window > "u") return;
+  let e = window;
+  if (typeof e[qw] === "function") return;
+  e[qw] = () => t.isFetching() + t.isMutating();
+}
+X8();
+var Q8 = "hatch:space:query-invalidated",
+  K8 = "hatch:space-action-auth-refresh-required",
+  V8 = "hatch:space-action-auth-refresh-result",
+  F8 = "hatch:space-unavailable",
+  Fw = "space_unavailable",
+  Z8 = ["notary_missing", "notary_expired", "notary_invalid", "credential_stale"],
+  $8 = 1e4,
+  Zw = 1000,
+  J8 = 30000,
+  tz = 30000;
+function ez(t) {
+  return typeof t === "object" && t != null && t.type === Q8;
+}
+function rz(t) {
+  return Z8.includes(t);
+}
+function nz(t) {
+  if (typeof t !== "object" || t == null) return !1;
+  let e = t.error;
+  if (typeof e !== "object" || e == null) return !1;
+  return rz(e.code);
+}
+function Bw(t) {
+  if (typeof t !== "object" || t == null) return !1;
+  let e = t.error;
+  if (typeof e !== "object" || e == null) return !1;
+  return e.code === Fw;
+}
+function Lw(t, e) {
+  if (typeof window > "u" || window.parent === window) return !1;
+  return window.parent.postMessage({
+    type: K8,
+    reason: t,
+    requestId: e
+  }, "*"), !0;
+}
+function az(t) {
+  if (typeof window > "u" || window.parent === window) return !1;
+  return window.parent.postMessage({
+    type: F8,
+    reason: Fw,
+    actionCallId: t
+  }, "*"), !0;
+}
+function iz(t, e) {
+  return typeof t === "object" && t != null && t.type === V8 && t.requestId === e;
+}
+function oz() {
+  return `refresh-${Jw()}`;
+}
+function lz(t) {
+  let e = oz(),
+    r = typeof window > "u" ? null : window;
+  if (r == null || r.parent === r || typeof r.addEventListener !== "function" || typeof r.removeEventListener !== "function") return Lw(t, e), Promise.reject(Error("space action auth refresh is unavailable"));
+  return new Promise((n, a) => {
+    let i = r.setTimeout(() => {
+        o(), a(Error("space action auth refresh timed out"));
+      }, $8),
+      o = () => {
+        r.clearTimeout(i), r.removeEventListener("message", l);
+      },
+      l = u => {
+        if (u.source !== r.parent) return;
+        if (!iz(u.data, e)) return;
+        if (o(), u.data.ok === !0) {
+          n(u.data);
+          return;
+        }
+        let s = typeof u.data.error === "string" && u.data.error.length > 0 ? u.data.error : "space action auth refresh failed";
+        a(Error(s));
+      };
+    if (r.addEventListener("message", l), !Lw(t, e)) o(), a(Error("space action auth refresh is unavailable"));
+  });
+}
+function uz(t, e) {
+  if (typeof e !== "string" || e.length === 0) return null;
+  let r = globalThis.location?.href ?? "https://hatch.invalid/",
+    n = null;
+  try {
+    n = new URL(e, r).searchParams.get("viewer_assertion");
+  } catch {
+    return null;
+  }
+  if (n == null || n.length === 0) return null;
+  try {
+    let a = new URL(t, r);
+    return a.searchParams.set("viewer_assertion", n), a.toString();
+  } catch {
+    return null;
+  }
+}
+function sz(t) {
+  let e = t.payload?.queryKeys;
+  if (!Array.isArray(e)) return null;
+  return e.filter(r => Array.isArray(r));
+}
+var Ou = new Map(),
+  cy = !1,
+  Au = [];
+function wf() {
+  return Date.now();
+}
+function fy(t) {
+  let e = t - tz;
+  while (!0) {
+    let r = Au[0];
+    if (r == null || r.tsMs >= e) break;
+    Au.shift();
+  }
+}
+function cz(t, e) {
+  if (Object.is(t, e)) return !0;
+  try {
+    return JSON.stringify(t) === JSON.stringify(e);
+  } catch {
+    return !1;
+  }
+}
+function Iw(t, e) {
+  if (e.length > t.length) return !1;
+  return e.every((r, n) => cz(r, t[n]));
+}
+function fz(t, e) {
+  return Iw(t, e) || Iw(e, t);
+}
+function pz(t) {
+  let [e] = t;
+  if (e == null) return "all";
+  if (Array.isArray(e)) return e;
+  if (typeof e === "object" && e != null && "queryKey" in e && Array.isArray(e.queryKey)) return e.queryKey;
+  return "all";
+}
+function dz(t) {
+  let e = wf();
+  fy(e), Au.push({
+    target: t,
+    tsMs: e
+  });
+}
+function Uw(t, e) {
+  let r = wf();
+  return fy(r), Au.some(n => n.tsMs >= e && (n.target === "all" || fz(t, n.target)));
+}
+function Hw(t) {
+  let e = wf();
+  return fy(e), Au.some(r => r.tsMs >= t);
+}
+function hz(t) {
+  let e = wf();
+  if (Ou.set(t, e), typeof window > "u") return;
+  window.setTimeout(() => {
+    if (Ou.get(t) === e) Ou.delete(t);
+  }, J8);
+}
+function Ww(t) {
+  if (cy) return;
+  cy = !0, cn.cancelQueries(), az(t);
+}
+function xf() {
+  if (!cy) return;
+  throw new oa("Space is no longer available", 404);
+}
+function mz(t) {
+  let e = t.payload?.originActionCallId;
+  return typeof e === "string" && e.length > 0 ? e : null;
+}
+function yz(t, e, r) {
+  let n = r == null ? void 0 : Ou.get(r);
+  if (n == null) {
+    Gw(t, e);
+    return;
+  }
+  if (Uw(e, n)) return;
+  window.setTimeout(() => {
+    if (Uw(e, n)) return;
+    Gw(t, e);
+  }, Zw);
+}
+function gz(t, e) {
+  let r = e == null ? void 0 : Ou.get(e);
+  if (r == null) {
+    Yw(t);
+    return;
+  }
+  if (Hw(r)) return;
+  window.setTimeout(() => {
+    if (Hw(r)) return;
+    Yw(t);
+  }, Zw);
+}
+var py = cn.invalidateQueries.bind(cn);
+cn.invalidateQueries = (...t) => {
+  let e = pz(t);
+  if (e != null) dz(e);
+  return py(...t);
+};
+function Gw(t, e) {
+  if (t === cn) return py({
+    queryKey: e
+  });
+  return t.invalidateQueries({
+    queryKey: e
+  });
+}
+function Yw(t) {
+  if (t === cn) return py();
+  return t.invalidateQueries();
+}
+var Xw = !1;
+function vz(t = cn) {
+  if (Xw || typeof window > "u") return;
+  Xw = !0, window.addEventListener("message", e => {
+    if (window.parent !== window) {
+      if (e.source !== window.parent) return;
+    } else if (e.origin !== window.location.origin) return;
+    if (!ez(e.data)) return;
+    let r = mz(e.data),
+      n = sz(e.data);
+    if (n == null) return;
+    if (n.length === 0) {
+      gz(t, r);
+      return;
+    }
+    for (let a of n) yz(t, a, r);
+  });
+}
+vz();
+var bz = "./actions";
+function xz(t) {
+  let e = globalThis.location?.href;
+  if (typeof e !== "string" || e.length === 0) return t;
+  let r = new URL(e);
+  return r.hash = "", r.search = "", new URL(t, r).toString();
+}
+function $w(t = {}) {
+  let e = t.endpoint ?? xz(bz),
+    r = t.fetch ?? globalThis.fetch,
+    n = (i, o, l, u) => r(l, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-request-id": u
+      },
+      body: JSON.stringify({
+        action: i,
+        args: o ?? {},
+        actionCallId: u
+      })
+    }),
+    a = async (i, o) => {
+      let l = await i.json();
+      if (l && typeof l === "object" && "error" in l && l.error) throw Error(`action ${o} error: ${String(l.error)}`);
+      return l.data;
+    };
+  return new Proxy({}, {
+    get(i, o) {
+      if (typeof o !== "string") return;
+      if (o === "then" || o === "catch" || o === "finally") return;
+      return async l => {
+        xf();
+        let u = Jw();
+        hz(u);
+        let s = await n(o, l, e, u);
+        if (!s.ok) {
+          let f = await Vw(s);
+          if (s.status === 404 && Bw(f)) Ww(u), xf();
+          if (nz(f)) {
+            let p = await lz(f.error.code);
+            if (!("retrySafe" in f) || f.retrySafe !== !0) throw new oa("Your session has been refreshed. Reload the app to check whether your changes were saved before trying again.", 409);
+            let d = uz(e, p.iframeSrc);
+            if (d == null) throw Error(`action ${o} auth refresh did not return a fresh viewer_assertion`);
+            xf();
+            let b = await n(o, l, d, u);
+            if (!b.ok) {
+              let y = await Vw(b);
+              if (b.status === 404 && Bw(y)) Ww(u), xf();
+              let w = typeof y === "string" ? y : JSON.stringify(y ?? null);
+              throw new oa(`action ${o} failed after auth refresh: ${b.status} ${w}`, b.status, Kw(b), Qw(y));
+            }
+            return a(b, o);
+          }
+          let c = typeof f === "string" ? f : JSON.stringify(f ?? null);
+          throw new oa(`action ${o} failed: ${s.status} ${c}`, s.status, Kw(s), Qw(f));
+        }
+        return a(s, o);
+      };
+    }
+  });
+}
+function Qw(t) {
+  return t !== null && typeof t === "object" && "retrySafe" in t && t.retrySafe === !0;
+}
+function Kw(t) {
+  let e = t.headers.get("retry-after");
+  if (e == null) return;
+  let r = Number(e);
+  if (Number.isFinite(r)) return Math.max(0, r * 1000);
+  let n = Date.parse(e);
+  if (Number.isFinite(n)) return Math.max(0, n - Date.now());
+  return;
+}
+async function Vw(t) {
+  let e = await t.text();
+  if (e.length === 0) return "";
+  try {
+    return JSON.parse(e);
+  } catch {
+    return e;
+  }
+}
+function Jw() {
+  if (typeof globalThis.crypto?.randomUUID === "function") return globalThis.crypto.randomUUID();
+  return `space-action-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+function mT() {
+  if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ > "u" || typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE !== "function") return;
+  try {
+    __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(mT);
+  } catch (t) {
+    console.error(t);
+  }
+}
+var Ja = {};
+p8(Ja, {
+  unstable_now: () => Gr,
+  unstable_IdlePriority: () => _f,
+  unstable_ImmediatePriority: () => Mf,
+  unstable_LowPriority: () => Cf,
+  unstable_NormalPriority: () => ti,
+  unstable_Profiling: () => oS,
+  unstable_UserBlockingPriority: () => jf,
+  unstable_cancelCallback: () => Df,
+  unstable_forceFrameRate: () => lS,
+  unstable_getCurrentPriorityLevel: () => Nf,
+  unstable_next: () => uS,
+  unstable_requestPaint: () => kf,
+  unstable_runWithPriority: () => sS,
+  unstable_scheduleCallback: () => ei,
+  unstable_shouldYield: () => Pf,
+  unstable_wrapCallback: () => cS
+}, {
+  unstable_now: Aut => Gr = Aut,
+  unstable_IdlePriority: Aut => _f = Aut,
+  unstable_ImmediatePriority: Aut => Mf = Aut,
+  unstable_LowPriority: Aut => Cf = Aut,
+  unstable_NormalPriority: Aut => ti = Aut,
+  unstable_Profiling: Aut => oS = Aut,
+  unstable_UserBlockingPriority: Aut => jf = Aut,
+  unstable_cancelCallback: Aut => Df = Aut,
+  unstable_forceFrameRate: Aut => lS = Aut,
+  unstable_getCurrentPriorityLevel: Aut => Nf = Aut,
+  unstable_next: Aut => uS = Aut,
+  unstable_requestPaint: Aut => kf = Aut,
+  unstable_runWithPriority: Aut => sS = Aut,
+  unstable_scheduleCallback: Aut => ei = Aut,
+  unstable_shouldYield: Aut => Pf = Aut,
+  unstable_wrapCallback: Aut => cS = Aut
+});
+function hy(t, e) {
+  var r = t.length;
+  t.push(e);
+  t: for (; 0 < r;) {
+    var n = r - 1 >>> 1,
+      a = t[n];
+    if (0 < Sf(a, e)) t[n] = e, t[r] = a, r = n;else break t;
+  }
+}
+function fn(t) {
+  return t.length === 0 ? null : t[0];
+}
+function Ef(t) {
+  if (t.length === 0) return null;
+  var e = t[0],
+    r = t.pop();
+  if (r !== e) {
+    t[0] = r;
+    t: for (var n = 0, a = t.length, i = a >>> 1; n < i;) {
+      var o = 2 * (n + 1) - 1,
+        l = t[o],
+        u = o + 1,
+        s = t[u];
+      if (0 > Sf(l, r)) u < a && 0 > Sf(s, l) ? (t[n] = s, t[u] = r, n = u) : (t[n] = l, t[o] = r, n = o);else if (u < a && 0 > Sf(s, r)) t[n] = s, t[u] = r, n = u;else break t;
+    }
+  }
+  return e;
+}
+function Sf(t, e) {
+  var r = t.sortIndex - e.sortIndex;
+  return r !== 0 ? r : t.id - e.id;
+}
+var Gr = void 0;
+if (typeof performance === "object" && typeof performance.now === "function") my = performance, Gr = function () {
+  return my.now();
+};else Of = Date, yy = Of.now(), Gr = function () {
+  return Of.now() - yy;
+};
+var my,
+  Of,
+  yy,
+  _n = [],
+  la = [],
+  wz = 1,
+  xr = null,
+  Me = 3,
+  gy = !1,
+  Tu = !1,
+  Eu = !1,
+  by = !1,
+  eS = typeof setTimeout === "function" ? setTimeout : null,
+  rS = typeof clearTimeout === "function" ? clearTimeout : null,
+  tS = typeof setImmediate < "u" ? setImmediate : null;
+function Af(t) {
+  for (var e = fn(la); e !== null;) {
+    if (e.callback === null) Ef(la);else if (e.startTime <= t) Ef(la), e.sortIndex = e.expirationTime, hy(_n, e);else break;
+    e = fn(la);
+  }
+}
+function xy(t) {
+  if (Eu = !1, Af(t), !Tu) if (fn(_n) !== null) Tu = !0, mo || (mo = !0, ho());else {
+    var e = fn(la);
+    e !== null && wy(xy, e.startTime - t);
+  }
+}
+var mo = !1,
+  _u = -1,
+  nS = 5,
+  aS = -1;
+function iS() {
+  return by ? !0 : Ja.unstable_now() - aS < nS ? !1 : !0;
+}
+function dy() {
+  if (by = !1, mo) {
+    var t = Ja.unstable_now();
+    aS = t;
+    var e = !0;
+    try {
+      t: {
+        Tu = !1, Eu && (Eu = !1, rS(_u), _u = -1), gy = !0;
+        var r = Me;
+        try {
+          e: {
+            Af(t);
+            for (xr = fn(_n); xr !== null && !(xr.expirationTime > t && iS());) {
+              var n = xr.callback;
+              if (typeof n === "function") {
+                xr.callback = null, Me = xr.priorityLevel;
+                var a = n(xr.expirationTime <= t);
+                if (t = Ja.unstable_now(), typeof a === "function") {
+                  xr.callback = a, Af(t), e = !0;
+                  break e;
+                }
+                xr === fn(_n) && Ef(_n), Af(t);
+              } else Ef(_n);
+              xr = fn(_n);
+            }
+            if (xr !== null) e = !0;else {
+              var i = fn(la);
+              i !== null && wy(xy, i.startTime - t), e = !1;
+            }
+          }
+          break t;
+        } finally {
+          xr = null, Me = r, gy = !1;
+        }
+        e = void 0;
+      }
+    } finally {
+      e ? ho() : mo = !1;
+    }
+  }
+}
+var ho;
+if (typeof tS === "function") ho = function () {
+  tS(dy);
+};else if (typeof MessageChannel < "u") Tf = new MessageChannel(), vy = Tf.port2, Tf.port1.onmessage = dy, ho = function () {
+  vy.postMessage(null);
+};else ho = function () {
+  eS(dy, 0);
+};
+var Tf, vy;
+function wy(t, e) {
+  _u = eS(function () {
+    t(Ja.unstable_now());
+  }, e);
+}
+var _f = 5,
+  Mf = 1,
+  Cf = 4,
+  ti = 3,
+  oS = null,
+  jf = 2,
+  Df = function (t) {
+    t.callback = null;
+  },
+  lS = function (t) {
+    0 > t || 125 < t ? console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported") : nS = 0 < t ? Math.floor(1000 / t) : 5;
+  },
+  Nf = function () {
+    return Me;
+  },
+  uS = function (t) {
+    switch (Me) {
+      case 1:
+      case 2:
+      case 3:
+        var e = 3;
+        break;
+      default:
+        e = Me;
+    }
+    var r = Me;
+    Me = e;
+    try {
+      return t();
+    } finally {
+      Me = r;
+    }
+  },
+  kf = function () {
+    by = !0;
+  },
+  sS = function (t, e) {
+    switch (t) {
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+        break;
+      default:
+        t = 3;
+    }
+    var r = Me;
+    Me = t;
+    try {
+      return e();
+    } finally {
+      Me = r;
+    }
+  },
+  ei = function (t, e, r) {
+    var n = Ja.unstable_now();
+    switch (typeof r === "object" && r !== null ? (r = r.delay, r = typeof r === "number" && 0 < r ? n + r : n) : r = n, t) {
+      case 1:
+        var a = -1;
+        break;
+      case 2:
+        a = 250;
+        break;
+      case 5:
+        a = 1073741823;
+        break;
+      case 4:
+        a = 1e4;
+        break;
+      default:
+        a = 5000;
+    }
+    return a = r + a, t = {
+      id: wz++,
+      callback: e,
+      priorityLevel: t,
+      startTime: r,
+      expirationTime: a,
+      sortIndex: -1
+    }, r > n ? (t.sortIndex = r, hy(la, t), fn(_n) === null && t === fn(la) && (Eu ? (rS(_u), _u = -1) : Eu = !0, wy(xy, r - n))) : (t.sortIndex = a, hy(_n, t), Tu || gy || (Tu = !0, mo || (mo = !0, ho()))), t;
+  },
+  Pf = iS,
+  cS = function (t) {
+    var e = Me;
+    return function () {
+      var r = Me;
+      Me = e;
+      try {
+        return t.apply(this, arguments);
+      } finally {
+        Me = r;
+      }
+    };
+  };
+function fS() {
+  if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ > "u" || typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE !== "function") return;
+  try {
+    __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(fS);
+  } catch (t) {
+    console.error(t);
+  }
+}
+function Sz(t) {
+  var e = "https://react.dev/errors/" + t;
+  if (1 < arguments.length) {
+    e += "?args[]=" + encodeURIComponent(arguments[1]);
+    for (var r = 2; r < arguments.length; r++) e += "&args[]=" + encodeURIComponent(arguments[r]);
+  }
+  return "Minified React error #" + t + "; visit " + e + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
+}
+function ua() {}
+var Oz = {
+  d: {
+    f: ua,
+    r: function () {
+      throw Error(Sz(522));
+    },
+    D: ua,
+    C: ua,
+    L: ua,
+    m: ua,
+    X: ua,
+    S: ua,
+    M: ua
+  },
+  p: 0,
+  findDOMNode: null
+};
+var Sy = Oz;
+fS();
+function K(t) {
+  var e = "https://react.dev/errors/" + t;
+  if (1 < arguments.length) {
+    e += "?args[]=" + encodeURIComponent(arguments[1]);
+    for (var r = 2; r < arguments.length; r++) e += "&args[]=" + encodeURIComponent(arguments[r]);
+  }
+  return "Minified React error #" + t + "; visit " + e + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
+}
+function Tz(t) {
+  return !(!t || t.nodeType !== 1 && t.nodeType !== 9 && t.nodeType !== 11);
+}
+function ys(t) {
+  var e = t,
+    r = t;
+  if (t.alternate) for (; e.return;) e = e.return;else {
+    t = e;
+    do e = t, (e.flags & 4098) !== 0 && (r = e.return), t = e.return; while (t);
+  }
+  return e.tag === 3 ? r : null;
+}
+function RO(t) {
+  if (t.tag === 13) {
+    var e = t.memoizedState;
+    if (e === null && (t = t.alternate, t !== null && (e = t.memoizedState)), e !== null) return e.dehydrated;
+  }
+  return null;
+}
+function zO(t) {
+  if (t.tag === 31) {
+    var e = t.memoizedState;
+    if (e === null && (t = t.alternate, t !== null && (e = t.memoizedState)), e !== null) return e.dehydrated;
+  }
+  return null;
+}
+function pS(t) {
+  if (ys(t) !== t) throw Error(K(188));
+}
+function Ez(t) {
+  var e = t.alternate;
+  if (!e) {
+    if (e = ys(t), e === null) throw Error(K(188));
+    return e !== t ? null : t;
+  }
+  for (var r = t, n = e;;) {
+    var a = r.return;
+    if (a === null) break;
+    var i = a.alternate;
+    if (i === null) {
+      if (n = a.return, n !== null) {
+        r = n;
+        continue;
+      }
+      break;
+    }
+    if (a.child === i.child) {
+      for (i = a.child; i;) {
+        if (i === r) return pS(a), t;
+        if (i === n) return pS(a), e;
+        i = i.sibling;
+      }
+      throw Error(K(188));
+    }
+    if (r.return !== n.return) r = a, n = i;else {
+      for (var o = !1, l = a.child; l;) {
+        if (l === r) {
+          o = !0, r = a, n = i;
+          break;
+        }
+        if (l === n) {
+          o = !0, n = a, r = i;
+          break;
+        }
+        l = l.sibling;
+      }
+      if (!o) {
+        for (l = i.child; l;) {
+          if (l === r) {
+            o = !0, r = i, n = a;
+            break;
+          }
+          if (l === n) {
+            o = !0, n = i, r = a;
+            break;
+          }
+          l = l.sibling;
+        }
+        if (!o) throw Error(K(189));
+      }
+    }
+    if (r.alternate !== n) throw Error(K(190));
+  }
+  if (r.tag !== 3) throw Error(K(188));
+  return r.stateNode.current === r ? t : e;
+}
+function qO(t) {
+  var e = t.tag;
+  if (e === 5 || e === 26 || e === 27 || e === 6) return t;
+  for (t = t.child; t !== null;) {
+    if (e = qO(t), e !== null) return e;
+    t = t.sibling;
+  }
+  return null;
+}
+var Wt = Object.assign,
+  _z = Symbol.for("react.element"),
+  Rf = Symbol.for("react.transitional.element"),
+  Pu = Symbol.for("react.portal"),
+  wo = Symbol.for("react.fragment"),
+  BO = Symbol.for("react.strict_mode"),
+  eg = Symbol.for("react.profiler"),
+  LO = Symbol.for("react.consumer"),
+  Rn = Symbol.for("react.context"),
+  $g = Symbol.for("react.forward_ref"),
+  rg = Symbol.for("react.suspense"),
+  ng = Symbol.for("react.suspense_list"),
+  Jg = Symbol.for("react.memo"),
+  sa = Symbol.for("react.lazy"),
+  ag = Symbol.for("react.activity"),
+  Mz = Symbol.for("react.memo_cache_sentinel"),
+  dS = Symbol.iterator;
+function Mu(t) {
+  if (t === null || typeof t !== "object") return null;
+  return t = dS && t[dS] || t["@@iterator"], typeof t === "function" ? t : null;
+}
+var Cz = Symbol.for("react.client.reference");
+function ig(t) {
+  if (t == null) return null;
+  if (typeof t === "function") return t.$$typeof === Cz ? null : t.displayName || t.name || null;
+  if (typeof t === "string") return t;
+  switch (t) {
+    case wo:
+      return "Fragment";
+    case eg:
+      return "Profiler";
+    case BO:
+      return "StrictMode";
+    case rg:
+      return "Suspense";
+    case ng:
+      return "SuspenseList";
+    case ag:
+      return "Activity";
+  }
+  if (typeof t === "object") switch (t.$$typeof) {
+    case Pu:
+      return "Portal";
+    case Rn:
+      return t.displayName || "Context";
+    case LO:
+      return (t._context.displayName || "Context") + ".Consumer";
+    case $g:
+      var e = t.render;
+      return t = t.displayName, t || (t = e.displayName || e.name || "", t = t !== "" ? "ForwardRef(" + t + ")" : "ForwardRef"), t;
+    case Jg:
+      return e = t.displayName || null, e !== null ? e : ig(t.type) || "Memo";
+    case sa:
+      e = t._payload, t = t._init;
+      try {
+        return ig(t(e));
+      } catch (r) {}
+  }
+  return null;
+}
+var Ru = Array.isArray,
+  st = vf,
+  At = Sy,
+  ui = {
+    pending: !1,
+    data: null,
+    method: null,
+    action: null
+  },
+  og = [],
+  So = -1;
+function yn(t) {
+  return {
+    current: t
+  };
+}
+function me(t) {
+  0 > So || (t.current = og[So], og[So] = null, So--);
+}
+function Lt(t, e) {
+  So++, og[So] = t.current, t.current = e;
+}
+var mn = yn(null),
+  rs = yn(null),
+  xa = yn(null),
+  fp = yn(null);
+function pp(t, e) {
+  switch (Lt(xa, e), Lt(rs, t), Lt(mn, null), e.nodeType) {
+    case 9:
+    case 11:
+      t = (t = e.documentElement) ? (t = t.namespaceURI) ? vO(t) : 0 : 0;
+      break;
+    default:
+      if (t = e.tagName, e = e.namespaceURI) e = vO(e), t = aT(e, t);else switch (t) {
+        case "svg":
+          t = 1;
+          break;
+        case "math":
+          t = 2;
+          break;
+        default:
+          t = 0;
+      }
+  }
+  me(mn), Lt(mn, t);
+}
+function Io() {
+  me(mn), me(rs), me(xa);
+}
+function lg(t) {
+  t.memoizedState !== null && Lt(fp, t);
+  var e = mn.current,
+    r = aT(e, t.type);
+  e !== r && (Lt(rs, t), Lt(mn, r));
+}
+function dp(t) {
+  rs.current === t && (me(mn), me(rs)), fp.current === t && (me(fp), ds._currentValue = ui);
+}
+var Oy, hS;
+function ni(t) {
+  if (Oy === void 0) try {
+    throw Error();
+  } catch (r) {
+    var e = r.stack.trim().match(/\n( *(at )?)/);
+    Oy = e && e[1] || "", hS = -1 < r.stack.indexOf(`
+    at`) ? " (<anonymous>)" : -1 < r.stack.indexOf("@") ? "@unknown:0:0" : "";
+  }
+  return `
+` + Oy + t + hS;
+}
+var Ay = !1;
+function Ty(t, e) {
+  if (!t || Ay) return "";
+  Ay = !0;
+  var r = Error.prepareStackTrace;
+  Error.prepareStackTrace = void 0;
+  try {
+    var n = {
+      DetermineComponentFrameRoot: function () {
+        try {
+          if (e) {
+            var c = function () {
+              throw Error();
+            };
+            if (Object.defineProperty(c.prototype, "props", {
+              set: function () {
+                throw Error();
+              }
+            }), typeof Reflect === "object" && Reflect.construct) {
+              try {
+                Reflect.construct(c, []);
+              } catch (d) {
+                var p = d;
+              }
+              Reflect.construct(t, [], c);
+            } else {
+              try {
+                c.call();
+              } catch (d) {
+                p = d;
+              }
+              t.call(c.prototype);
+            }
+          } else {
+            try {
+              throw Error();
+            } catch (d) {
+              p = d;
+            }
+            (c = t()) && typeof c.catch === "function" && c.catch(function () {});
+          }
+        } catch (d) {
+          if (d && p && typeof d.stack === "string") return [d.stack, p.stack];
+        }
+        return [null, null];
+      }
+    };
+    n.DetermineComponentFrameRoot.displayName = "DetermineComponentFrameRoot";
+    var a = Object.getOwnPropertyDescriptor(n.DetermineComponentFrameRoot, "name");
+    a && a.configurable && Object.defineProperty(n.DetermineComponentFrameRoot, "name", {
+      value: "DetermineComponentFrameRoot"
+    });
+    var i = n.DetermineComponentFrameRoot(),
+      o = i[0],
+      l = i[1];
+    if (o && l) {
+      var u = o.split(`
+`),
+        s = l.split(`
+`);
+      for (a = n = 0; n < u.length && !u[n].includes("DetermineComponentFrameRoot");) n++;
+      for (; a < s.length && !s[a].includes("DetermineComponentFrameRoot");) a++;
+      if (n === u.length || a === s.length) for (n = u.length - 1, a = s.length - 1; 1 <= n && 0 <= a && u[n] !== s[a];) a--;
+      for (; 1 <= n && 0 <= a; n--, a--) if (u[n] !== s[a]) {
+        if (n !== 1 || a !== 1) do if (n--, a--, 0 > a || u[n] !== s[a]) {
+          var f = `
+` + u[n].replace(" at new ", " at ");
+          return t.displayName && f.includes("<anonymous>") && (f = f.replace("<anonymous>", t.displayName)), f;
+        } while (1 <= n && 0 <= a);
+        break;
+      }
+    }
+  } finally {
+    Ay = !1, Error.prepareStackTrace = r;
+  }
+  return (r = t ? t.displayName || t.name : "") ? ni(r) : "";
+}
+function jz(t, e) {
+  switch (t.tag) {
+    case 26:
+    case 27:
+    case 5:
+      return ni(t.type);
+    case 16:
+      return ni("Lazy");
+    case 13:
+      return t.child !== e && e !== null ? ni("Suspense Fallback") : ni("Suspense");
+    case 19:
+      return ni("SuspenseList");
+    case 0:
+    case 15:
+      return Ty(t.type, !1);
+    case 11:
+      return Ty(t.type.render, !1);
+    case 1:
+      return Ty(t.type, !0);
+    case 31:
+      return ni("Activity");
+    default:
+      return "";
+  }
+}
+function mS(t) {
+  try {
+    var e = "",
+      r = null;
+    do e += jz(t, r), r = t, t = t.return; while (t);
+    return e;
+  } catch (n) {
+    return `
+Error generating stack: ` + n.message + `
+` + n.stack;
+  }
+}
+var ug = Object.prototype.hasOwnProperty,
+  tv = ei,
+  Ey = Df,
+  Dz = Pf,
+  Nz = kf,
+  or = Gr,
+  kz = Nf,
+  IO = Mf,
+  UO = jf,
+  hp = ti,
+  Pz = Cf,
+  HO = _f,
+  Rz = void 0,
+  zz = void 0,
+  gs = null,
+  lr = null;
+function ma(t) {
+  if (typeof Rz === "function" && zz(t), lr && typeof lr.setStrictMode === "function") try {
+    lr.setStrictMode(gs, t);
+  } catch (e) {}
+}
+var ur = Math.clz32 ? Math.clz32 : Lz,
+  {
+    log: qz,
+    LN2: Bz
+  } = Math;
+function Lz(t) {
+  return t >>>= 0, t === 0 ? 32 : 31 - (qz(t) / Bz | 0) | 0;
+}
+var zf = 256,
+  qf = 262144,
+  Bf = 4194304;
+function ai(t) {
+  var e = t & 42;
+  if (e !== 0) return e;
+  switch (t & -t) {
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 4:
+      return 4;
+    case 8:
+      return 8;
+    case 16:
+      return 16;
+    case 32:
+      return 32;
+    case 64:
+      return 64;
+    case 128:
+      return 128;
+    case 256:
+    case 512:
+    case 1024:
+    case 2048:
+    case 4096:
+    case 8192:
+    case 16384:
+    case 32768:
+    case 65536:
+    case 131072:
+      return t & 261888;
+    case 262144:
+    case 524288:
+    case 1048576:
+    case 2097152:
+      return t & 3932160;
+    case 4194304:
+    case 8388608:
+    case 16777216:
+    case 33554432:
+      return t & 62914560;
+    case 67108864:
+      return 67108864;
+    case 134217728:
+      return 134217728;
+    case 268435456:
+      return 268435456;
+    case 536870912:
+      return 536870912;
+    case 1073741824:
+      return 0;
+    default:
+      return t;
+  }
+}
+function Ip(t, e, r) {
+  var n = t.pendingLanes;
+  if (n === 0) return 0;
+  var a = 0,
+    i = t.suspendedLanes,
+    o = t.pingedLanes;
+  t = t.warmLanes;
+  var l = n & 134217727;
+  return l !== 0 ? (n = l & ~i, n !== 0 ? a = ai(n) : (o &= l, o !== 0 ? a = ai(o) : r || (r = l & ~t, r !== 0 && (a = ai(r))))) : (l = n & ~i, l !== 0 ? a = ai(l) : o !== 0 ? a = ai(o) : r || (r = n & ~t, r !== 0 && (a = ai(r)))), a === 0 ? 0 : e !== 0 && e !== a && (e & i) === 0 && (i = a & -a, r = e & -e, i >= r || i === 32 && (r & 4194048) !== 0) ? e : a;
+}
+function vs(t, e) {
+  return (t.pendingLanes & ~(t.suspendedLanes & ~t.pingedLanes) & e) === 0;
+}
+function Iz(t, e) {
+  switch (t) {
+    case 1:
+    case 2:
+    case 4:
+    case 8:
+    case 64:
+      return e + 250;
+    case 16:
+    case 32:
+    case 128:
+    case 256:
+    case 512:
+    case 1024:
+    case 2048:
+    case 4096:
+    case 8192:
+    case 16384:
+    case 32768:
+    case 65536:
+    case 131072:
+    case 262144:
+    case 524288:
+    case 1048576:
+    case 2097152:
+      return e + 5000;
+    case 4194304:
+    case 8388608:
+    case 16777216:
+    case 33554432:
+      return -1;
+    case 67108864:
+    case 134217728:
+    case 268435456:
+    case 536870912:
+    case 1073741824:
+      return -1;
+    default:
+      return -1;
+  }
+}
+function WO() {
+  var t = Bf;
+  return Bf <<= 1, (Bf & 62914560) === 0 && (Bf = 4194304), t;
+}
+function _y(t) {
+  for (var e = [], r = 0; 31 > r; r++) e.push(t);
+  return e;
+}
+function Up(t, e) {
+  t.pendingLanes |= e, e !== 268435456 && (t.suspendedLanes = 0, t.pingedLanes = 0, t.warmLanes = 0);
+}
+function Uz(t, e, r, n, a, i) {
+  var o = t.pendingLanes;
+  t.pendingLanes = r, t.suspendedLanes = 0, t.pingedLanes = 0, t.warmLanes = 0, t.expiredLanes &= r, t.entangledLanes &= r, t.errorRecoveryDisabledLanes &= r, t.shellSuspendCounter = 0;
+  var {
+    entanglements: l,
+    expirationTimes: u,
+    hiddenUpdates: s
+  } = t;
+  for (r = o & ~r; 0 < r;) {
+    var f = 31 - ur(r),
+      c = 1 << f;
+    l[f] = 0, u[f] = -1;
+    var p = s[f];
+    if (p !== null) for (s[f] = null, f = 0; f < p.length; f++) {
+      var d = p[f];
+      d !== null && (d.lane &= -536870913);
+    }
+    r &= ~c;
+  }
+  n !== 0 && GO(t, n, 0), i !== 0 && a === 0 && t.tag !== 0 && (t.suspendedLanes |= i & ~(o & ~e));
+}
+function GO(t, e, r) {
+  t.pendingLanes |= e, t.suspendedLanes &= ~e;
+  var n = 31 - ur(e);
+  t.entangledLanes |= e, t.entanglements[n] = t.entanglements[n] | 1073741824 | r & 261930;
+}
+function YO(t, e) {
+  var r = t.entangledLanes |= e;
+  for (t = t.entanglements; r;) {
+    var n = 31 - ur(r),
+      a = 1 << n;
+    a & e | t[n] & e && (t[n] |= e), r &= ~a;
+  }
+}
+function XO(t, e) {
+  var r = e & -e;
+  return r = (r & 42) !== 0 ? 1 : QO(r), (r & (t.suspendedLanes | e)) !== 0 ? 0 : r;
+}
+function QO(t) {
+  switch (t) {
+    case 2:
+      t = 1;
+      break;
+    case 8:
+      t = 4;
+      break;
+    case 32:
+      t = 16;
+      break;
+    case 256:
+    case 512:
+    case 1024:
+    case 2048:
+    case 4096:
+    case 8192:
+    case 16384:
+    case 32768:
+    case 65536:
+    case 131072:
+    case 262144:
+    case 524288:
+    case 1048576:
+    case 2097152:
+    case 4194304:
+    case 8388608:
+    case 16777216:
+    case 33554432:
+      t = 128;
+      break;
+    case 268435456:
+      t = 134217728;
+      break;
+    default:
+      t = 0;
+  }
+  return t;
+}
+function ev(t) {
+  return t &= -t, 2 < t ? 8 < t ? (t & 134217727) !== 0 ? 32 : 268435456 : 8 : 2;
+}
+function KO() {
+  var t = At.p;
+  if (t !== 0) return t;
+  return t = window.event, t === void 0 ? 32 : dT(t.type);
+}
+function yS(t, e) {
+  var r = At.p;
+  try {
+    return At.p = t, e();
+  } finally {
+    At.p = r;
+  }
+}
+var Da = Math.random().toString(36).slice(2),
+  xe = "__reactFiber$" + Da,
+  Fe = "__reactProps$" + Da,
+  bs = "__reactContainer$" + Da,
+  sg = "__reactEvents$" + Da,
+  Hz = "__reactListeners$" + Da,
+  Wz = "__reactHandles$" + Da,
+  gS = "__reactResources$" + Da,
+  xs = "__reactMarker$" + Da;
+function rv(t) {
+  delete t[xe], delete t[Fe], delete t[sg], delete t[Hz], delete t[Wz];
+}
+function Oo(t) {
+  var e = t[xe];
+  if (e) return e;
+  for (var r = t.parentNode; r;) {
+    if (e = r[bs] || r[xe]) {
+      if (r = e.alternate, e.child !== null || r !== null && r.child !== null) for (t = OO(t); t !== null;) {
+        if (r = t[xe]) return r;
+        t = OO(t);
+      }
+      return e;
+    }
+    t = r, r = t.parentNode;
+  }
+  return null;
+}
+function Zo(t) {
+  if (t = t[xe] || t[bs]) {
+    var e = t.tag;
+    if (e === 5 || e === 6 || e === 13 || e === 31 || e === 26 || e === 27 || e === 3) return t;
+  }
+  return null;
+}
+function zu(t) {
+  var e = t.tag;
+  if (e === 5 || e === 26 || e === 27 || e === 6) return t.stateNode;
+  throw Error(K(33));
+}
+function ko(t) {
+  var e = t[gS];
+  return e || (e = t[gS] = {
+    hoistableStyles: new Map(),
+    hoistableScripts: new Map()
+  }), e;
+}
+function he(t) {
+  t[xs] = !0;
+}
+var VO = new Set(),
+  FO = {};
+function xi(t, e) {
+  Uo(t, e), Uo(t + "Capture", e);
+}
+function Uo(t, e) {
+  FO[t] = e;
+  for (t = 0; t < e.length; t++) VO.add(e[t]);
+}
+var Gz = RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"),
+  vS = {},
+  bS = {};
+function Yz(t) {
+  if (ug.call(bS, t)) return !0;
+  if (ug.call(vS, t)) return !1;
+  if (Gz.test(t)) return bS[t] = !0;
+  return vS[t] = !0, !1;
+}
+function Vf(t, e, r) {
+  if (Yz(e)) if (r === null) t.removeAttribute(e);else {
+    switch (typeof r) {
+      case "undefined":
+      case "function":
+      case "symbol":
+        t.removeAttribute(e);
+        return;
+      case "boolean":
+        var n = e.toLowerCase().slice(0, 5);
+        if (n !== "data-" && n !== "aria-") {
+          t.removeAttribute(e);
+          return;
+        }
+    }
+    __tunnel.setAttr(t, e, "" + r);
+  }
+}
+function Lf(t, e, r) {
+  if (r === null) t.removeAttribute(e);else {
+    switch (typeof r) {
+      case "undefined":
+      case "function":
+      case "symbol":
+      case "boolean":
+        t.removeAttribute(e);
+        return;
+    }
+    __tunnel.setAttr(t, e, "" + r);
+  }
+}
+function Mn(t, e, r, n) {
+  if (n === null) t.removeAttribute(r);else {
+    switch (typeof n) {
+      case "undefined":
+      case "function":
+      case "symbol":
+      case "boolean":
+        t.removeAttribute(r);
+        return;
+    }
+    __tunnel.setAttrNS(t, e, r, "" + n);
+  }
+}
+function Sr(t) {
+  switch (typeof t) {
+    case "bigint":
+    case "boolean":
+    case "number":
+    case "string":
+    case "undefined":
+      return t;
+    case "object":
+      return t;
+    default:
+      return "";
+  }
+}
+function ZO(t) {
+  var e = t.type;
+  return (t = t.nodeName) && t.toLowerCase() === "input" && (e === "checkbox" || e === "radio");
+}
+function Xz(t, e, r) {
+  var n = Object.getOwnPropertyDescriptor(t.constructor.prototype, e);
+  if (!t.hasOwnProperty(e) && typeof n < "u" && typeof n.get === "function" && typeof n.set === "function") {
+    var {
+      get: a,
+      set: i
+    } = n;
+    return Object.defineProperty(t, e, {
+      configurable: !0,
+      get: function () {
+        return a.call(this);
+      },
+      set: function (o) {
+        r = "" + o, i.call(this, o);
+      }
+    }), Object.defineProperty(t, e, {
+      enumerable: n.enumerable
+    }), {
+      getValue: function () {
+        return r;
+      },
+      setValue: function (o) {
+        r = "" + o;
+      },
+      stopTracking: function () {
+        t._valueTracker = null, delete t[e];
+      }
+    };
+  }
+}
+function cg(t) {
+  if (!t._valueTracker) {
+    var e = ZO(t) ? "checked" : "value";
+    t._valueTracker = Xz(t, e, "" + t[e]);
+  }
+}
+function $O(t) {
+  if (!t) return !1;
+  var e = t._valueTracker;
+  if (!e) return !0;
+  var r = e.getValue(),
+    n = "";
+  return t && (n = ZO(t) ? t.checked ? "true" : "false" : t.value), t = n, t !== r ? (e.setValue(t), !0) : !1;
+}
+function mp(t) {
+  if (t = t || (typeof document < "u" ? document : void 0), typeof t > "u") return null;
+  try {
+    return t.activeElement || t.body;
+  } catch (e) {
+    return t.body;
+  }
+}
+var Qz = /[\n"\\]/g;
+function Tr(t) {
+  return t.replace(Qz, function (e) {
+    return "\\" + e.charCodeAt(0).toString(16) + " ";
+  });
+}
+function fg(t, e, r, n, a, i, o, l) {
+  if (t.name = "", o != null && typeof o !== "function" && typeof o !== "symbol" && typeof o !== "boolean" ? t.type = o : t.removeAttribute("type"), e != null) {
+    if (o === "number") {
+      if (e === 0 && t.value === "" || t.value != e) t.value = "" + Sr(e);
+    } else t.value !== "" + Sr(e) && (t.value = "" + Sr(e));
+  } else o !== "submit" && o !== "reset" || t.removeAttribute("value");
+  e != null ? pg(t, o, Sr(e)) : r != null ? pg(t, o, Sr(r)) : n != null && t.removeAttribute("value"), a == null && i != null && (t.defaultChecked = !!i), a != null && (t.checked = a && typeof a !== "function" && typeof a !== "symbol"), l != null && typeof l !== "function" && typeof l !== "symbol" && typeof l !== "boolean" ? t.name = "" + Sr(l) : t.removeAttribute("name");
+}
+function JO(t, e, r, n, a, i, o, l) {
+  if (i != null && typeof i !== "function" && typeof i !== "symbol" && typeof i !== "boolean" && (t.type = i), e != null || r != null) {
+    if (!(i !== "submit" && i !== "reset" || e !== void 0 && e !== null)) {
+      cg(t);
+      return;
+    }
+    r = r != null ? "" + Sr(r) : "", e = e != null ? "" + Sr(e) : r, l || e === t.value || (t.value = e), t.defaultValue = e;
+  }
+  n = n != null ? n : a, n = typeof n !== "function" && typeof n !== "symbol" && !!n, t.checked = l ? t.checked : !!n, t.defaultChecked = !!n, o != null && typeof o !== "function" && typeof o !== "symbol" && typeof o !== "boolean" && (t.name = o), cg(t);
+}
+function pg(t, e, r) {
+  e === "number" && mp(t.ownerDocument) === t || t.defaultValue === "" + r || (t.defaultValue = "" + r);
+}
+function Po(t, e, r, n) {
+  if (t = t.options, e) {
+    e = {};
+    for (var a = 0; a < r.length; a++) e["$" + r[a]] = !0;
+    for (r = 0; r < t.length; r++) a = e.hasOwnProperty("$" + t[r].value), t[r].selected !== a && (t[r].selected = a), a && n && (t[r].defaultSelected = !0);
+  } else {
+    r = "" + Sr(r), e = null;
+    for (a = 0; a < t.length; a++) {
+      if (t[a].value === r) {
+        t[a].selected = !0, n && (t[a].defaultSelected = !0);
+        return;
+      }
+      e !== null || t[a].disabled || (e = t[a]);
+    }
+    e !== null && (e.selected = !0);
+  }
+}
+function t2(t, e, r) {
+  if (e != null && (e = "" + Sr(e), e !== t.value && (t.value = e), r == null)) {
+    t.defaultValue !== e && (t.defaultValue = e);
+    return;
+  }
+  t.defaultValue = r != null ? "" + Sr(r) : "";
+}
+function e2(t, e, r, n) {
+  if (e == null) {
+    if (n != null) {
+      if (r != null) throw Error(K(92));
+      if (Ru(n)) {
+        if (1 < n.length) throw Error(K(93));
+        n = n[0];
+      }
+      r = n;
+    }
+    r == null && (r = ""), e = r;
+  }
+  r = Sr(e), t.defaultValue = r, n = t.textContent, n === r && n !== "" && n !== null && (t.value = n), cg(t);
+}
+function Ho(t, e) {
+  if (e) {
+    var r = t.firstChild;
+    if (r && r === t.lastChild && r.nodeType === 3) {
+      r.nodeValue = e;
+      return;
+    }
+  }
+  t.textContent = e;
+}
+var Kz = new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" "));
+function xS(t, e, r) {
+  var n = e.indexOf("--") === 0;
+  r == null || typeof r === "boolean" || r === "" ? n ? t.setProperty(e, "") : e === "float" ? t.cssFloat = "" : t[e] = "" : n ? t.setProperty(e, r) : typeof r !== "number" || r === 0 || Kz.has(e) ? e === "float" ? t.cssFloat = r : t[e] = ("" + r).trim() : t[e] = r + "px";
+}
+function r2(t, e, r) {
+  if (e != null && typeof e !== "object") throw Error(K(62));
+  if (t = __tunnel.getStyle(t), r != null) {
+    for (var n in r) !r.hasOwnProperty(n) || e != null && e.hasOwnProperty(n) || (n.indexOf("--") === 0 ? t.setProperty(n, "") : n === "float" ? t.cssFloat = "" : t[n] = "");
+    for (var a in e) n = e[a], e.hasOwnProperty(a) && r[a] !== n && xS(t, a, n);
+  } else for (var i in e) e.hasOwnProperty(i) && xS(t, i, e[i]);
+}
+function nv(t) {
+  if (t.indexOf("-") === -1) return !1;
+  switch (t) {
+    case "annotation-xml":
+    case "color-profile":
+    case "font-face":
+    case "font-face-src":
+    case "font-face-uri":
+    case "font-face-format":
+    case "font-face-name":
+    case "missing-glyph":
+      return !1;
+    default:
+      return !0;
+  }
+}
+var Vz = new Map([["acceptCharset", "accept-charset"], ["htmlFor", "for"], ["httpEquiv", "http-equiv"], ["crossOrigin", "crossorigin"], ["accentHeight", "accent-height"], ["alignmentBaseline", "alignment-baseline"], ["arabicForm", "arabic-form"], ["baselineShift", "baseline-shift"], ["capHeight", "cap-height"], ["clipPath", "clip-path"], ["clipRule", "clip-rule"], ["colorInterpolation", "color-interpolation"], ["colorInterpolationFilters", "color-interpolation-filters"], ["colorProfile", "color-profile"], ["colorRendering", "color-rendering"], ["dominantBaseline", "dominant-baseline"], ["enableBackground", "enable-background"], ["fillOpacity", "fill-opacity"], ["fillRule", "fill-rule"], ["floodColor", "flood-color"], ["floodOpacity", "flood-opacity"], ["fontFamily", "font-family"], ["fontSize", "font-size"], ["fontSizeAdjust", "font-size-adjust"], ["fontStretch", "font-stretch"], ["fontStyle", "font-style"], ["fontVariant", "font-variant"], ["fontWeight", "font-weight"], ["glyphName", "glyph-name"], ["glyphOrientationHorizontal", "glyph-orientation-horizontal"], ["glyphOrientationVertical", "glyph-orientation-vertical"], ["horizAdvX", "horiz-adv-x"], ["horizOriginX", "horiz-origin-x"], ["imageRendering", "image-rendering"], ["letterSpacing", "letter-spacing"], ["lightingColor", "lighting-color"], ["markerEnd", "marker-end"], ["markerMid", "marker-mid"], ["markerStart", "marker-start"], ["overlinePosition", "overline-position"], ["overlineThickness", "overline-thickness"], ["paintOrder", "paint-order"], ["panose-1", "panose-1"], ["pointerEvents", "pointer-events"], ["renderingIntent", "rendering-intent"], ["shapeRendering", "shape-rendering"], ["stopColor", "stop-color"], ["stopOpacity", "stop-opacity"], ["strikethroughPosition", "strikethrough-position"], ["strikethroughThickness", "strikethrough-thickness"], ["strokeDasharray", "stroke-dasharray"], ["strokeDashoffset", "stroke-dashoffset"], ["strokeLinecap", "stroke-linecap"], ["strokeLinejoin", "stroke-linejoin"], ["strokeMiterlimit", "stroke-miterlimit"], ["strokeOpacity", "stroke-opacity"], ["strokeWidth", "stroke-width"], ["textAnchor", "text-anchor"], ["textDecoration", "text-decoration"], ["textRendering", "text-rendering"], ["transformOrigin", "transform-origin"], ["underlinePosition", "underline-position"], ["underlineThickness", "underline-thickness"], ["unicodeBidi", "unicode-bidi"], ["unicodeRange", "unicode-range"], ["unitsPerEm", "units-per-em"], ["vAlphabetic", "v-alphabetic"], ["vHanging", "v-hanging"], ["vIdeographic", "v-ideographic"], ["vMathematical", "v-mathematical"], ["vectorEffect", "vector-effect"], ["vertAdvY", "vert-adv-y"], ["vertOriginX", "vert-origin-x"], ["vertOriginY", "vert-origin-y"], ["wordSpacing", "word-spacing"], ["writingMode", "writing-mode"], ["xmlnsXlink", "xmlns:xlink"], ["xHeight", "x-height"]]),
+  Fz = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
+function Ff(t) {
+  return Fz.test("" + t) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : t;
+}
+function zn() {}
+var dg = null;
+function av(t) {
+  return t = t.target || t.srcElement || window, t.correspondingUseElement && (t = t.correspondingUseElement), t.nodeType === 3 ? t.parentNode : t;
+}
+var Ao = null,
+  Ro = null;
+function wS(t) {
+  var e = Zo(t);
+  if (e && (t = e.stateNode)) {
+    var r = t[Fe] || null;
+    t: switch (t = e.stateNode, e.type) {
+      case "input":
+        if (fg(t, r.value, r.defaultValue, r.defaultValue, r.checked, r.defaultChecked, r.type, r.name), e = r.name, r.type === "radio" && e != null) {
+          for (r = t; r.parentNode;) r = r.parentNode;
+          r = r.querySelectorAll('input[name="' + Tr("" + e) + '"][type="radio"]');
+          for (e = 0; e < r.length; e++) {
+            var n = r[e];
+            if (n !== t && n.form === t.form) {
+              var a = n[Fe] || null;
+              if (!a) throw Error(K(90));
+              fg(n, a.value, a.defaultValue, a.defaultValue, a.checked, a.defaultChecked, a.type, a.name);
+            }
+          }
+          for (e = 0; e < r.length; e++) n = r[e], n.form === t.form && $O(n);
+        }
+        break t;
+      case "textarea":
+        t2(t, r.value, r.defaultValue);
+        break t;
+      case "select":
+        e = r.value, e != null && Po(t, !!r.multiple, e, !1);
+    }
+  }
+}
+var My = !1;
+function n2(t, e, r) {
+  if (My) return t(e, r);
+  My = !0;
+  try {
+    var n = t(e);
+    return n;
+  } finally {
+    if (My = !1, Ao !== null || Ro !== null) {
+      if (Jp(), Ao && (e = Ao, t = Ro, Ro = Ao = null, wS(e), t)) for (e = 0; e < t.length; e++) wS(t[e]);
+    }
+  }
+}
+function ns(t, e) {
+  var r = t.stateNode;
+  if (r === null) return null;
+  var n = r[Fe] || null;
+  if (n === null) return null;
+  r = n[e];
+  t: switch (e) {
+    case "onClick":
+    case "onClickCapture":
+    case "onDoubleClick":
+    case "onDoubleClickCapture":
+    case "onMouseDown":
+    case "onMouseDownCapture":
+    case "onMouseMove":
+    case "onMouseMoveCapture":
+    case "onMouseUp":
+    case "onMouseUpCapture":
+    case "onMouseEnter":
+      (n = !n.disabled) || (t = t.type, n = !(t === "button" || t === "input" || t === "select" || t === "textarea")), t = !n;
+      break t;
+    default:
+      t = !1;
+  }
+  if (t) return null;
+  if (r && typeof r !== "function") throw Error(K(231, e, typeof r));
+  return r;
+}
+var Un = !(typeof window > "u" || typeof window.document > "u" || typeof window.document.createElement > "u"),
+  hg = !1;
+if (Un) try {
+  ii = {}, Object.defineProperty(ii, "passive", {
+    get: function () {
+      hg = !0;
+    }
+  }), window.addEventListener("test", ii, ii), window.removeEventListener("test", ii, ii);
+} catch (t) {
+  hg = !1;
+}
+var ii,
+  ya = null,
+  iv = null,
+  Zf = null;
+function a2() {
+  if (Zf) return Zf;
+  var t,
+    e = iv,
+    r = e.length,
+    n,
+    a = "value" in ya ? ya.value : ya.textContent,
+    i = a.length;
+  for (t = 0; t < r && e[t] === a[t]; t++);
+  var o = r - t;
+  for (n = 1; n <= o && e[r - n] === a[i - n]; n++);
+  return Zf = a.slice(t, 1 < n ? 1 - n : void 0);
+}
+function $f(t) {
+  var e = t.keyCode;
+  return "charCode" in t ? (t = t.charCode, t === 0 && e === 13 && (t = 13)) : t = e, t === 10 && (t = 13), 32 <= t || t === 13 ? t : 0;
+}
+function If() {
+  return !0;
+}
+function SS() {
+  return !1;
+}
+function Ze(t) {
+  function e(r, n, a, i, o) {
+    this._reactName = r, this._targetInst = a, this.type = n, this.nativeEvent = i, this.target = o, this.currentTarget = null;
+    for (var l in t) t.hasOwnProperty(l) && (r = t[l], this[l] = r ? r(i) : i[l]);
+    return this.isDefaultPrevented = (i.defaultPrevented != null ? i.defaultPrevented : i.returnValue === !1) ? If : SS, this.isPropagationStopped = SS, this;
+  }
+  return Wt(e.prototype, {
+    preventDefault: function () {
+      this.defaultPrevented = !0;
+      var r = this.nativeEvent;
+      r && (r.preventDefault ? r.preventDefault() : typeof r.returnValue !== "unknown" && (r.returnValue = !1), this.isDefaultPrevented = If);
+    },
+    stopPropagation: function () {
+      var r = this.nativeEvent;
+      r && (r.stopPropagation ? r.stopPropagation() : typeof r.cancelBubble !== "unknown" && (r.cancelBubble = !0), this.isPropagationStopped = If);
+    },
+    persist: function () {},
+    isPersistent: If
+  }), e;
+}
+var wi = {
+    eventPhase: 0,
+    bubbles: 0,
+    cancelable: 0,
+    timeStamp: function (t) {
+      return t.timeStamp || Date.now();
+    },
+    defaultPrevented: 0,
+    isTrusted: 0
+  },
+  Hp = Ze(wi),
+  ws = Wt({}, wi, {
+    view: 0,
+    detail: 0
+  }),
+  Zz = Ze(ws),
+  Cy,
+  jy,
+  Cu,
+  Wp = Wt({}, ws, {
+    screenX: 0,
+    screenY: 0,
+    clientX: 0,
+    clientY: 0,
+    pageX: 0,
+    pageY: 0,
+    ctrlKey: 0,
+    shiftKey: 0,
+    altKey: 0,
+    metaKey: 0,
+    getModifierState: ov,
+    button: 0,
+    buttons: 0,
+    relatedTarget: function (t) {
+      return t.relatedTarget === void 0 ? t.fromElement === t.srcElement ? t.toElement : t.fromElement : t.relatedTarget;
+    },
+    movementX: function (t) {
+      if ("movementX" in t) return t.movementX;
+      return t !== Cu && (Cu && t.type === "mousemove" ? (Cy = t.screenX - Cu.screenX, jy = t.screenY - Cu.screenY) : jy = Cy = 0, Cu = t), Cy;
+    },
+    movementY: function (t) {
+      return "movementY" in t ? t.movementY : jy;
+    }
+  }),
+  OS = Ze(Wp),
+  $z = Wt({}, Wp, {
+    dataTransfer: 0
+  }),
+  Jz = Ze($z),
+  t6 = Wt({}, ws, {
+    relatedTarget: 0
+  }),
+  Dy = Ze(t6),
+  e6 = Wt({}, wi, {
+    animationName: 0,
+    elapsedTime: 0,
+    pseudoElement: 0
+  }),
+  r6 = Ze(e6),
+  n6 = Wt({}, wi, {
+    clipboardData: function (t) {
+      return "clipboardData" in t ? t.clipboardData : window.clipboardData;
+    }
+  }),
+  a6 = Ze(n6),
+  i6 = Wt({}, wi, {
+    data: 0
+  }),
+  AS = Ze(i6),
+  o6 = {
+    Esc: "Escape",
+    Spacebar: " ",
+    Left: "ArrowLeft",
+    Up: "ArrowUp",
+    Right: "ArrowRight",
+    Down: "ArrowDown",
+    Del: "Delete",
+    Win: "OS",
+    Menu: "ContextMenu",
+    Apps: "ContextMenu",
+    Scroll: "ScrollLock",
+    MozPrintableKey: "Unidentified"
+  },
+  l6 = {
+    8: "Backspace",
+    9: "Tab",
+    12: "Clear",
+    13: "Enter",
+    16: "Shift",
+    17: "Control",
+    18: "Alt",
+    19: "Pause",
+    20: "CapsLock",
+    27: "Escape",
+    32: " ",
+    33: "PageUp",
+    34: "PageDown",
+    35: "End",
+    36: "Home",
+    37: "ArrowLeft",
+    38: "ArrowUp",
+    39: "ArrowRight",
+    40: "ArrowDown",
+    45: "Insert",
+    46: "Delete",
+    112: "F1",
+    113: "F2",
+    114: "F3",
+    115: "F4",
+    116: "F5",
+    117: "F6",
+    118: "F7",
+    119: "F8",
+    120: "F9",
+    121: "F10",
+    122: "F11",
+    123: "F12",
+    144: "NumLock",
+    145: "ScrollLock",
+    224: "Meta"
+  },
+  u6 = {
+    Alt: "altKey",
+    Control: "ctrlKey",
+    Meta: "metaKey",
+    Shift: "shiftKey"
+  };
+function s6(t) {
+  var e = this.nativeEvent;
+  return e.getModifierState ? e.getModifierState(t) : (t = u6[t]) ? !!e[t] : !1;
+}
+function ov() {
+  return s6;
+}
+var c6 = Wt({}, ws, {
+    key: function (t) {
+      if (t.key) {
+        var e = o6[t.key] || t.key;
+        if (e !== "Unidentified") return e;
+      }
+      return t.type === "keypress" ? (t = $f(t), t === 13 ? "Enter" : String.fromCharCode(t)) : t.type === "keydown" || t.type === "keyup" ? l6[t.keyCode] || "Unidentified" : "";
+    },
+    code: 0,
+    location: 0,
+    ctrlKey: 0,
+    shiftKey: 0,
+    altKey: 0,
+    metaKey: 0,
+    repeat: 0,
+    locale: 0,
+    getModifierState: ov,
+    charCode: function (t) {
+      return t.type === "keypress" ? $f(t) : 0;
+    },
+    keyCode: function (t) {
+      return t.type === "keydown" || t.type === "keyup" ? t.keyCode : 0;
+    },
+    which: function (t) {
+      return t.type === "keypress" ? $f(t) : t.type === "keydown" || t.type === "keyup" ? t.keyCode : 0;
+    }
+  }),
+  f6 = Ze(c6),
+  p6 = Wt({}, Wp, {
+    pointerId: 0,
+    width: 0,
+    height: 0,
+    pressure: 0,
+    tangentialPressure: 0,
+    tiltX: 0,
+    tiltY: 0,
+    twist: 0,
+    pointerType: 0,
+    isPrimary: 0
+  }),
+  TS = Ze(p6),
+  d6 = Wt({}, ws, {
+    touches: 0,
+    targetTouches: 0,
+    changedTouches: 0,
+    altKey: 0,
+    metaKey: 0,
+    ctrlKey: 0,
+    shiftKey: 0,
+    getModifierState: ov
+  }),
+  h6 = Ze(d6),
+  m6 = Wt({}, wi, {
+    propertyName: 0,
+    elapsedTime: 0,
+    pseudoElement: 0
+  }),
+  y6 = Ze(m6),
+  g6 = Wt({}, Wp, {
+    deltaX: function (t) {
+      return "deltaX" in t ? t.deltaX : "wheelDeltaX" in t ? -t.wheelDeltaX : 0;
+    },
+    deltaY: function (t) {
+      return "deltaY" in t ? t.deltaY : "wheelDeltaY" in t ? -t.wheelDeltaY : "wheelDelta" in t ? -t.wheelDelta : 0;
+    },
+    deltaZ: 0,
+    deltaMode: 0
+  }),
+  v6 = Ze(g6),
+  b6 = Wt({}, wi, {
+    newState: 0,
+    oldState: 0
+  }),
+  x6 = Ze(b6),
+  w6 = [9, 13, 27, 32],
+  lv = Un && "CompositionEvent" in window,
+  Wu = null;
+Un && "documentMode" in document && (Wu = document.documentMode);
+var S6 = Un && "TextEvent" in window && !Wu,
+  i2 = Un && (!lv || Wu && 8 < Wu && 11 >= Wu),
+  ES = String.fromCharCode(32),
+  _S = !1;
+function o2(t, e) {
+  switch (t) {
+    case "keyup":
+      return w6.indexOf(e.keyCode) !== -1;
+    case "keydown":
+      return e.keyCode !== 229;
+    case "keypress":
+    case "mousedown":
+    case "focusout":
+      return !0;
+    default:
+      return !1;
+  }
+}
+function l2(t) {
+  return t = t.detail, typeof t === "object" && "data" in t ? t.data : null;
+}
+var To = !1;
+function O6(t, e) {
+  switch (t) {
+    case "compositionend":
+      return l2(e);
+    case "keypress":
+      if (e.which !== 32) return null;
+      return _S = !0, ES;
+    case "textInput":
+      return t = e.data, t === ES && _S ? null : t;
+    default:
+      return null;
+  }
+}
+function A6(t, e) {
+  if (To) return t === "compositionend" || !lv && o2(t, e) ? (t = a2(), Zf = iv = ya = null, To = !1, t) : null;
+  switch (t) {
+    case "paste":
+      return null;
+    case "keypress":
+      if (!(e.ctrlKey || e.altKey || e.metaKey) || e.ctrlKey && e.altKey) {
+        if (e.char && 1 < e.char.length) return e.char;
+        if (e.which) return String.fromCharCode(e.which);
+      }
+      return null;
+    case "compositionend":
+      return i2 && e.locale !== "ko" ? null : e.data;
+    default:
+      return null;
+  }
+}
+var T6 = {
+  color: !0,
+  date: !0,
+  datetime: !0,
+  "datetime-local": !0,
+  email: !0,
+  month: !0,
+  number: !0,
+  password: !0,
+  range: !0,
+  search: !0,
+  tel: !0,
+  text: !0,
+  time: !0,
+  url: !0,
+  week: !0
+};
+function MS(t) {
+  var e = t && t.nodeName && t.nodeName.toLowerCase();
+  return 
