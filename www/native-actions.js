@@ -809,4 +809,26 @@ async function callAction(actionName, args) {
   return fn(args || {});
 }
 
-window.WellnessQuestNative = { init, callAction };
+window.WellnessQuestNative = { init, callAction, _initialized: false };
+
+// Auto-initialize on load
+(function() {
+  function tryInit() {
+    // Wait for Capacitor to be ready
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorSQLite) {
+      init().then(() => {
+        window.WellnessQuestNative._initialized = true;
+        console.log('[native-actions] Initialized successfully');
+      }).catch(err => {
+        console.error('[native-actions] Init failed:', err);
+        // Mark as initialized anyway so the bridge installs; actions will fail with clear errors
+        window.WellnessQuestNative._initialized = true;
+        window.WellnessQuestNative._initError = err;
+      });
+    } else {
+      setTimeout(tryInit, 100);
+    }
+  }
+  // Start trying after a short delay to let Capacitor load
+  setTimeout(tryInit, 500);
+})();
