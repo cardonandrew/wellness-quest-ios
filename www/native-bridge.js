@@ -1,1 +1,114 @@
-LyoqCiAqIFdlbGxuZXNzIFF1ZXN0IE5hdGl2ZSBCcmlkZ2UKICoKICogSW50ZXJjZXB0cyB0aGUgYXBwJ3MgLi9hY3Rpb25zIFJQQyBjYWxscyBhbmQgcm91dGVzIHRoZW0gdG8gdGhlCiAqIG9uLWRldmljZSBTUUxpdGUgaW1wbGVtZW50YXRpb24gKG5hdGl2ZS1hY3Rpb25zLmpzKSBpbnN0ZWFkIG9mCiAqIGEgcmVtb3RlIHNlcnZlci4gVGhpcyBtYWtlcyB0aGUgYXBwIGZ1bGx5IG9mZmxpbmUgYW5kIG5hdGl2ZS4KICoKICogTG9hZCBvcmRlciBpbiBpbmRleC5odG1sOgogKiAgIDEuIG5hdGl2ZS1hY3Rpb25zLmpzICAoZGVmaW5lcyB3aW5kb3cuV2VsbG5lc3NRdWVzdE5hdGl2ZSkKICogICAyLiBuYXRpdmUtYnJpZGdlLmpzICAgKHRoaXMgZmlsZSDigJQgaW5zdGFsbHMgdGhlIGZldGNoIGludGVyY2VwdG9yKQogKiAgIDMuIGFwcCBidW5kbGUgICAgICAgICAobWFrZXMgLi9hY3Rpb25zIGNhbGxzLCB0cmFuc3BhcmVudGx5IGludGVyY2VwdGVkKQogKi8KKGZ1bmN0aW9uICgpIHsKICAndXNlIHN0cmljdCc7CgogIC8vIFdhaXQgZm9yIHRoZSBuYXRpdmUgYWN0aW9ucyBtb2R1bGUgdG8gYmUgcmVhZHkKICBmdW5jdGlvbiB3aGVuUmVhZHkoY2FsbGJhY2spIHsKICAgIGlmICh3aW5kb3cuV2VsbG5lc3NRdWVzdE5hdGl2ZSAmJiB3aW5kb3cuV2VsbG5lc3NRdWVzdE5hdGl2ZS5faW5pdGlhbGl6ZWQpIHsKICAgICAgY2FsbGJhY2soKTsKICAgIH0gZWxzZSB7CiAgICAgIHNldFRpbWVvdXQoKCkgPT4gd2hlblJlYWR5KGNhbGxiYWNrKSwgNTApOwogICAgfQogIH0KCiAgLy8gQ2hlY2sgaWYgYSBVUkwgaXMgYW4gLi9hY3Rpb25zIGNhbGwKICBmdW5jdGlvbiBpc0FjdGlvbnNDYWxsKHVybCkgewogICAgaWYgKHR5cGVvZiB1cmwgIT09ICdzdHJpbmcnKSByZXR1cm4gZmFsc2U7CiAgICAvLyBNYXRjaGVzOiAuL2FjdGlvbnMsIC9hY3Rpb25zLCBhY3Rpb25zLCBhbmQgYWJzb2x1dGUgdmFyaWFudHMKICAgIHJldHVybiB1cmwgPT09ICcuL2FjdGlvbnMnIHx8CiAgICAgICAgICAgdXJsID09PSAnL2FjdGlvbnMnIHx8CiAgICAgICAgICAgdXJsID09PSAnYWN0aW9ucycgfHwKICAgICAgICAgICB1cmwuZW5kc1dpdGgoJy9hY3Rpb25zJykgfHwKICAgICAgICAgICB1cmwuZW5kc1dpdGgoJy4vYWN0aW9ucycpOwogIH0KCiAgd2hlblJlYWR5KCgpID0+IHsKICAgIGNvbnNvbGUubG9nKCdbbmF0aXZlLWJyaWRnZV0gSW5zdGFsbGluZyAuL2FjdGlvbnMgaW50ZXJjZXB0b3InKTsKCiAgICBjb25zdCBvcmlnaW5hbEZldGNoID0gd2luZG93LmZldGNoLmJpbmQod2luZG93KTsKCiAgICB3aW5kb3cuZmV0Y2ggPSBhc3luYyBmdW5jdGlvbiAodXJsLCBvcHRpb25zKSB7CiAgICAgIGNvbnN0IHVybFN0ciA9IHR5cGVvZiB1cmwgPT09ICdzdHJpbmcnID8gdXJsIDogKHVybCAmJiB1cmwudXJsKSB8fCAnJzsKCiAgICAgIGlmIChpc0FjdGlvbnNDYWxsKHVybFN0cikgJiYgb3B0aW9ucyAmJiBvcHRpb25zLm1ldGhvZCA9PT0gJ1BPU1QnKSB7CiAgICAgICAgdHJ5IHsKICAgICAgICAgIGNvbnN0IGJvZHkgPSB0eXBlb2Ygb3B0aW9ucy5ib2R5ID09PSAnc3RyaW5nJyA/IEpTT04ucGFyc2Uob3B0aW9ucy5ib2R5KSA6IG9wdGlvbnMuYm9keTsKICAgICAgICAgIGNvbnN0IHsgYWN0aW9uLCBhcmdzIH0gPSBib2R5OwoKICAgICAgICAgIGNvbnNvbGUubG9nKGBbbmF0aXZlLWJyaWRnZV0gUm91dGluZyBhY3Rpb246ICR7YWN0aW9ufWApOwoKICAgICAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHdpbmRvdy5XZWxsbmVzc1F1ZXN0TmF0aXZlLmNhbGxBY3Rpb24oYWN0aW9uLCBhcmdzKTsKCiAgICAgICAgICAvLyBSZXR1cm4gYSBSZXNwb25zZS1saWtlIG9iamVjdCBtYXRjaGluZyB3aGF0IHRoZSBTREsgZXhwZWN0cwogICAgICAgICAgcmV0dXJuIG5ldyBSZXNwb25zZShKU09OLnN0cmluZ2lmeShyZXN1bHQpLCB7CiAgICAgICAgICAgIHN0YXR1czogMjAwLAogICAgICAgICAgICBoZWFkZXJzOiB7ICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicgfSwKICAgICAgICAgIH0pOwogICAgICAgIH0gY2F0Y2ggKGVycikgewogICAgICAgICAgY29uc29sZS5lcnJvcihgW25hdGl2ZS1icmlkZ2VdIEFjdGlvbiBmYWlsZWQ6YCwgZXJyKTsKICAgICAgICAgIHJldHVybiBuZXcgUmVzcG9uc2UoSlNPTi5zdHJpbmdpZnkoewogICAgICAgICAgICBlcnJvcjogZXJyLm1lc3NhZ2UgfHwgJ0FjdGlvbiBmYWlsZWQnLAogICAgICAgICAgfSksIHsKICAgICAgICAgICAgc3RhdHVzOiA1MDAsCiAgICAgICAgICAgIGhlYWRlcnM6IHsgJ0NvbnRlbnQtVHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJyB9LAogICAgICAgICAgfSk7CiAgICAgICAgfQogICAgICB9CgogICAgICAvLyBOb3QgYW4gYWN0aW9ucyBjYWxsIOKAlCBwYXNzIHRocm91Z2ggbm9ybWFsbHkKICAgICAgcmV0dXJuIG9yaWdpbmFsRmV0Y2godXJsLCBvcHRpb25zKTsKICAgIH07CgogICAgLy8gQWxzbyBpbnRlcmNlcHQgWE1MSHR0cFJlcXVlc3QgZm9yIHJvYnVzdG5lc3MKICAgIGNvbnN0IG9yaWdpbmFsWEhST3BlbiA9IFhNTEh0dHBSZXF1ZXN0LnByb3RvdHlwZS5vcGVuOwogICAgY29uc3Qgb3JpZ2luYWxYSFJTZW5kID0gWE1MSHR0cFJlcXVlc3QucHJvdG90eXBlLnNlbmQ7CgogICAgWE1MSHR0cFJlcXVlc3QucHJvdG90eXBlLm9wZW4gPSBmdW5jdGlvbiAobWV0aG9kLCB1cmwsIC4uLnJlc3QpIHsKICAgICAgdGhpcy5faXNBY3Rpb25zQ2FsbCA9IGlzQWN0aW9uc0NhbGwodXJsKSAmJiBtZXRob2QgPT09ICdQT1NUJzsKICAgICAgdGhpcy5fYWN0aW9uc1VybCA9IHVybDsKICAgICAgcmV0dXJuIG9yaWdpbmFsWEhST3Blbi5jYWxsKHRoaXMsIG1ldGhvZCwgdXJsLCAuLi5yZXN0KTsKICAgIH07CgogICAgWE1MSHR0cFJlcXVlc3QucHJvdG90eXBlLnNlbmQgPSBmdW5jdGlvbiAoYm9keSkgewogICAgICBpZiAodGhpcy5faXNBY3Rpb25zQ2FsbCkgewogICAgICAgIGNvbnN0IHhociA9IHRoaXM7CiAgICAgICAgKGFzeW5jICgpID0+IHsKICAgICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IHBhcnNlZCA9IHR5cGVvZiBib2R5ID09PSAnc3RyaW5nJyA/IEpTT04ucGFyc2UoYm9keSkgOiBib2R5OwogICAgICAgICAgICBjb25zdCByZXN1bHQgPSBhd2FpdCB3aW5kb3cuV2VsbG5lc3NRdWVzdE5hdGl2ZS5jYWxsQWN0aW9uKHBhcnNlZC5hY3Rpb24sIHBhcnNlZC5hcmdzKTsKCiAgICAgICAgICAgIC8vIFNpbXVsYXRlIGEgc3VjY2Vzc2Z1bCBYSFIgcmVzcG9uc2UKICAgICAgICAgICAgT2JqZWN0LmRlZmluZVByb3BlcnR5KHhociwgJ3N0YXR1cycsIHsgdmFsdWU6IDIwMCwgd3JpdGFibGU6IGZhbHNlIH0pOwogICAgICAgICAgICBPYmplY3QuZGVmaW5lUHJvcGVydHkoeGhyLCAncmVzcG9uc2VUZXh0JywgeyB2YWx1ZTogSlNPTi5zdHJpbmdpZnkocmVzdWx0KSwgd3JpdGFibGU6IGZhbHNlIH0pOwogICAgICAgICAgICBPYmplY3QuZGVmaW5lUHJvcGVydHkoeGhyLCAncmVzcG9uc2UnLCB7IHZhbHVlOiBKU09OLnN0cmluZ2lmeShyZXN1bHQpLCB3cml0YWJsZTogZmFsc2UgfSk7CiAgICAgICAgICAgIE9iamVjdC5kZWZpbmVQcm9wZXJ0eSh4aHIsICdyZWFkeVN0YXRlJywgeyB2YWx1ZTogNCwgd3JpdGFibGU6IGZhbHNlIH0pOwoKICAgICAgICAgICAgaWYgKHhoci5vbnJlYWR5c3RhdGVjaGFuZ2UpIHhoci5vbnJlYWR5c3RhdGVjaGFuZ2UoKTsKICAgICAgICAgICAgaWYgKHhoci5vbmxvYWQpIHhoci5vbmxvYWQoKTsKICAgICAgICAgIH0gY2F0Y2ggKGVycikgewogICAgICAgICAgICBjb25zb2xlLmVycm9yKGBbbmF0aXZlLWJyaWRnZV0gWEhSIGFjdGlvbiBmYWlsZWQ6YCwgZXJyKTsKICAgICAgICAgICAgT2JqZWN0LmRlZmluZVByb3BlcnR5KHhociwgJ3N0YXR1cycsIHsgdmFsdWU6IDUwMCwgd3JpdGFibGU6IGZhbHNlIH0pOwogICAgICAgICAgICBPYmplY3QuZGVmaW5lUHJvcGVydHkoeGhyLCAncmVhZHlTdGF0ZScsIHsgdmFsdWU6IDQsIHdyaXRhYmxlOiBmYWxzZSB9KTsKICAgICAgICAgICAgaWYgKHhoci5vbnJlYWR5c3RhdGVjaGFuZ2UpIHhoci5vbnJlYWR5c3RhdGVjaGFuZ2UoKTsKICAgICAgICAgICAgaWYgKHhoci5vbmVycm9yKSB4aHIub25lcnJvcihlcnIpOwogICAgICAgICAgfQogICAgICAgIH0pKCk7CiAgICAgICAgcmV0dXJuOwogICAgICB9CiAgICAgIHJldHVybiBvcmlnaW5hbFhIUlNlbmQuY2FsbCh0aGlzLCBib2R5KTsKICAgIH07CgogICAgY29uc29sZS5sb2coJ1tuYXRpdmUtYnJpZGdlXSBJbnRlcmNlcHRvciBpbnN0YWxsZWQg4oCUIGFwcCBpcyBub3cgZnVsbHkgb2ZmbGluZS1jYXBhYmxlJyk7CiAgfSk7Cn0pKCk7Cg==
+/**
+ * Wellness Quest Native Bridge
+ *
+ * Intercepts the app's ./actions RPC calls and routes them to the
+ * on-device SQLite implementation (native-actions.js) instead of
+ * a remote server. This makes the app fully offline and native.
+ *
+ * Load order in index.html:
+ *   1. native-actions.js  (defines window.WellnessQuestNative)
+ *   2. native-bridge.js   (this file — installs the fetch interceptor)
+ *   3. app bundle         (makes ./actions calls, transparently intercepted)
+ */
+(function () {
+  'use strict';
+
+  // Wait for the native actions module to be ready
+  function whenReady(callback) {
+    if (window.WellnessQuestNative && window.WellnessQuestNative._initialized) {
+      callback();
+    } else {
+      setTimeout(() => whenReady(callback), 50);
+    }
+  }
+
+  // Check if a URL is an ./actions call
+  function isActionsCall(url) {
+    if (typeof url !== 'string') return false;
+    // Matches: ./actions, /actions, actions, and absolute variants
+    return url === './actions' ||
+           url === '/actions' ||
+           url === 'actions' ||
+           url.endsWith('/actions') ||
+           url.endsWith('./actions');
+  }
+
+  whenReady(() => {
+    console.log('[native-bridge] Installing ./actions interceptor');
+
+    const originalFetch = window.fetch.bind(window);
+
+    window.fetch = async function (url, options) {
+      const urlStr = typeof url === 'string' ? url : (url && url.url) || '';
+
+      if (isActionsCall(urlStr) && options && options.method === 'POST') {
+        try {
+          const body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+          const { action, args } = body;
+
+          console.log(`[native-bridge] Routing action: ${action}`);
+
+          const result = await window.WellnessQuestNative.callAction(action, args);
+
+          // Return a Response-like object matching what the SDK expects
+          return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        } catch (err) {
+          console.error(`[native-bridge] Action failed:`, err);
+          return new Response(JSON.stringify({
+            error: err.message || 'Action failed',
+          }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+      }
+
+      // Not an actions call — pass through normally
+      return originalFetch(url, options);
+    };
+
+    // Also intercept XMLHttpRequest for robustness
+    const originalXHROpen = XMLHttpRequest.prototype.open;
+    const originalXHRSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+      this._isActionsCall = isActionsCall(url) && method === 'POST';
+      this._actionsUrl = url;
+      return originalXHROpen.call(this, method, url, ...rest);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+      if (this._isActionsCall) {
+        const xhr = this;
+        (async () => {
+          try {
+            const parsed = typeof body === 'string' ? JSON.parse(body) : body;
+            const result = await window.WellnessQuestNative.callAction(parsed.action, parsed.args);
+
+            // Simulate a successful XHR response
+            Object.defineProperty(xhr, 'status', { value: 200, writable: false });
+            Object.defineProperty(xhr, 'responseText', { value: JSON.stringify(result), writable: false });
+            Object.defineProperty(xhr, 'response', { value: JSON.stringify(result), writable: false });
+            Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
+
+            if (xhr.onreadystatechange) xhr.onreadystatechange();
+            if (xhr.onload) xhr.onload();
+          } catch (err) {
+            console.error(`[native-bridge] XHR action failed:`, err);
+            Object.defineProperty(xhr, 'status', { value: 500, writable: false });
+            Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
+            if (xhr.onreadystatechange) xhr.onreadystatechange();
+            if (xhr.onerror) xhr.onerror(err);
+          }
+        })();
+        return;
+      }
+      return originalXHRSend.call(this, body);
+    };
+
+    console.log('[native-bridge] Interceptor installed — app is now fully offline-capable');
+  });
+})();
