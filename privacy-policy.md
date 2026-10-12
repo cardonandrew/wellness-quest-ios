@@ -1,1 +1,39 @@
-IyBQcml2YWN5IFBvbGljeSDigJQgV2VsbG5lc3MgUXVlc3QKCioqTGFzdCB1cGRhdGVkOiBPY3RvYmVyIDksIDIwMjYqKgoKV2VsbG5lc3MgUXVlc3QgKCJ0aGUgQXBwIikgaXMgYSBwZXJzb25hbCB3ZWxsbmVzcyB0cmFja2luZyBhcHBsaWNhdGlvbi4gVGhpcyBwcml2YWN5IHBvbGljeSBleHBsYWlucyBob3cgd2UgaGFuZGxlIHlvdXIgaW5mb3JtYXRpb24uCgojIyBJbmZvcm1hdGlvbiBXZSBDb2xsZWN0CgoqKldlbGxuZXNzIGRhdGEgeW91IGVudGVyLioqIFRoZSBBcHAgc3RvcmVzIHRoZSB3ZWxsbmVzcyBpbmZvcm1hdGlvbiB5b3UgcHJvdmlkZSwgaW5jbHVkaW5nOgotIERhaWx5IHRhc2sgY29tcGxldGlvbnMgYWNyb3NzIHdlbGxuZXNzIGNhdGVnb3JpZXMgKE1pbmRzZXQsIEpvdXJuYWxpbmcsIE51dHJpdGlvbiwgRml0bmVzcywgSHlkcmF0aW9uLCBFZHVjYXRpb24pCi0gSm91cm5hbCBlbnRyaWVzIGFuZCB0ZXh0IHlvdSB3cml0ZQotIFlvdXIgcHJlZmVyZW5jZXMgKGludGVuc2l0eSBsZXZlbHMsIHRoZW1lLCBhY2NlbnQgY29sb3IsIGVuYWJsZWQgdGFza3MpCi0gQXBwIHByb2dyZXNzIChYUCwgbGV2ZWxzLCBzdHJlYWtzLCBxdWVzdCBjaGFpbiBwcm9ncmVzcywgYmFkZ2VzKQoKKipXZSBkbyBub3QgY29sbGVjdCoqIHlvdXIgbmFtZSwgZW1haWwgYWRkcmVzcywgcGhvbmUgbnVtYmVyLCBsb2NhdGlvbiwgY29udGFjdHMsIHBob3Rvcywgb3IgYW55IHBlcnNvbmFsbHkgaWRlbnRpZnlpbmcgaW5mb3JtYXRpb24uIFRoZXJlIGlzIG5vIGFjY291bnQgc3lzdGVtIGFuZCBubyBzaWduLWluIHJlcXVpcmVkLgoKIyMgSG93IFlvdXIgRGF0YSBJcyBTdG9yZWQKCkFsbCBvZiB5b3VyIHdlbGxuZXNzIGRhdGEgaXMgc3RvcmVkICoqbG9jYWxseSBvbiB5b3VyIGRldmljZSBvbmx5KiouIE5vdGhpbmcgaXMgdHJhbnNtaXR0ZWQgdG8gZXh0ZXJuYWwgc2VydmVycy4gWW91ciBkYXRhIG5ldmVyIGxlYXZlcyB5b3VyIHBob25lLgoKIyMgRGF0YSBTaGFyaW5nCgpXZSBkbyBub3Qgc2hhcmUsIHNlbGwsIG9yIHRyYW5zbWl0IHlvdXIgZGF0YSB0byBhbnkgdGhpcmQgcGFydHkuIFRoZXJlIGFyZSBubyBhbmFseXRpY3MgU0RLcywgYWR2ZXJ0aXNpbmcgZnJhbWV3b3Jrcywgb3IgdHJhY2tpbmcgdG9vbHMgaW4gdGhlIEFwcC4KCiMjIERhdGEgRGVsZXRpb24KCllvdSBjYW4gZGVsZXRlIGFsbCBvZiB5b3VyIGRhdGEgYXQgYW55IHRpbWUgdXNpbmcgdGhlICJSZXNldCBEYXRhIiBvcHRpb24gaW4gU2V0dGluZ3MsIG9yIGJ5IGRlbGV0aW5nIHRoZSBBcHAgZnJvbSB5b3VyIGRldmljZS4KCiMjIENoaWxkcmVuJ3MgUHJpdmFjeQoKVGhlIEFwcCBpcyBub3QgZGlyZWN0ZWQgYXQgY2hpbGRyZW4gdW5kZXIgMTMuIFdlIGRvIG5vdCBrbm93aW5nbHkgY29sbGVjdCBpbmZvcm1hdGlvbiBmcm9tIGNoaWxkcmVuLgoKIyMgQ2hhbmdlcyB0byBUaGlzIFBvbGljeQoKSWYgd2UgdXBkYXRlIHRoaXMgcG9saWN5LCB0aGUgbmV3IHZlcnNpb24gd2lsbCBiZSByZWZsZWN0ZWQgaW4gdGhlIEFwcC4gQ29udGludWVkIHVzZSBvZiB0aGUgQXBwIGFmdGVyIGNoYW5nZXMgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZS4KCiMjIENvbnRhY3QKCkZvciBwcml2YWN5IHF1ZXN0aW9ucywgY29udGFjdCB1cyB0aHJvdWdoIHRoZSBBcHAgU3RvcmUgbGlzdGluZy4K
+# Privacy Policy — Wellness Quest
+
+**Last updated: October 9, 2026**
+
+Wellness Quest ("the App") is a personal wellness tracking application. This privacy policy explains how we handle your information.
+
+## Information We Collect
+
+**Wellness data you enter.** The App stores the wellness information you provide, including:
+- Daily task completions across wellness categories (Mindset, Journaling, Nutrition, Fitness, Hydration, Education)
+- Journal entries and text you write
+- Your preferences (intensity levels, theme, accent color, enabled tasks)
+- App progress (XP, levels, streaks, quest chain progress, badges)
+
+**We do not collect** your name, email address, phone number, location, contacts, photos, or any personally identifying information. There is no account system and no sign-in required.
+
+## How Your Data Is Stored
+
+All of your wellness data is stored **locally on your device only**. Nothing is transmitted to external servers. Your data never leaves your phone.
+
+## Data Sharing
+
+We do not share, sell, or transmit your data to any third party. There are no analytics SDKs, advertising frameworks, or tracking tools in the App.
+
+## Data Deletion
+
+You can delete all of your data at any time using the "Reset Data" option in Settings, or by deleting the App from your device.
+
+## Children's Privacy
+
+The App is not directed at children under 13. We do not knowingly collect information from children.
+
+## Changes to This Policy
+
+If we update this policy, the new version will be reflected in the App. Continued use of the App after changes constitutes acceptance.
+
+## Contact
+
+For privacy questions, contact us through the App Store listing.
