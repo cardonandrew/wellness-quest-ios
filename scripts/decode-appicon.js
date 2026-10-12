@@ -16,24 +16,11 @@ if (existsSync(partsDir)) {
     .filter(f => f.startsWith('index.html.part'))
     .sort();
   if (parts.length > 0) {
-    // Check if index.html is truncated (smaller than expected 1.1MB)
-    let needsRebuild = true;
-    if (existsSync(indexPath)) {
-      const stat = readFileSync(indexPath);
-      // Expected size is ~1,103,477 bytes; if significantly smaller, it's truncated
-      if (stat.length > 1000000) {
-        console.log('[decode-appicon] www/index.html looks complete, skipping rebuild.');
-        needsRebuild = false;
-      } else {
-        console.log(`[decode-appicon] www/index.html is truncated (${stat.length} bytes), rebuilding from parts.`);
-      }
-    }
-    if (needsRebuild) {
-      const chunks = parts.map(p => readFileSync(join(partsDir, p)));
-      const combined = Buffer.concat(chunks);
-      writeFileSync(indexPath, combined);
-      console.log(`[decode-appicon] rebuilt www/index.html from ${parts.length} parts (${combined.length} bytes).`);
-    }
+    // Always rebuild from parts - they are the source of truth
+    const chunks = parts.map(p => readFileSync(join(partsDir, p)));
+    const combined = Buffer.concat(chunks);
+    writeFileSync(indexPath, combined);
+    console.log(`[decode-appicon] rebuilt www/index.html from ${parts.length} parts (${combined.length} bytes).`);
   }
 }
 
