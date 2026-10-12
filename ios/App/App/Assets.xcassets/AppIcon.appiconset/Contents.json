@@ -1,1 +1,14 @@
-ewogICJpbWFnZXMiIDogWwogICAgewogICAgICAiZmlsZW5hbWUiIDogIkFwcEljb24tNTEyQDJ4LnBuZyIsCiAgICAgICJpZGlvbSIgOiAidW5pdmVyc2FsIiwKICAgICAgInBsYXRmb3JtIiA6ICJpb3MiLAogICAgICAic2l6ZSIgOiAiMTAyNHgxMDI0IgogICAgfQogIF0sCiAgImluZm8iIDogewogICAgImF1dGhvciIgOiAieGNvZGUiLAogICAgInZlcnNpb24iIDogMQogIH0KfQo=
+{
+  "images" : [
+    {
+      "filename" : "AppIcon-512@2x.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
