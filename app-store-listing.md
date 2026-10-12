@@ -1,1 +1,62 @@
-IyBXZWxsbmVzcyBRdWVzdCDigJQgQXBwIFN0b3JlIExpc3RpbmcKCiMjIEFwcCBOYW1lCldlbGxuZXNzIFF1ZXN0CgojIyBTdWJ0aXRsZSAoMzAgY2hhcnMgbWF4KQpHYW1pZmllZCB3ZWxsbmVzcywgeW91ciB3YXkuCgojIyBEZXNjcmlwdGlvbgoKKipUdXJuIHNlbGYtaW1wcm92ZW1lbnQgaW50byBhIGdhbWUgeW91IGFjdHVhbGx5IHdhbnQgdG8gcGxheS4qKgoKV2VsbG5lc3MgUXVlc3QgdGFrZXMgdGhlIGFkZGljdGl2ZSBwcm9ncmVzc2lvbiBvZiB5b3VyIGZhdm9yaXRlIGdhbWVzIGFuZCBhcHBsaWVzIGl0IHRvIGJldHRlcmluZyB5b3Vyc2VsZi4gQ29tcGxldGUgZGFpbHkgcXVlc3RzIGFjcm9zcyBzaXggd2VsbG5lc3MgZGlzY2lwbGluZXMsIGVhcm4gWFAsIGxldmVsIHVwLCBhbmQgYnVpbGQgc3RyZWFrcyDigJQgYWxsIGF0IHlvdXIgb3duIHBhY2UuCgoqKlNJWCBXRUxMTkVTUyBESVNDSVBMSU5FUyoqCvCfp6AgTWluZHNldCDigJQgbWVkaXRhdGlvbiwgcHJheWVyLCBtZW50YWwgY2xhcml0eQrwn5OdIEpvdXJuYWxpbmcg4oCUIDM2NSB1bmlxdWUgZGFpbHkgcHJvbXB0cywgb25lIGZvciBldmVyeSBkYXkgb2YgdGhlIHllYXIK8J+llyBOdXRyaXRpb24g4oCUIG1hY3JvIGdvYWxzIGFuZCBtaW5kZnVsIGVhdGluZwrwn5KqIEZpdG5lc3Mg4oCUIHdvcmtvdXRzIGFuZCBtb3ZlbWVudArwn5KnIEh5ZHJhdGlvbiDigJQgd2F0ZXIgaW50YWtlIHRyYWNraW5nCvCfk5ogRWR1Y2F0aW9uIOKAlCByZWFkaW5nIGFuZCBjb250aW51b3VzIGxlYXJuaW5nCgoqKllPVVIgSU5URU5TSVRZLCBZT1VSIFJVTEVTKioKU2V0IENoaWxsLCBCYWxhbmNlZCwgb3IgQmVhc3QgbW9kZSBpbmRlcGVuZGVudGx5IGZvciBlYWNoIGNhdGVnb3J5LiBHbyBoYXJkIG9uIGZpdG5lc3Mgd2hpbGUga2VlcGluZyBqb3VybmFsaW5nIHJlbGF4ZWQg4oCUIG9yIGZsaXAgaXQuIEhhcmRlciBnb2FscyBlYXJuIG1vcmUgWFAuIFlvdSBkZWNpZGUgd2hhdCB5b3VyIGpvdXJuZXkgbG9va3MgbGlrZS4KCioqUVVFU1QgQ0hBSU5TKioKV2Vla2x5IHRoZW1lZCBjaGFsbGVuZ2VzIHRoYXQgdGllIGRpc2NpcGxpbmVzIHRvZ2V0aGVyLiBDb21wbGV0ZSB0aGVtIGZvciBib251cyBYUCBhbmQgY29sbGVjdGlibGUgYmFkZ2VzLgoKKipXRUVLTFkgUkVDQVAqKgpFdmVyeSBTdW5kYXksIGdldCBhIGJlYXV0aWZ1bCBzdW1tYXJ5IG9mIHlvdXIgd2VlayDigJQgWFAgZWFybmVkLCBiZXN0IGRheSwgc3RyZWFrcywgYW5kIGluc2lnaHRzLiBXYXRjaCB5b3VyIHByb2dyZXNzIGNvbXBvdW5kLgoKKiozNjUgSk9VUk5BTCBQUk9NUFRTKioKQSBmcmVzaCBjb250ZW1wbGF0aXZlIHByb21wdCBldmVyeSBzaW5nbGUgZGF5LCBmcm9tIGRlZXAgcmVmbGVjdGlvbnMgdG8gZnVuIGh5cG90aGV0aWNhbHMuIFRoZXkgcmVwZWF0IHllYXJseSBzbyB5b3VyIGFuc3dlcnMgZXZvbHZlIGFzIHlvdSBncm93LgoKKipLRVkgRkVBVFVSRVMqKgotIFNvbG8gam91cm5leSDigJQgbm8gc29jaWFsIHByZXNzdXJlLCBubyBsZWFkZXJib2FyZHMsIGp1c3QgeW91IHZzLiB5b3UKLSBGdWxseSBjdXN0b21pemFibGUgdGFza3Mg4oCUIGFkZCwgcmVtb3ZlLCBhbmQgdG9nZ2xlIGFueSB0YXNrCi0gWFAsIGxldmVscywgYW5kIHN0cmVha3Mgd2l0aCBzYXRpc2Z5aW5nIGNlbGVicmF0aW9ucwotIERhcmsgYW5kIGxpZ2h0IG1vZGUgd2l0aCBjdXN0b21pemFibGUgYWNjZW50IGNvbG9ycwotIE9uYm9hcmRpbmcgc3VydmV5IHRoYXQgc2V0cyB1cCB5b3VyIGludGVuc2l0eSBhdXRvbWF0aWNhbGx5Ci0gWW91ciBkYXRhIHN0YXlzIG9uIHlvdXIgZGV2aWNlIOKAlCBubyBhY2NvdW50LCBubyB0cmFja2luZywgbm8gYWRzCgoqKlN0YXJ0IHlvdXIgcXVlc3QgdG9kYXkuKioKCiMjIEtleXdvcmRzICgxMDAgY2hhcnMgbWF4LCBjb21tYS1zZXBhcmF0ZWQpCndlbGxuZXNzLGhhYml0IHRyYWNrZXIsam91cm5hbCxtaW5kc2V0LGZpdG5lc3MseHAsZ29hbHMsc2VsZiBpbXByb3ZlbWVudCxtZWRpdGF0aW9uLGh5ZHJhdGlvbgoKIyMgQ2F0ZWdvcnkKLSBQcmltYXJ5OiBIZWFsdGggJiBGaXRuZXNzCi0gU2Vjb25kYXJ5OiBMaWZlc3R5bGUKCiMjIEFnZSBSYXRpbmcKNCsgKG5vIG9iamVjdGlvbmFibGUgY29udGVudCkKCiMjIFByaWNlCkZyZWUKCiMjIFN1cHBvcnQgVVJMCihUbyBiZSBhZGRlZCDigJQgQXBwIFN0b3JlIENvbm5lY3QgcmVxdWlyZXMgYSBzdXBwb3J0IFVSTCkKCiMjIFByaXZhY3kgUG9saWN5IFVSTAooVG8gYmUgYWRkZWQg4oCUIG5lZWRzIHRvIGJlIGhvc3RlZDsgcHJpdmFjeS1wb2xpY3kubWQgaXMgcmVhZHkgdG8gcHVibGlzaCkK
+# Wellness Quest — App Store Listing
+
+## App Name
+Wellness Quest
+
+## Subtitle (30 chars max)
+Gamified wellness, your way.
+
+## Description
+
+**Turn self-improvement into a game you actually want to play.**
+
+Wellness Quest takes the addictive progression of your favorite games and applies it to bettering yourself. Complete daily quests across six wellness disciplines, earn XP, level up, and build streaks — all at your own pace.
+
+**SIX WELLNESS DISCIPLINES**
+🧠 Mindset — meditation, prayer, mental clarity
+📝 Journaling — 365 unique daily prompts, one for every day of the year
+🥗 Nutrition — macro goals and mindful eating
+💪 Fitness — workouts and movement
+💧 Hydration — water intake tracking
+📚 Education — reading and continuous learning
+
+**YOUR INTENSITY, YOUR RULES**
+Set Chill, Balanced, or Beast mode independently for each category. Go hard on fitness while keeping journaling relaxed — or flip it. Harder goals earn more XP. You decide what your journey looks like.
+
+**QUEST CHAINS**
+Weekly themed challenges that tie disciplines together. Complete them for bonus XP and collectible badges.
+
+**WEEKLY RECAP**
+Every Sunday, get a beautiful summary of your week — XP earned, best day, streaks, and insights. Watch your progress compound.
+
+**365 JOURNAL PROMPTS**
+A fresh contemplative prompt every single day, from deep reflections to fun hypotheticals. They repeat yearly so your answers evolve as you grow.
+
+**KEY FEATURES**
+- Solo journey — no social pressure, no leaderboards, just you vs. you
+- Fully customizable tasks — add, remove, and toggle any task
+- XP, levels, and streaks with satisfying celebrations
+- Dark and light mode with customizable accent colors
+- Onboarding survey that sets up your intensity automatically
+- Your data stays on your device — no account, no tracking, no ads
+
+**Start your quest today.**
+
+## Keywords (100 chars max, comma-separated)
+wellness,habit tracker,journal,mindset,fitness,xp,goals,self improvement,meditation,hydration
+
+## Category
+- Primary: Health & Fitness
+- Secondary: Lifestyle
+
+## Age Rating
+4+ (no objectionable content)
+
+## Price
+Free
+
+## Support URL
+(To be added — App Store Connect requires a support URL)
+
+## Privacy Policy URL
+(To be added — needs to be hosted; privacy-policy.md is ready to publish)
