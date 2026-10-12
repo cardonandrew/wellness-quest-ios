@@ -1,0 +1,3299 @@
+r)) : aR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function k1(t, e, r) {
+  if (e = uR(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function uR(t) {
+  var e = aat(t, "string");
+  return su(e) == "symbol" ? e : e + "";
+}
+function aat(t, e) {
+  if (su(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (su(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function iat(t, e) {
+  return sat(t) || uat(t, e) || lat(t, e) || oat();
+}
+function oat() {
+  throw TypeError(`Invalid attempt to destructure non-iterable instance.
+In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
+}
+function lat(t, e) {
+  if (!t) return;
+  if (typeof t === "string") return oR(t, e);
+  var r = Object.prototype.toString.call(t).slice(8, -1);
+  if (r === "Object" && t.constructor) r = t.constructor.name;
+  if (r === "Map" || r === "Set") return Array.from(t);
+  if (r === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return oR(t, e);
+}
+function oR(t, e) {
+  if (e == null || e > t.length) e = t.length;
+  for (var r = 0, n = Array(e); r < e; r++) n[r] = t[r];
+  return n;
+}
+function uat(t, e) {
+  var r = t == null ? null : typeof Symbol < "u" && t[Symbol.iterator] || t["@@iterator"];
+  if (r != null) {
+    var n,
+      a,
+      i,
+      o,
+      l = [],
+      u = !0,
+      s = !1;
+    try {
+      if (i = (r = r.call(t)).next, e === 0) {
+        if (Object(r) !== r) return;
+        u = !1;
+      } else for (; !(u = (n = i.call(r)).done) && (l.push(n.value), l.length !== e); u = !0);
+    } catch (f) {
+      s = !0, a = f;
+    } finally {
+      try {
+        if (!u && r.return != null && (o = r.return(), Object(o) !== o)) return;
+      } finally {
+        if (s) throw a;
+      }
+    }
+    return l;
+  }
+}
+function sat(t) {
+  if (Array.isArray(t)) return t;
+}
+function N1() {
+  return N1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, N1.apply(this, arguments);
+}
+var cat = function (e, r) {
+    var n;
+    if (_t(e)) n = mt(e, r);else if (sR.default(e)) n = e(r);else n = U("line", N1({}, r, {
+      className: "recharts-reference-line-line"
+    }));
+    return n;
+  },
+  fat = function (e, r, n, a, i, o, l, u, s) {
+    var {
+      x: f,
+      y: c,
+      width: p,
+      height: d
+    } = i;
+    if (n) {
+      var b = s.y,
+        y = e.y.apply(b, {
+          position: o
+        });
+      if (tr(s, "discard") && !e.y.isInRange(y)) return null;
+      var w = [{
+        x: f + p,
+        y
+      }, {
+        x: f,
+        y
+      }];
+      return u === "left" ? w.reverse() : w;
+    }
+    if (r) {
+      var m = s.x,
+        h = e.x.apply(m, {
+          position: o
+        });
+      if (tr(s, "discard") && !e.x.isInRange(h)) return null;
+      var g = [{
+        x: h,
+        y: c + d
+      }, {
+        x: h,
+        y: c
+      }];
+      return l === "top" ? g.reverse() : g;
+    }
+    if (a) {
+      var x = s.segment,
+        v = x.map(function (S) {
+          return e.apply(S, {
+            position: o
+          });
+        });
+      if (tr(s, "discard") && cR.default(v, function (S) {
+        return !e.isInRange(S);
+      })) return null;
+      return v;
+    }
+    return null;
+  };
+function pat(t) {
+  var {
+      x: e,
+      y: r,
+      segment: n,
+      xAxisId: a,
+      yAxisId: i,
+      shape: o,
+      className: l,
+      alwaysShow: u
+    } = t,
+    s = y4(),
+    f = pm(a),
+    c = dm(i),
+    p = b4();
+  if (!s || !p) return null;
+  Ie(u === void 0, 'The alwaysShow prop is deprecated. Please use ifOverflow="extendDomain" instead.');
+  var d = $l({
+      x: f.scale,
+      y: c.scale
+    }),
+    b = It(e),
+    y = It(r),
+    w = n && n.length === 2,
+    m = fat(d, b, y, w, p, t.position, f.orientation, c.orientation, t);
+  if (!m) return null;
+  var h = iat(m, 2),
+    g = h[0],
+    {
+      x,
+      y: v
+    } = g,
+    S = h[1],
+    {
+      x: A,
+      y: M
+    } = S,
+    N = tr(t, "hidden") ? "url(#".concat(s, ")") : void 0,
+    R = iR(iR({
+      clipPath: N
+    }, at(t, !0)), {}, {
+      x1: x,
+      y1: v,
+      x2: A,
+      y2: M
+    });
+  return U(Rt, {
+    className: nt("recharts-reference-line", l)
+  }, cat(o, R), re.renderCallByParent(t, B5({
+    x1: x,
+    y1: v,
+    x2: A,
+    y2: M
+  })));
+}
+var Am = function (t) {
+  function e() {
+    return $nt(this, e), tat(this, e, arguments);
+  }
+  return nat(e, t), Jnt(e, [{
+    key: "render",
+    value: function () {
+      return U(pat, this.props);
+    }
+  }]);
+}(Hr);
+k1(Am, "displayName", "ReferenceLine");
+k1(Am, "defaultProps", {
+  isFront: !1,
+  ifOverflow: "discard",
+  xAxisId: 0,
+  yAxisId: 0,
+  fill: "none",
+  stroke: "#ccc",
+  fillOpacity: 1,
+  strokeWidth: 1,
+  position: "middle"
+});
+var yR = rt(ue());
+function P1() {
+  return P1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, P1.apply(this, arguments);
+}
+function cu(t) {
+  return cu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, cu(t);
+}
+function fR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function pR(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? fR(Object(r), !0).forEach(function (n) {
+      Em(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : fR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function dat(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function dR(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, mR(n.key), n);
+  }
+}
+function hat(t, e, r) {
+  if (e) dR(t.prototype, e);
+  if (r) dR(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function mat(t, e, r) {
+  return e = Tm(e), yat(t, hR() ? Reflect.construct(e, r || [], Tm(t).constructor) : e.apply(t, r));
+}
+function yat(t, e) {
+  if (e && (cu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return gat(t);
+}
+function gat(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function hR() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (hR = function () {
+    return !!t;
+  })();
+}
+function Tm(t) {
+  return Tm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, Tm(t);
+}
+function vat(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) R1(t, e);
+}
+function R1(t, e) {
+  return R1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, R1(t, e);
+}
+function Em(t, e, r) {
+  if (e = mR(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function mR(t) {
+  var e = bat(t, "string");
+  return cu(e) == "symbol" ? e : e + "";
+}
+function bat(t, e) {
+  if (cu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (cu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var xat = function (e, r, n, a, i) {
+    var {
+      x1: o,
+      x2: l,
+      y1: u,
+      y2: s,
+      xAxis: f,
+      yAxis: c
+    } = i;
+    if (!f || !c) return null;
+    var p = $l({
+        x: f.scale,
+        y: c.scale
+      }),
+      d = {
+        x: e ? p.x.apply(o, {
+          position: "start"
+        }) : p.x.rangeMin,
+        y: n ? p.y.apply(u, {
+          position: "start"
+        }) : p.y.rangeMin
+      },
+      b = {
+        x: r ? p.x.apply(l, {
+          position: "end"
+        }) : p.x.rangeMax,
+        y: a ? p.y.apply(s, {
+          position: "end"
+        }) : p.y.rangeMax
+      };
+    if (tr(i, "discard") && (!p.isInRange(d) || !p.isInRange(b))) return null;
+    return c1(d, b);
+  },
+  $c = function (t) {
+    function e() {
+      return dat(this, e), mat(this, e, arguments);
+    }
+    return vat(e, t), hat(e, [{
+      key: "render",
+      value: function () {
+        var n = this.props,
+          {
+            x1: a,
+            x2: i,
+            y1: o,
+            y2: l,
+            className: u,
+            alwaysShow: s,
+            clipPathId: f
+          } = n;
+        Ie(s === void 0, 'The alwaysShow prop is deprecated. Please use ifOverflow="extendDomain" instead.');
+        var c = It(a),
+          p = It(i),
+          d = It(o),
+          b = It(l),
+          y = this.props.shape;
+        if (!c && !p && !d && !b && !y) return null;
+        var w = xat(c, p, d, b, this.props);
+        if (!w && !y) return null;
+        var m = tr(this.props, "hidden") ? "url(#".concat(f, ")") : void 0;
+        return U(Rt, {
+          className: nt("recharts-reference-area", u)
+        }, e.renderRect(y, pR(pR({
+          clipPath: m
+        }, at(this.props, !0)), w)), re.renderCallByParent(this.props, w));
+      }
+    }]);
+  }(Hr);
+Em($c, "displayName", "ReferenceArea");
+Em($c, "defaultProps", {
+  isFront: !1,
+  ifOverflow: "discard",
+  xAxisId: 0,
+  yAxisId: 0,
+  r: 10,
+  fill: "#ccc",
+  fillOpacity: 0.5,
+  stroke: "none",
+  strokeWidth: 1
+});
+Em($c, "renderRect", function (t, e) {
+  var r;
+  if (_t(t)) r = mt(t, e);else if (yR.default(t)) r = t(e);else r = U(Vl, P1({}, e, {
+    className: "recharts-reference-area-rect"
+  }));
+  return r;
+});
+function gR(t) {
+  return Aat(t) || Oat(t) || Sat(t) || wat();
+}
+function wat() {
+  throw TypeError(`Invalid attempt to spread non-iterable instance.
+In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
+}
+function Sat(t, e) {
+  if (!t) return;
+  if (typeof t === "string") return z1(t, e);
+  var r = Object.prototype.toString.call(t).slice(8, -1);
+  if (r === "Object" && t.constructor) r = t.constructor.name;
+  if (r === "Map" || r === "Set") return Array.from(t);
+  if (r === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return z1(t, e);
+}
+function Oat(t) {
+  if (typeof Symbol < "u" && t[Symbol.iterator] != null || t["@@iterator"] != null) return Array.from(t);
+}
+function Aat(t) {
+  if (Array.isArray(t)) return z1(t);
+}
+function z1(t, e) {
+  if (e == null || e > t.length) e = t.length;
+  for (var r = 0, n = Array(e); r < e; r++) n[r] = t[r];
+  return n;
+}
+var _m = function (e, r, n, a, i) {
+  var o = Ae(e, Am),
+    l = Ae(e, Zc),
+    u = [].concat(gR(o), gR(l)),
+    s = Ae(e, $c),
+    f = "".concat(a, "Id"),
+    c = a[0],
+    p = r;
+  if (u.length) p = u.reduce(function (y, w) {
+    if (w.props[f] === n && tr(w.props, "extendDomain") && F(w.props[c])) {
+      var m = w.props[c];
+      return [Math.min(y[0], m), Math.max(y[1], m)];
+    }
+    return y;
+  }, p);
+  if (s.length) {
+    var d = "".concat(c, "1"),
+      b = "".concat(c, "2");
+    p = s.reduce(function (y, w) {
+      if (w.props[f] === n && tr(w.props, "extendDomain") && F(w.props[d]) && F(w.props[b])) {
+        var m = w.props[d],
+          h = w.props[b];
+        return [Math.min(y[0], m, h), Math.max(y[1], m, h)];
+      }
+      return y;
+    }, p);
+  }
+  if (i && i.length) p = i.reduce(function (y, w) {
+    if (F(w)) return [Math.min(y[0], w), Math.max(y[1], w)];
+    return y;
+  }, p);
+  return p;
+};
+var xR = rt(bR()),
+  Cm = new xR.default();
+var jm = "recharts.syncMouseEvents";
+function tf(t) {
+  return tf = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, tf(t);
+}
+function _at(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function wR(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, SR(n.key), n);
+  }
+}
+function Mat(t, e, r) {
+  if (e) wR(t.prototype, e);
+  if (r) wR(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function B1(t, e, r) {
+  if (e = SR(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function SR(t) {
+  var e = Cat(t, "string");
+  return tf(e) == "symbol" ? e : e + "";
+}
+function Cat(t, e) {
+  if (tf(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (tf(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var OR = function () {
+  function t() {
+    _at(this, t), B1(this, "activeIndex", 0), B1(this, "coordinateList", []), B1(this, "layout", "horizontal");
+  }
+  return Mat(t, [{
+    key: "setDetails",
+    value: function (r) {
+      var n,
+        a = r.coordinateList,
+        i = a === void 0 ? null : a,
+        o = r.container,
+        l = o === void 0 ? null : o,
+        u = r.layout,
+        s = u === void 0 ? null : u,
+        f = r.offset,
+        c = f === void 0 ? null : f,
+        p = r.mouseHandlerCallback,
+        d = p === void 0 ? null : p;
+      this.coordinateList = (n = i !== null && i !== void 0 ? i : this.coordinateList) !== null && n !== void 0 ? n : [], this.container = l !== null && l !== void 0 ? l : this.container, this.layout = s !== null && s !== void 0 ? s : this.layout, this.offset = c !== null && c !== void 0 ? c : this.offset, this.mouseHandlerCallback = d !== null && d !== void 0 ? d : this.mouseHandlerCallback, this.activeIndex = Math.min(Math.max(this.activeIndex, 0), this.coordinateList.length - 1);
+    }
+  }, {
+    key: "focus",
+    value: function () {
+      this.spoofMouse();
+    }
+  }, {
+    key: "keyboardEvent",
+    value: function (r) {
+      if (this.coordinateList.length === 0) return;
+      switch (r.key) {
+        case "ArrowRight":
+          {
+            if (this.layout !== "horizontal") return;
+            this.activeIndex = Math.min(this.activeIndex + 1, this.coordinateList.length - 1), this.spoofMouse();
+            break;
+          }
+        case "ArrowLeft":
+          {
+            if (this.layout !== "horizontal") return;
+            this.activeIndex = Math.max(this.activeIndex - 1, 0), this.spoofMouse();
+            break;
+          }
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "setIndex",
+    value: function (r) {
+      this.activeIndex = r;
+    }
+  }, {
+    key: "spoofMouse",
+    value: function () {
+      var r, n;
+      if (this.layout !== "horizontal") return;
+      if (this.coordinateList.length === 0) return;
+      var a = this.container.getBoundingClientRect(),
+        {
+          x: i,
+          y: o,
+          height: l
+        } = a,
+        u = this.coordinateList[this.activeIndex].coordinate,
+        s = ((r = window) === null || r === void 0 ? void 0 : r.scrollX) || 0,
+        f = ((n = window) === null || n === void 0 ? void 0 : n.scrollY) || 0,
+        c = i + u + s,
+        p = o + this.offset.top + l / 2 + f;
+      this.mouseHandlerCallback({
+        pageX: c,
+        pageY: p
+      });
+    }
+  }]);
+}();
+function AR(t, e, r) {
+  if (r === "number" && e === !0 && Array.isArray(t)) {
+    var n = t === null || t === void 0 ? void 0 : t[0],
+      a = t === null || t === void 0 ? void 0 : t[1];
+    if (!!n && !!a && F(n) && F(a)) return !0;
+  }
+  return !1;
+}
+var MR = rt(jh()),
+  CR = rt(ue());
+function nf(t) {
+  return nf = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, nf(t);
+}
+function L1() {
+  return L1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, L1.apply(this, arguments);
+}
+function TR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function ER(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? TR(Object(r), !0).forEach(function (n) {
+      jat(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : TR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function jat(t, e, r) {
+  if (e = Dat(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Dat(t) {
+  var e = Nat(t, "string");
+  return nf(e) == "symbol" ? e : e + "";
+}
+function Nat(t, e) {
+  if (nf(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (nf(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var _R = {
+    curveBasisClosed: bh,
+    curveBasisOpen: xh,
+    curveBasis: vh,
+    curveBumpX: Wb,
+    curveBumpY: Gb,
+    curveLinearClosed: wh,
+    curveLinear: ra,
+    curveMonotoneX: tx,
+    curveMonotoneY: ex,
+    curveNatural: Oh,
+    curveStep: Th,
+    curveStepAfter: nx,
+    curveStepBefore: rx
+  },
+  Dm = function (e) {
+    return e.x === +e.x && e.y === +e.y;
+  },
+  ef = function (e) {
+    return e.x;
+  },
+  rf = function (e) {
+    return e.y;
+  },
+  kat = function (e, r) {
+    if (CR.default(e)) return e;
+    var n = "curve".concat(MR.default(e));
+    if ((n === "curveMonotone" || n === "curveBump") && r) return _R["".concat(n).concat(r === "vertical" ? "Y" : "X")];
+    return _R[n] || ra;
+  },
+  Pat = function (e) {
+    var r = e.type,
+      n = r === void 0 ? "linear" : r,
+      a = e.points,
+      i = a === void 0 ? [] : a,
+      {
+        baseLine: o,
+        layout: l,
+        connectNulls: u
+      } = e,
+      s = u === void 0 ? !1 : u,
+      f = kat(n, l),
+      c = s ? i.filter(function (y) {
+        return Dm(y);
+      }) : i,
+      p;
+    if (Array.isArray(o)) {
+      var d = s ? o.filter(function (y) {
+          return Dm(y);
+        }) : o,
+        b = c.map(function (y, w) {
+          return ER(ER({}, y), {}, {
+            base: d[w]
+          });
+        });
+      if (l === "vertical") p = Yi().y(rf).x1(ef).x0(function (y) {
+        return y.base.x;
+      });else p = Yi().x(ef).y1(rf).y0(function (y) {
+        return y.base.y;
+      });
+      return p.defined(Dm).curve(f), p(b);
+    }
+    if (l === "vertical" && F(o)) p = Yi().y(rf).x1(ef).x0(o);else if (F(o)) p = Yi().x(ef).y1(rf).y0(o);else p = kl().x(ef).y(rf);
+    return p.defined(Dm).curve(f), p(c);
+  },
+  I1 = function (e) {
+    var {
+      className: r,
+      points: n,
+      path: a,
+      pathRef: i
+    } = e;
+    if ((!n || !n.length) && !a) return null;
+    var o = n && n.length ? Pat(e) : a;
+    return U("path", L1({}, at(e, !1), ji(e), {
+      className: nt("recharts-curve", r),
+      d: o,
+      ref: i
+    }));
+  };
+function af(t) {
+  return af = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, af(t);
+}
+var Rat = ["x", "y", "top", "left", "width", "height", "className"];
+function U1() {
+  return U1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, U1.apply(this, arguments);
+}
+function jR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function zat(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? jR(Object(r), !0).forEach(function (n) {
+      qat(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : jR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function qat(t, e, r) {
+  if (e = Bat(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Bat(t) {
+  var e = Lat(t, "string");
+  return af(e) == "symbol" ? e : e + "";
+}
+function Lat(t, e) {
+  if (af(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (af(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function Iat(t, e) {
+  if (t == null) return {};
+  var r = Uat(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Uat(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+var Hat = function (e, r, n, a, i, o) {
+    return "M".concat(e, ",").concat(i, "v").concat(a, "M").concat(o, ",").concat(r, "h").concat(n);
+  },
+  DR = function (e) {
+    var r = e.x,
+      n = r === void 0 ? 0 : r,
+      a = e.y,
+      i = a === void 0 ? 0 : a,
+      o = e.top,
+      l = o === void 0 ? 0 : o,
+      u = e.left,
+      s = u === void 0 ? 0 : u,
+      f = e.width,
+      c = f === void 0 ? 0 : f,
+      p = e.height,
+      d = p === void 0 ? 0 : p,
+      b = e.className,
+      y = Iat(e, Rat),
+      w = zat({
+        x: n,
+        y: i,
+        top: l,
+        left: s,
+        width: c,
+        height: d
+      }, y);
+    if (!F(n) || !F(i) || !F(c) || !F(d) || !F(l) || !F(s)) return null;
+    return U("path", U1({}, at(w, !0), {
+      className: nt("recharts-cross", b),
+      d: Hat(n, i, c, d, l, s)
+    }));
+  };
+function NR(t, e, r, n) {
+  var a = n / 2;
+  return {
+    stroke: "none",
+    fill: "#ccc",
+    x: t === "horizontal" ? e.x - a : r.left + 0.5,
+    y: t === "horizontal" ? r.top + 0.5 : e.y - a,
+    width: t === "horizontal" ? n : r.width - 1,
+    height: t === "horizontal" ? r.height - 1 : n
+  };
+}
+function Nm(t) {
+  var {
+      cx: e,
+      cy: r,
+      radius: n,
+      startAngle: a,
+      endAngle: i
+    } = t,
+    o = Zt(e, r, n, a),
+    l = Zt(e, r, n, i);
+  return {
+    points: [o, l],
+    cx: e,
+    cy: r,
+    radius: n,
+    startAngle: a,
+    endAngle: i
+  };
+}
+function kR(t, e, r) {
+  var n, a, i, o;
+  if (t === "horizontal") n = e.x, i = n, a = r.top, o = r.top + r.height;else if (t === "vertical") a = e.y, o = a, n = r.left, i = r.left + r.width;else if (e.cx != null && e.cy != null) if (t === "centric") {
+    var {
+        cx: l,
+        cy: u,
+        innerRadius: s,
+        outerRadius: f,
+        angle: c
+      } = e,
+      p = Zt(l, u, s, c),
+      d = Zt(l, u, f, c);
+    n = p.x, a = p.y, i = d.x, o = d.y;
+  } else return Nm(e);
+  return [{
+    x: n,
+    y: a
+  }, {
+    x: i,
+    y: o
+  }];
+}
+function of(t) {
+  return of = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, of(t);
+}
+function PR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function km(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? PR(Object(r), !0).forEach(function (n) {
+      Wat(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : PR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function Wat(t, e, r) {
+  if (e = Gat(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Gat(t) {
+  var e = Yat(t, "string");
+  return of(e) == "symbol" ? e : e + "";
+}
+function Yat(t, e) {
+  if (of(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (of(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function RR(t) {
+  var e,
+    r,
+    {
+      element: n,
+      tooltipEventType: a,
+      isActive: i,
+      activeCoordinate: o,
+      activePayload: l,
+      offset: u,
+      activeTooltipIndex: s,
+      tooltipAxisBandSize: f,
+      layout: c,
+      chartName: p
+    } = t,
+    d = (e = n.props.cursor) !== null && e !== void 0 ? e : (r = n.type.defaultProps) === null || r === void 0 ? void 0 : r.cursor;
+  if (!n || !d || !i || !o || p !== "ScatterChart" && a !== "axis") return null;
+  var b,
+    y = I1;
+  if (p === "ScatterChart") b = o, y = DR;else if (p === "BarChart") b = NR(c, o, u, f), y = Vl;else if (c === "radial") {
+    var w = Nm(o),
+      {
+        cx: m,
+        cy: h,
+        radius: g,
+        startAngle: x,
+        endAngle: v
+      } = w;
+    b = {
+      cx: m,
+      cy: h,
+      startAngle: x,
+      endAngle: v,
+      innerRadius: g,
+      outerRadius: g
+    }, y = am;
+  } else b = {
+    points: kR(c, o, u)
+  }, y = I1;
+  var S = km(km(km(km({
+    stroke: "#ccc",
+    pointerEvents: "none"
+  }, u), b), at(d, !1)), {}, {
+    payload: l,
+    payloadIndex: s,
+    className: nt("recharts-tooltip-cursor", d.className)
+  });
+  return _t(d) ? mt(d, S) : U(y, S);
+}
+var Xat = ["item"],
+  Qat = ["children", "className", "width", "height", "style", "compact", "title", "desc"];
+function hu(t) {
+  return hu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, hu(t);
+}
+function fu() {
+  return fu = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, fu.apply(this, arguments);
+}
+function zR(t, e) {
+  return Fat(t) || Vat(t, e) || GR(t, e) || Kat();
+}
+function Kat() {
+  throw TypeError(`Invalid attempt to destructure non-iterable instance.
+In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
+}
+function Vat(t, e) {
+  var r = t == null ? null : typeof Symbol < "u" && t[Symbol.iterator] || t["@@iterator"];
+  if (r != null) {
+    var n,
+      a,
+      i,
+      o,
+      l = [],
+      u = !0,
+      s = !1;
+    try {
+      if (i = (r = r.call(t)).next, e === 0) {
+        if (Object(r) !== r) return;
+        u = !1;
+      } else for (; !(u = (n = i.call(r)).done) && (l.push(n.value), l.length !== e); u = !0);
+    } catch (f) {
+      s = !0, a = f;
+    } finally {
+      try {
+        if (!u && r.return != null && (o = r.return(), Object(o) !== o)) return;
+      } finally {
+        if (s) throw a;
+      }
+    }
+    return l;
+  }
+}
+function Fat(t) {
+  if (Array.isArray(t)) return t;
+}
+function qR(t, e) {
+  if (t == null) return {};
+  var r = Zat(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Zat(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+function $at(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function BR(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, YR(n.key), n);
+  }
+}
+function Jat(t, e, r) {
+  if (e) BR(t.prototype, e);
+  if (r) BR(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function tit(t, e, r) {
+  return e = Rm(e), eit(t, WR() ? Reflect.construct(e, r || [], Rm(t).constructor) : e.apply(t, r));
+}
+function eit(t, e) {
+  if (e && (hu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return rit(t);
+}
+function rit(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function WR() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (WR = function () {
+    return !!t;
+  })();
+}
+function Rm(t) {
+  return Rm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, Rm(t);
+}
+function nit(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) H1(t, e);
+}
+function H1(t, e) {
+  return H1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, H1(t, e);
+}
+function mu(t) {
+  return oit(t) || iit(t) || GR(t) || ait();
+}
+function ait() {
+  throw TypeError(`Invalid attempt to spread non-iterable instance.
+In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
+}
+function GR(t, e) {
+  if (!t) return;
+  if (typeof t === "string") return W1(t, e);
+  var r = Object.prototype.toString.call(t).slice(8, -1);
+  if (r === "Object" && t.constructor) r = t.constructor.name;
+  if (r === "Map" || r === "Set") return Array.from(t);
+  if (r === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)) return W1(t, e);
+}
+function iit(t) {
+  if (typeof Symbol < "u" && t[Symbol.iterator] != null || t["@@iterator"] != null) return Array.from(t);
+}
+function oit(t) {
+  if (Array.isArray(t)) return W1(t);
+}
+function W1(t, e) {
+  if (e == null || e > t.length) e = t.length;
+  for (var r = 0, n = Array(e); r < e; r++) n[r] = t[r];
+  return n;
+}
+function LR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function W(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? LR(Object(r), !0).forEach(function (n) {
+      ot(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : LR(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function ot(t, e, r) {
+  if (e = YR(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function YR(t) {
+  var e = lit(t, "string");
+  return hu(e) == "symbol" ? e : e + "";
+}
+function lit(t, e) {
+  if (hu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (hu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var uit = {
+    xAxis: ["bottom", "top"],
+    yAxis: ["left", "right"]
+  },
+  sit = {
+    width: "100%",
+    height: "100%"
+  },
+  KR = {
+    x: 0,
+    y: 0
+  };
+function Pm(t) {
+  return t;
+}
+var cit = function (e, r) {
+    if (r === "horizontal") return e.x;
+    if (r === "vertical") return e.y;
+    if (r === "centric") return e.angle;
+    return e.radius;
+  },
+  fit = function (e, r, n, a) {
+    var i = r.find(function (f) {
+      return f && f.index === n;
+    });
+    if (i) {
+      if (e === "horizontal") return {
+        x: i.coordinate,
+        y: a.y
+      };
+      if (e === "vertical") return {
+        x: a.x,
+        y: i.coordinate
+      };
+      if (e === "centric") {
+        var o = i.coordinate,
+          l = a.radius;
+        return W(W(W({}, a), Zt(a.cx, a.cy, l, o)), {}, {
+          angle: o,
+          radius: l
+        });
+      }
+      var u = i.coordinate,
+        s = a.angle;
+      return W(W(W({}, a), Zt(a.cx, a.cy, u, s)), {}, {
+        angle: s,
+        radius: u
+      });
+    }
+    return KR;
+  },
+  qm = function (e, r) {
+    var {
+        graphicalItems: n,
+        dataStartIndex: a,
+        dataEndIndex: i
+      } = r,
+      o = (n !== null && n !== void 0 ? n : []).reduce(function (l, u) {
+        var s = u.props.data;
+        if (s && s.length) return [].concat(mu(l), mu(s));
+        return l;
+      }, []);
+    if (o.length > 0) return o;
+    if (e && e.length && F(a) && F(i)) return e.slice(a, i + 1);
+    return [];
+  };
+function VR(t) {
+  return t === "number" ? [0, "auto"] : void 0;
+}
+var G1 = function (e, r, n, a) {
+    var {
+        graphicalItems: i,
+        tooltipAxis: o
+      } = e,
+      l = qm(r, e);
+    if (n < 0 || !i || !i.length || n >= l.length) return null;
+    return i.reduce(function (u, s) {
+      var f,
+        c = (f = s.props.data) !== null && f !== void 0 ? f : r;
+      if (c && e.dataStartIndex + e.dataEndIndex !== 0 && e.dataEndIndex - e.dataStartIndex >= n) c = c.slice(e.dataStartIndex, e.dataEndIndex + 1);
+      var p;
+      if (o.dataKey && !o.allowDuplicatedCategory) {
+        var d = c === void 0 ? l : c;
+        p = qs(d, o.dataKey, a);
+      } else p = c && c[n] || l[n];
+      if (!p) return u;
+      return [].concat(mu(u), [Wh(s, p)]);
+    }, []);
+  },
+  IR = function (e, r, n, a) {
+    var i = a || {
+        x: e.chartX,
+        y: e.chartY
+      },
+      o = cit(i, n),
+      {
+        orderedTooltipTicks: l,
+        tooltipAxis: u,
+        tooltipTicks: s
+      } = e,
+      f = dk(o, l, s, u);
+    if (f >= 0 && s) {
+      var c = s[f] && s[f].value,
+        p = G1(e, r, f, c),
+        d = fit(n, l, f, i);
+      return {
+        activeTooltipIndex: f,
+        activeLabel: c,
+        activePayload: p,
+        activeCoordinate: d
+      };
+    }
+    return null;
+  },
+  pit = function (e, r) {
+    var {
+        axes: n,
+        graphicalItems: a,
+        axisType: i,
+        axisIdKey: o,
+        stackGroups: l,
+        dataStartIndex: u,
+        dataEndIndex: s
+      } = r,
+      {
+        layout: f,
+        children: c,
+        stackOffset: p
+      } = e,
+      d = kx(f, i);
+    return n.reduce(function (b, y) {
+      var w,
+        m = y.type.defaultProps !== void 0 ? W(W({}, y.type.defaultProps), y.props) : y.props,
+        {
+          type: h,
+          dataKey: g,
+          allowDataOverflow: x,
+          allowDuplicatedCategory: v,
+          scale: S,
+          ticks: A,
+          includeHidden: M
+        } = m,
+        N = m[o];
+      if (b[N]) return b;
+      var R = qm(e.data, {
+          graphicalItems: a.filter(function (q) {
+            var B,
+              Q = o in q.props ? q.props[o] : (B = q.type.defaultProps) === null || B === void 0 ? void 0 : B[o];
+            return Q === N;
+          }),
+          dataStartIndex: u,
+          dataEndIndex: s
+        }),
+        H = R.length,
+        L,
+        z,
+        X;
+      if (AR(m.domain, x, h)) {
+        if (L = Hh(m.domain, null, x), d && (h === "number" || S !== "auto")) X = Hl(R, g, "category");
+      }
+      var Y = VR(h);
+      if (!L || L.length === 0) {
+        var O,
+          T = (O = m.domain) !== null && O !== void 0 ? O : Y;
+        if (g) {
+          if (L = Hl(R, g, h), h === "category" && d) {
+            var D = hj(L);
+            if (v && D) z = L, L = zm.default(0, H);else if (!v) L = qx(T, L, y).reduce(function (q, B) {
+              return q.indexOf(B) >= 0 ? q : [].concat(mu(q), [B]);
+            }, []);
+          } else if (h === "category") {
+            if (!v) L = qx(T, L, y).reduce(function (q, B) {
+              return q.indexOf(B) >= 0 || B === "" || pu.default(B) ? q : [].concat(mu(q), [B]);
+            }, []);else L = L.filter(function (q) {
+              return q !== "" && !pu.default(q);
+            });
+          } else if (h === "number") {
+            var _ = vk(R, a.filter(function (q) {
+              var B,
+                Q,
+                Z = o in q.props ? q.props[o] : (B = q.type.defaultProps) === null || B === void 0 ? void 0 : B[o],
+                J = "hide" in q.props ? q.props.hide : (Q = q.type.defaultProps) === null || Q === void 0 ? void 0 : Q.hide;
+              return Z === N && (M || !J);
+            }), g, i, f);
+            if (_) L = _;
+          }
+          if (d && (h === "number" || S !== "auto")) X = Hl(R, g, "category");
+        } else if (d) L = zm.default(0, H);else if (l && l[N] && l[N].hasStack && h === "number") L = p === "expand" ? [0, 1] : zx(l[N].stackGroups, u, s);else L = Nx(R, a.filter(function (q) {
+          var B = o in q.props ? q.props[o] : q.type.defaultProps[o],
+            Q = "hide" in q.props ? q.props.hide : q.type.defaultProps.hide;
+          return B === N && (M || !Q);
+        }), h, f, !0);
+        if (h === "number") {
+          if (L = _m(c, L, N, i, A), T) L = Hh(T, L, x);
+        } else if (h === "category" && T) {
+          var j = T,
+            C = L.every(function (q) {
+              return j.indexOf(q) >= 0;
+            });
+          if (C) L = j;
+        }
+      }
+      return W(W({}, b), {}, ot({}, N, W(W({}, m), {}, {
+        axisType: i,
+        domain: L,
+        categoricalDomain: X,
+        duplicateDomain: z,
+        originalDomain: (w = m.domain) !== null && w !== void 0 ? w : Y,
+        isCategorical: d,
+        layout: f
+      })));
+    }, {});
+  },
+  dit = function (e, r) {
+    var {
+        graphicalItems: n,
+        Axis: a,
+        axisType: i,
+        axisIdKey: o,
+        stackGroups: l,
+        dataStartIndex: u,
+        dataEndIndex: s
+      } = r,
+      {
+        layout: f,
+        children: c
+      } = e,
+      p = qm(e.data, {
+        graphicalItems: n,
+        dataStartIndex: u,
+        dataEndIndex: s
+      }),
+      d = p.length,
+      b = kx(f, i),
+      y = -1;
+    return n.reduce(function (w, m) {
+      var h = m.type.defaultProps !== void 0 ? W(W({}, m.type.defaultProps), m.props) : m.props,
+        g = h[o],
+        x = VR("number");
+      if (!w[g]) {
+        y++;
+        var v;
+        if (b) v = zm.default(0, d);else if (l && l[g] && l[g].hasStack) v = zx(l[g].stackGroups, u, s), v = _m(c, v, g, i);else v = Hh(x, Nx(p, n.filter(function (S) {
+          var A,
+            M,
+            N = o in S.props ? S.props[o] : (A = S.type.defaultProps) === null || A === void 0 ? void 0 : A[o],
+            R = "hide" in S.props ? S.props.hide : (M = S.type.defaultProps) === null || M === void 0 ? void 0 : M.hide;
+          return N === g && !R;
+        }), "number", f), a.defaultProps.allowDataOverflow), v = _m(c, v, g, i);
+        return W(W({}, w), {}, ot({}, g, W(W({
+          axisType: i
+        }, a.defaultProps), {}, {
+          hide: !0,
+          orientation: du.default(uit, "".concat(i, ".").concat(y % 2), null),
+          domain: v,
+          originalDomain: x,
+          isCategorical: b,
+          layout: f
+        })));
+      }
+      return w;
+    }, {});
+  },
+  hit = function (e, r) {
+    var n = r.axisType,
+      a = n === void 0 ? "xAxis" : n,
+      {
+        AxisComp: i,
+        graphicalItems: o,
+        stackGroups: l,
+        dataStartIndex: u,
+        dataEndIndex: s
+      } = r,
+      f = e.children,
+      c = "".concat(a, "Id"),
+      p = Ae(f, i),
+      d = {};
+    if (p && p.length) d = pit(e, {
+      axes: p,
+      graphicalItems: o,
+      axisType: a,
+      axisIdKey: c,
+      stackGroups: l,
+      dataStartIndex: u,
+      dataEndIndex: s
+    });else if (o && o.length) d = dit(e, {
+      Axis: i,
+      graphicalItems: o,
+      axisType: a,
+      axisIdKey: c,
+      stackGroups: l,
+      dataStartIndex: u,
+      dataEndIndex: s
+    });
+    return d;
+  },
+  mit = function (e) {
+    var r = xn(e),
+      n = gr(r, !1, !0);
+    return {
+      tooltipTicks: n,
+      orderedTooltipTicks: XR.default(n, function (a) {
+        return a.coordinate;
+      }),
+      tooltipAxis: r,
+      tooltipAxisBandSize: Wl(r, n)
+    };
+  },
+  UR = function (e) {
+    var {
+        children: r,
+        defaultShowTooltip: n
+      } = e,
+      a = je(r, no),
+      i = 0,
+      o = 0;
+    if (e.data && e.data.length !== 0) o = e.data.length - 1;
+    if (a && a.props) {
+      if (a.props.startIndex >= 0) i = a.props.startIndex;
+      if (a.props.endIndex >= 0) o = a.props.endIndex;
+    }
+    return {
+      chartX: 0,
+      chartY: 0,
+      dataStartIndex: i,
+      dataEndIndex: o,
+      activeTooltipIndex: -1,
+      isTooltipActive: Boolean(n)
+    };
+  },
+  yit = function (e) {
+    if (!e || !e.length) return !1;
+    return e.some(function (r) {
+      var n = kr(r && r.type);
+      return n && n.indexOf("Bar") >= 0;
+    });
+  },
+  HR = function (e) {
+    if (e === "horizontal") return {
+      numericAxisName: "yAxis",
+      cateAxisName: "xAxis"
+    };
+    if (e === "vertical") return {
+      numericAxisName: "xAxis",
+      cateAxisName: "yAxis"
+    };
+    if (e === "centric") return {
+      numericAxisName: "radiusAxis",
+      cateAxisName: "angleAxis"
+    };
+    return {
+      numericAxisName: "angleAxis",
+      cateAxisName: "radiusAxis"
+    };
+  },
+  git = function (e, r) {
+    var {
+        props: n,
+        graphicalItems: a,
+        xAxisMap: i
+      } = e,
+      o = i === void 0 ? {} : i,
+      l = e.yAxisMap,
+      u = l === void 0 ? {} : l,
+      {
+        width: s,
+        height: f,
+        children: c
+      } = n,
+      p = n.margin || {},
+      d = je(c, no),
+      b = je(c, Wa),
+      y = Object.keys(u).reduce(function (v, S) {
+        var A = u[S],
+          M = A.orientation;
+        if (!A.mirror && !A.hide) return W(W({}, v), {}, ot({}, M, v[M] + A.width));
+        return v;
+      }, {
+        left: p.left || 0,
+        right: p.right || 0
+      }),
+      w = Object.keys(o).reduce(function (v, S) {
+        var A = o[S],
+          M = A.orientation;
+        if (!A.mirror && !A.hide) return W(W({}, v), {}, ot({}, M, du.default(v, "".concat(M)) + A.height));
+        return v;
+      }, {
+        top: p.top || 0,
+        bottom: p.bottom || 0
+      }),
+      m = W(W({}, w), y),
+      h = m.bottom;
+    if (d) m.bottom += d.props.height || no.defaultProps.height;
+    if (b && r) m = yk(m, a, n, r);
+    var g = s - m.left - m.right,
+      x = f - m.top - m.bottom;
+    return W(W({
+      brushBottom: h
+    }, m), {}, {
+      width: Math.max(g, 0),
+      height: Math.max(x, 0)
+    });
+  },
+  vit = function (e, r) {
+    if (r === "xAxis") return e[r].width;
+    if (r === "yAxis") return e[r].height;
+    return;
+  },
+  FR = function (e) {
+    var {
+        chartName: r,
+        GraphicalChild: n,
+        defaultTooltipEventType: a
+      } = e,
+      i = a === void 0 ? "axis" : a,
+      o = e.validateTooltipEventTypes,
+      l = o === void 0 ? ["axis"] : o,
+      {
+        axisComponents: u,
+        legendContent: s,
+        formatAxisMap: f,
+        defaultProps: c
+      } = e,
+      p = function (m, h) {
+        var {
+            graphicalItems: g,
+            stackGroups: x,
+            offset: v,
+            updateId: S,
+            dataStartIndex: A,
+            dataEndIndex: M
+          } = h,
+          {
+            barSize: N,
+            layout: R,
+            barGap: H,
+            barCategoryGap: L,
+            maxBarSize: z
+          } = m,
+          X = HR(R),
+          {
+            numericAxisName: Y,
+            cateAxisName: O
+          } = X,
+          T = yit(g),
+          D = [];
+        return g.forEach(function (_, j) {
+          var C = qm(m.data, {
+              graphicalItems: [_],
+              dataStartIndex: A,
+              dataEndIndex: M
+            }),
+            q = _.type.defaultProps !== void 0 ? W(W({}, _.type.defaultProps), _.props) : _.props,
+            {
+              dataKey: B,
+              maxBarSize: Q
+            } = q,
+            Z = q["".concat(Y, "Id")],
+            J = q["".concat(O, "Id")],
+            tt = {},
+            bt = u.reduce(function (ht, Ee) {
+              var Ir,
+                $t,
+                Lm = h["".concat(Ee.axisType, "Map")],
+                X1 = q["".concat(Ee.axisType, "Id")];
+              !(Lm && Lm[X1] || Ee.axisType === "zAxis") && Jr(!1);
+              var Q1 = Lm[X1];
+              return W(W({}, ht), {}, ot(ot({}, Ee.axisType, Q1), "".concat(Ee.axisType, "Ticks"), gr(Q1)));
+            }, tt),
+            V = bt[O],
+            it = bt["".concat(O, "Ticks")],
+            et = x && x[Z] && x[Z].hasStack && Ek(_, x[Z].stackGroups),
+            G = kr(_.type).indexOf("Bar") >= 0,
+            St = Wl(V, it),
+            ut = [],
+            Bt = T && hk({
+              barSize: N,
+              stackGroups: x,
+              totalSize: vit(bt, O)
+            });
+          if (G) {
+            var ft,
+              k,
+              lt = pu.default(Q) ? z : Q,
+              ct = (ft = (k = Wl(V, it, !0)) !== null && k !== void 0 ? k : lt) !== null && ft !== void 0 ? ft : 0;
+            if (ut = mk({
+              barGap: H,
+              barCategoryGap: L,
+              bandSize: ct !== St ? ct : St,
+              sizeList: Bt[J],
+              maxBarSize: lt
+            }), ct !== St) ut = ut.map(function (ht) {
+              return W(W({}, ht), {}, {
+                position: W(W({}, ht.position), {}, {
+                  offset: ht.position.offset - ct / 2
+                })
+              });
+            });
+          }
+          var ne = _ && _.type && _.type.getComposedData;
+          if (ne) D.push({
+            props: W(W({}, ne(W(W({}, bt), {}, {
+              displayedData: C,
+              props: m,
+              dataKey: B,
+              item: _,
+              bandSize: St,
+              barPosition: ut,
+              offset: v,
+              stackedData: et,
+              layout: R,
+              dataStartIndex: A,
+              dataEndIndex: M
+            }))), {}, ot(ot(ot({
+              key: _.key || "item-".concat(j)
+            }, Y, bt[Y]), O, bt[O]), "animationId", S)),
+            childIndex: TD(_, m.children),
+            item: _
+          });
+        }), D;
+      },
+      d = function (m, h) {
+        var {
+          props: g,
+          dataStartIndex: x,
+          dataEndIndex: v,
+          updateId: S
+        } = m;
+        if (!K0({
+          props: g
+        })) return null;
+        var {
+            children: A,
+            layout: M,
+            stackOffset: N,
+            data: R,
+            reverseStackOrder: H
+          } = g,
+          L = HR(M),
+          {
+            numericAxisName: z,
+            cateAxisName: X
+          } = L,
+          Y = Ae(A, n),
+          O = Ok(R, Y, "".concat(z, "Id"), "".concat(X, "Id"), N, H),
+          T = u.reduce(function (q, B) {
+            var Q = "".concat(B.axisType, "Map");
+            return W(W({}, q), {}, ot({}, Q, hit(g, W(W({}, B), {}, {
+              graphicalItems: Y,
+              stackGroups: B.axisType === z && O,
+              dataStartIndex: x,
+              dataEndIndex: v
+            }))));
+          }, {}),
+          D = git(W(W({}, T), {}, {
+            props: g,
+            graphicalItems: Y
+          }), h === null || h === void 0 ? void 0 : h.legendBBox);
+        Object.keys(T).forEach(function (q) {
+          T[q] = f(g, T[q], D, q.replace("Map", ""), r);
+        });
+        var _ = T["".concat(X, "Map")],
+          j = mit(_),
+          C = p(g, W(W({}, T), {}, {
+            dataStartIndex: x,
+            dataEndIndex: v,
+            updateId: S,
+            graphicalItems: Y,
+            stackGroups: O,
+            offset: D
+          }));
+        return W(W({
+          formattedGraphicalItems: C,
+          graphicalItems: Y,
+          offset: D,
+          stackGroups: O
+        }, j), T);
+      },
+      b = function (w) {
+        function m(h) {
+          var g, x, v;
+          return $at(this, m), v = tit(this, m, [h]), ot(v, "eventEmitterSymbol", Symbol("rechartsEventEmitter")), ot(v, "accessibilityManager", new OR()), ot(v, "handleLegendBBoxUpdate", function (S) {
+            if (S) {
+              var A = v.state,
+                {
+                  dataStartIndex: M,
+                  dataEndIndex: N,
+                  updateId: R
+                } = A;
+              v.setState(W({
+                legendBBox: S
+              }, d({
+                props: v.props,
+                dataStartIndex: M,
+                dataEndIndex: N,
+                updateId: R
+              }, W(W({}, v.state), {}, {
+                legendBBox: S
+              }))));
+            }
+          }), ot(v, "handleReceiveSyncEvent", function (S, A, M) {
+            if (v.props.syncId === S) {
+              if (M === v.eventEmitterSymbol && typeof v.props.syncMethod !== "function") return;
+              v.applySyncEvent(A);
+            }
+          }), ot(v, "handleBrushChange", function (S) {
+            var {
+              startIndex: A,
+              endIndex: M
+            } = S;
+            if (A !== v.state.dataStartIndex || M !== v.state.dataEndIndex) {
+              var N = v.state.updateId;
+              v.setState(function () {
+                return W({
+                  dataStartIndex: A,
+                  dataEndIndex: M
+                }, d({
+                  props: v.props,
+                  dataStartIndex: A,
+                  dataEndIndex: M,
+                  updateId: N
+                }, v.state));
+              }), v.triggerSyncEvent({
+                dataStartIndex: A,
+                dataEndIndex: M
+              });
+            }
+          }), ot(v, "handleMouseEnter", function (S) {
+            var A = v.getMouseInfo(S);
+            if (A) {
+              var M = W(W({}, A), {}, {
+                isTooltipActive: !0
+              });
+              v.setState(M), v.triggerSyncEvent(M);
+              var N = v.props.onMouseEnter;
+              if (nn.default(N)) N(M, S);
+            }
+          }), ot(v, "triggeredAfterMouseMove", function (S) {
+            var A = v.getMouseInfo(S),
+              M = A ? W(W({}, A), {}, {
+                isTooltipActive: !0
+              }) : {
+                isTooltipActive: !1
+              };
+            v.setState(M), v.triggerSyncEvent(M);
+            var N = v.props.onMouseMove;
+            if (nn.default(N)) N(M, S);
+          }), ot(v, "handleItemMouseEnter", function (S) {
+            v.setState(function () {
+              return {
+                isTooltipActive: !0,
+                activeItem: S,
+                activePayload: S.tooltipPayload,
+                activeCoordinate: S.tooltipPosition || {
+                  x: S.cx,
+                  y: S.cy
+                }
+              };
+            });
+          }), ot(v, "handleItemMouseLeave", function () {
+            v.setState(function () {
+              return {
+                isTooltipActive: !1
+              };
+            });
+          }), ot(v, "handleMouseMove", function (S) {
+            S.persist(), v.throttleTriggeredAfterMouseMove(S);
+          }), ot(v, "handleMouseLeave", function (S) {
+            v.throttleTriggeredAfterMouseMove.cancel();
+            var A = {
+              isTooltipActive: !1
+            };
+            v.setState(A), v.triggerSyncEvent(A);
+            var M = v.props.onMouseLeave;
+            if (nn.default(M)) M(A, S);
+          }), ot(v, "handleOuterEvent", function (S) {
+            var A = AD(S),
+              M = du.default(v.props, "".concat(A));
+            if (A && nn.default(M)) {
+              var N, R;
+              if (/.*touch.*/i.test(A)) R = v.getMouseInfo(S.changedTouches[0]);else R = v.getMouseInfo(S);
+              M((N = R) !== null && N !== void 0 ? N : {}, S);
+            }
+          }), ot(v, "handleClick", function (S) {
+            var A = v.getMouseInfo(S);
+            if (A) {
+              var M = W(W({}, A), {}, {
+                isTooltipActive: !0
+              });
+              v.setState(M), v.triggerSyncEvent(M);
+              var N = v.props.onClick;
+              if (nn.default(N)) N(M, S);
+            }
+          }), ot(v, "handleMouseDown", function (S) {
+            var A = v.props.onMouseDown;
+            if (nn.default(A)) {
+              var M = v.getMouseInfo(S);
+              A(M, S);
+            }
+          }), ot(v, "handleMouseUp", function (S) {
+            var A = v.props.onMouseUp;
+            if (nn.default(A)) {
+              var M = v.getMouseInfo(S);
+              A(M, S);
+            }
+          }), ot(v, "handleTouchMove", function (S) {
+            if (S.changedTouches != null && S.changedTouches.length > 0) v.throttleTriggeredAfterMouseMove(S.changedTouches[0]);
+          }), ot(v, "handleTouchStart", function (S) {
+            if (S.changedTouches != null && S.changedTouches.length > 0) v.handleMouseDown(S.changedTouches[0]);
+          }), ot(v, "handleTouchEnd", function (S) {
+            if (S.changedTouches != null && S.changedTouches.length > 0) v.handleMouseUp(S.changedTouches[0]);
+          }), ot(v, "handleDoubleClick", function (S) {
+            var A = v.props.onDoubleClick;
+            if (nn.default(A)) {
+              var M = v.getMouseInfo(S);
+              A(M, S);
+            }
+          }), ot(v, "handleContextMenu", function (S) {
+            var A = v.props.onContextMenu;
+            if (nn.default(A)) {
+              var M = v.getMouseInfo(S);
+              A(M, S);
+            }
+          }), ot(v, "triggerSyncEvent", function (S) {
+            if (v.props.syncId !== void 0) Cm.emit(jm, v.props.syncId, S, v.eventEmitterSymbol);
+          }), ot(v, "applySyncEvent", function (S) {
+            var A = v.props,
+              {
+                layout: M,
+                syncMethod: N
+              } = A,
+              R = v.state.updateId,
+              {
+                dataStartIndex: H,
+                dataEndIndex: L
+              } = S;
+            if (S.dataStartIndex !== void 0 || S.dataEndIndex !== void 0) v.setState(W({
+              dataStartIndex: H,
+              dataEndIndex: L
+            }, d({
+              props: v.props,
+              dataStartIndex: H,
+              dataEndIndex: L,
+              updateId: R
+            }, v.state)));else if (S.activeTooltipIndex !== void 0) {
+              var {
+                  chartX: z,
+                  chartY: X,
+                  activeTooltipIndex: Y
+                } = S,
+                O = v.state,
+                {
+                  offset: T,
+                  tooltipTicks: D
+                } = O;
+              if (!T) return;
+              if (typeof N === "function") Y = N(D, S);else if (N === "value") {
+                Y = -1;
+                for (var _ = 0; _ < D.length; _++) if (D[_].value === S.activeLabel) {
+                  Y = _;
+                  break;
+                }
+              }
+              var j = W(W({}, T), {}, {
+                  x: T.left,
+                  y: T.top
+                }),
+                C = Math.min(z, j.x + j.width),
+                q = Math.min(X, j.y + j.height),
+                B = D[Y] && D[Y].value,
+                Q = G1(v.state, v.props.data, Y),
+                Z = D[Y] ? {
+                  x: M === "horizontal" ? D[Y].coordinate : C,
+                  y: M === "horizontal" ? q : D[Y].coordinate
+                } : KR;
+              v.setState(W(W({}, S), {}, {
+                activeLabel: B,
+                activeCoordinate: Z,
+                activePayload: Q,
+                activeTooltipIndex: Y
+              }));
+            } else v.setState(S);
+          }), ot(v, "renderCursor", function (S) {
+            var A,
+              M = v.state,
+              {
+                isTooltipActive: N,
+                activeCoordinate: R,
+                activePayload: H,
+                offset: L,
+                activeTooltipIndex: z,
+                tooltipAxisBandSize: X
+              } = M,
+              Y = v.getTooltipEventType(),
+              O = (A = S.props.active) !== null && A !== void 0 ? A : N,
+              T = v.props.layout,
+              D = S.key || "_recharts-cursor";
+            return U(RR, {
+              key: D,
+              activeCoordinate: R,
+              activePayload: H,
+              activeTooltipIndex: z,
+              chartName: r,
+              element: S,
+              isActive: O,
+              layout: T,
+              offset: L,
+              tooltipAxisBandSize: X,
+              tooltipEventType: Y
+            });
+          }), ot(v, "renderPolarAxis", function (S, A, M) {
+            var N = du.default(S, "type.axisType"),
+              R = du.default(v.state, "".concat(N, "Map")),
+              H = S.type.defaultProps,
+              L = H !== void 0 ? W(W({}, H), S.props) : S.props,
+              z = R && R[L["".concat(N, "Id")]];
+            return mt(S, W(W({}, z), {}, {
+              className: nt(N, z.className),
+              key: S.key || "".concat(A, "-").concat(M),
+              ticks: gr(z, !0)
+            }));
+          }), ot(v, "renderPolarGrid", function (S) {
+            var A = S.props,
+              {
+                radialLines: M,
+                polarAngles: N,
+                polarRadius: R
+              } = A,
+              H = v.state,
+              {
+                radiusAxisMap: L,
+                angleAxisMap: z
+              } = H,
+              X = xn(L),
+              Y = xn(z),
+              {
+                cx: O,
+                cy: T,
+                innerRadius: D,
+                outerRadius: _
+              } = Y;
+            return mt(S, {
+              polarAngles: Array.isArray(N) ? N : gr(Y, !0).map(function (j) {
+                return j.coordinate;
+              }),
+              polarRadius: Array.isArray(R) ? R : gr(X, !0).map(function (j) {
+                return j.coordinate;
+              }),
+              cx: O,
+              cy: T,
+              innerRadius: D,
+              outerRadius: _,
+              key: S.key || "polar-grid",
+              radialLines: M
+            });
+          }), ot(v, "renderLegend", function () {
+            var S = v.state.formattedGraphicalItems,
+              A = v.props,
+              {
+                children: M,
+                width: N,
+                height: R
+              } = A,
+              H = v.props.margin || {},
+              L = N - (H.left || 0) - (H.right || 0),
+              z = Ih({
+                children: M,
+                formattedGraphicalItems: S,
+                legendWidth: L,
+                legendContent: s
+              });
+            if (!z) return null;
+            var X = z.item,
+              Y = qR(z, Xat);
+            return mt(X, W(W({}, Y), {}, {
+              chartWidth: N,
+              chartHeight: R,
+              margin: H,
+              onBBoxUpdate: v.handleLegendBBoxUpdate
+            }));
+          }), ot(v, "renderTooltip", function () {
+            var S,
+              A = v.props,
+              {
+                children: M,
+                accessibilityLayer: N
+              } = A,
+              R = je(M, pr);
+            if (!R) return null;
+            var H = v.state,
+              {
+                isTooltipActive: L,
+                activeCoordinate: z,
+                activePayload: X,
+                activeLabel: Y,
+                offset: O
+              } = H,
+              T = (S = R.props.active) !== null && S !== void 0 ? S : L;
+            return mt(R, {
+              viewBox: W(W({}, O), {}, {
+                x: O.left,
+                y: O.top
+              }),
+              active: T,
+              label: Y,
+              payload: T ? X : [],
+              coordinate: z,
+              accessibilityLayer: N
+            });
+          }), ot(v, "renderBrush", function (S) {
+            var A = v.props,
+              {
+                margin: M,
+                data: N
+              } = A,
+              R = v.state,
+              {
+                offset: H,
+                dataStartIndex: L,
+                dataEndIndex: z,
+                updateId: X
+              } = R;
+            return mt(S, {
+              key: S.key || "_recharts-brush",
+              onChange: Oc(v.handleBrushChange, S.props.onChange),
+              data: N,
+              x: F(S.props.x) ? S.props.x : H.left,
+              y: F(S.props.y) ? S.props.y : H.top + H.height + H.brushBottom - (M.bottom || 0),
+              width: F(S.props.width) ? S.props.width : H.width,
+              startIndex: L,
+              endIndex: z,
+              updateId: "brush-".concat(X)
+            });
+          }), ot(v, "renderReferenceElement", function (S, A, M) {
+            if (!S) return null;
+            var N = v,
+              R = N.clipPathId,
+              H = v.state,
+              {
+                xAxisMap: L,
+                yAxisMap: z,
+                offset: X
+              } = H,
+              Y = S.type.defaultProps || {},
+              O = S.props,
+              T = O.xAxisId,
+              D = T === void 0 ? Y.xAxisId : T,
+              _ = O.yAxisId,
+              j = _ === void 0 ? Y.yAxisId : _;
+            return mt(S, {
+              key: S.key || "".concat(A, "-").concat(M),
+              xAxis: L[D],
+              yAxis: z[j],
+              viewBox: {
+                x: X.left,
+                y: X.top,
+                width: X.width,
+                height: X.height
+              },
+              clipPathId: R
+            });
+          }), ot(v, "renderActivePoints", function (S) {
+            var {
+                item: A,
+                activePoint: M,
+                basePoint: N,
+                childIndex: R,
+                isRange: H
+              } = S,
+              L = [],
+              z = A.props.key,
+              X = A.item.type.defaultProps !== void 0 ? W(W({}, A.item.type.defaultProps), A.item.props) : A.item.props,
+              {
+                activeDot: Y,
+                dataKey: O
+              } = X,
+              T = W(W({
+                index: R,
+                dataKey: O,
+                cx: M.x,
+                cy: M.y,
+                r: 4,
+                fill: bc(A.item),
+                strokeWidth: 2,
+                stroke: "#fff",
+                payload: M.payload,
+                value: M.value
+              }, at(Y, !1)), ji(Y));
+            if (L.push(m.renderActiveDot(Y, T, "".concat(z, "-activePoint-").concat(R))), N) L.push(m.renderActiveDot(Y, W(W({}, T), {}, {
+              cx: N.x,
+              cy: N.y
+            }), "".concat(z, "-basePoint-").concat(R)));else if (H) L.push(null);
+            return L;
+          }), ot(v, "renderGraphicChild", function (S, A, M) {
+            var N = v.filterFormatItem(S, A, M);
+            if (!N) return null;
+            var R = v.getTooltipEventType(),
+              H = v.state,
+              {
+                isTooltipActive: L,
+                tooltipAxis: z,
+                activeTooltipIndex: X,
+                activeLabel: Y
+              } = H,
+              O = v.props.children,
+              T = je(O, pr),
+              D = N.props,
+              {
+                points: _,
+                isRange: j,
+                baseLine: C
+              } = D,
+              q = N.item.type.defaultProps !== void 0 ? W(W({}, N.item.type.defaultProps), N.item.props) : N.item.props,
+              {
+                activeDot: B,
+                hide: Q,
+                activeBar: Z,
+                activeShape: J
+              } = q,
+              tt = Boolean(!Q && L && T && (B || Z || J)),
+              bt = {};
+            if (R !== "axis" && T && T.props.trigger === "click") bt = {
+              onClick: Oc(v.handleItemMouseEnter, S.props.onClick)
+            };else if (R !== "axis") bt = {
+              onMouseLeave: Oc(v.handleItemMouseLeave, S.props.onMouseLeave),
+              onMouseEnter: Oc(v.handleItemMouseEnter, S.props.onMouseEnter)
+            };
+            var V = mt(S, W(W({}, N.props), bt));
+            function it(Ee) {
+              return typeof z.dataKey === "function" ? z.dataKey(Ee.payload) : null;
+            }
+            if (tt) if (X >= 0) {
+              var et, G;
+              if (z.dataKey && !z.allowDuplicatedCategory) {
+                var St = typeof z.dataKey === "function" ? it : "payload.".concat(z.dataKey.toString());
+                et = qs(_, St, Y), G = j && C && qs(C, St, Y);
+              } else et = _ === null || _ === void 0 ? void 0 : _[X], G = j && C && C[X];
+              if (J || Z) {
+                var ut = S.props.activeIndex !== void 0 ? S.props.activeIndex : X;
+                return [mt(S, W(W(W({}, N.props), bt), {}, {
+                  activeIndex: ut
+                })), null, null];
+              }
+              if (!pu.default(et)) return [V].concat(mu(v.renderActivePoints({
+                item: N,
+                activePoint: et,
+                basePoint: G,
+                childIndex: X,
+                isRange: j
+              })));
+            } else {
+              var Bt,
+                ft = (Bt = v.getItemByXY(v.state.activeCoordinate)) !== null && Bt !== void 0 ? Bt : {
+                  graphicalItem: V
+                },
+                k = ft.graphicalItem,
+                lt = k.item,
+                ct = lt === void 0 ? S : lt,
+                ne = k.childIndex,
+                ht = W(W(W({}, N.props), bt), {}, {
+                  activeIndex: ne
+                });
+              return [mt(ct, ht), null, null];
+            }
+            if (j) return [V, null, null];
+            return [V, null];
+          }), ot(v, "renderCustomized", function (S, A, M) {
+            return mt(S, W(W({
+              key: "recharts-customized-".concat(M)
+            }, v.props), v.state));
+          }), ot(v, "renderMap", {
+            CartesianGrid: {
+              handler: Pm,
+              once: !0
+            },
+            ReferenceArea: {
+              handler: v.renderReferenceElement
+            },
+            ReferenceLine: {
+              handler: Pm
+            },
+            ReferenceDot: {
+              handler: v.renderReferenceElement
+            },
+            XAxis: {
+              handler: Pm
+            },
+            YAxis: {
+              handler: Pm
+            },
+            Brush: {
+              handler: v.renderBrush,
+              once: !0
+            },
+            Bar: {
+              handler: v.renderGraphicChild
+            },
+            Line: {
+              handler: v.renderGraphicChild
+            },
+            Area: {
+              handler: v.renderGraphicChild
+            },
+            Radar: {
+              handler: v.renderGraphicChild
+            },
+            RadialBar: {
+              handler: v.renderGraphicChild
+            },
+            Scatter: {
+              handler: v.renderGraphicChild
+            },
+            Pie: {
+              handler: v.renderGraphicChild
+            },
+            Funnel: {
+              handler: v.renderGraphicChild
+            },
+            Tooltip: {
+              handler: v.renderCursor,
+              once: !0
+            },
+            PolarGrid: {
+              handler: v.renderPolarGrid,
+              once: !0
+            },
+            PolarAngleAxis: {
+              handler: v.renderPolarAxis
+            },
+            PolarRadiusAxis: {
+              handler: v.renderPolarAxis
+            },
+            Customized: {
+              handler: v.renderCustomized
+            }
+          }), v.clipPathId = "".concat((g = h.id) !== null && g !== void 0 ? g : Pa("recharts"), "-clip"), v.throttleTriggeredAfterMouseMove = QR.default(v.triggeredAfterMouseMove, (x = h.throttleDelay) !== null && x !== void 0 ? x : 16.666666666666668), v.state = {}, v;
+        }
+        return nit(m, w), Jat(m, [{
+          key: "componentDidMount",
+          value: function () {
+            var g, x;
+            this.addListener(), this.accessibilityManager.setDetails({
+              container: this.container,
+              offset: {
+                left: (g = this.props.margin.left) !== null && g !== void 0 ? g : 0,
+                top: (x = this.props.margin.top) !== null && x !== void 0 ? x : 0
+              },
+              coordinateList: this.state.tooltipTicks,
+              mouseHandlerCallback: this.triggeredAfterMouseMove,
+              layout: this.props.layout
+            }), this.displayDefaultTooltip();
+          }
+        }, {
+          key: "displayDefaultTooltip",
+          value: function () {
+            var g = this.props,
+              {
+                children: x,
+                data: v,
+                height: S,
+                layout: A
+              } = g,
+              M = je(x, pr);
+            if (!M) return;
+            var N = M.props.defaultIndex;
+            if (typeof N !== "number" || N < 0 || N > this.state.tooltipTicks.length - 1) return;
+            var R = this.state.tooltipTicks[N] && this.state.tooltipTicks[N].value,
+              H = G1(this.state, v, N, R),
+              L = this.state.tooltipTicks[N].coordinate,
+              z = (this.state.offset.top + S) / 2,
+              X = A === "horizontal",
+              Y = X ? {
+                x: L,
+                y: z
+              } : {
+                y: L,
+                x: z
+              },
+              O = this.state.formattedGraphicalItems.find(function (D) {
+                var _ = D.item;
+                return _.type.name === "Scatter";
+              });
+            if (O) Y = W(W({}, Y), O.props.points[N].tooltipPosition), H = O.props.points[N].tooltipPayload;
+            var T = {
+              activeTooltipIndex: N,
+              isTooltipActive: !0,
+              activeLabel: R,
+              activePayload: H,
+              activeCoordinate: Y
+            };
+            this.setState(T), this.renderCursor(M), this.accessibilityManager.setIndex(N);
+          }
+        }, {
+          key: "getSnapshotBeforeUpdate",
+          value: function (g, x) {
+            if (!this.props.accessibilityLayer) return null;
+            if (this.state.tooltipTicks !== x.tooltipTicks) this.accessibilityManager.setDetails({
+              coordinateList: this.state.tooltipTicks
+            });
+            if (this.props.layout !== g.layout) this.accessibilityManager.setDetails({
+              layout: this.props.layout
+            });
+            if (this.props.margin !== g.margin) {
+              var v, S;
+              this.accessibilityManager.setDetails({
+                offset: {
+                  left: (v = this.props.margin.left) !== null && v !== void 0 ? v : 0,
+                  top: (S = this.props.margin.top) !== null && S !== void 0 ? S : 0
+                }
+              });
+            }
+            return null;
+          }
+        }, {
+          key: "componentDidUpdate",
+          value: function (g) {
+            if (!Ed([je(g.children, pr)], [je(this.props.children, pr)])) this.displayDefaultTooltip();
+          }
+        }, {
+          key: "componentWillUnmount",
+          value: function () {
+            this.removeListener(), this.throttleTriggeredAfterMouseMove.cancel();
+          }
+        }, {
+          key: "getTooltipEventType",
+          value: function () {
+            var g = je(this.props.children, pr);
+            if (g && typeof g.props.shared === "boolean") {
+              var x = g.props.shared ? "axis" : "item";
+              return l.indexOf(x) >= 0 ? x : i;
+            }
+            return i;
+          }
+        }, {
+          key: "getMouseInfo",
+          value: function (g) {
+            if (!this.container) return null;
+            var x = this.container,
+              v = x.getBoundingClientRect(),
+              S = Ck(v),
+              A = {
+                chartX: Math.round(g.pageX - S.left),
+                chartY: Math.round(g.pageY - S.top)
+              },
+              M = v.width / x.offsetWidth || 1,
+              N = this.inRange(A.chartX, A.chartY, M);
+            if (!N) return null;
+            var R = this.state,
+              {
+                xAxisMap: H,
+                yAxisMap: L
+              } = R,
+              z = this.getTooltipEventType(),
+              X = IR(this.state, this.props.data, this.props.layout, N);
+            if (z !== "axis" && H && L) {
+              var Y = xn(H).scale,
+                O = xn(L).scale,
+                T = Y && Y.invert ? Y.invert(A.chartX) : null,
+                D = O && O.invert ? O.invert(A.chartY) : null;
+              return W(W({}, A), {}, {
+                xValue: T,
+                yValue: D
+              }, X);
+            }
+            if (X) return W(W({}, A), X);
+            return null;
+          }
+        }, {
+          key: "inRange",
+          value: function (g, x) {
+            var v = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1,
+              S = this.props.layout,
+              A = g / v,
+              M = x / v;
+            if (S === "horizontal" || S === "vertical") {
+              var N = this.state.offset,
+                R = A >= N.left && A <= N.left + N.width && M >= N.top && M <= N.top + N.height;
+              return R ? {
+                x: A,
+                y: M
+              } : null;
+            }
+            var H = this.state,
+              {
+                angleAxisMap: L,
+                radiusAxisMap: z
+              } = H;
+            if (L && z) {
+              var X = xn(L);
+              return r1({
+                x: A,
+                y: M
+              }, X);
+            }
+            return null;
+          }
+        }, {
+          key: "parseEventsOfWrapper",
+          value: function () {
+            var g = this.props.children,
+              x = this.getTooltipEventType(),
+              v = je(g, pr),
+              S = {};
+            if (v && x === "axis") if (v.props.trigger === "click") S = {
+              onClick: this.handleClick
+            };else S = {
+              onMouseEnter: this.handleMouseEnter,
+              onDoubleClick: this.handleDoubleClick,
+              onMouseMove: this.handleMouseMove,
+              onMouseLeave: this.handleMouseLeave,
+              onTouchMove: this.handleTouchMove,
+              onTouchStart: this.handleTouchStart,
+              onTouchEnd: this.handleTouchEnd,
+              onContextMenu: this.handleContextMenu
+            };
+            var A = ji(this.props, this.handleOuterEvent);
+            return W(W({}, A), S);
+          }
+        }, {
+          key: "addListener",
+          value: function () {
+            Cm.on(jm, this.handleReceiveSyncEvent);
+          }
+        }, {
+          key: "removeListener",
+          value: function () {
+            Cm.removeListener(jm, this.handleReceiveSyncEvent);
+          }
+        }, {
+          key: "filterFormatItem",
+          value: function (g, x, v) {
+            var S = this.state.formattedGraphicalItems;
+            for (var A = 0, M = S.length; A < M; A++) {
+              var N = S[A];
+              if (N.item === g || N.props.key === g.key || x === kr(N.item.type) && v === N.childIndex) return N;
+            }
+            return null;
+          }
+        }, {
+          key: "renderClipPath",
+          value: function () {
+            var g = this.clipPathId,
+              x = this.state.offset,
+              {
+                left: v,
+                top: S,
+                height: A,
+                width: M
+              } = x;
+            return U("defs", null, U("clipPath", {
+              id: g
+            }, U("rect", {
+              x: v,
+              y: S,
+              height: A,
+              width: M
+            })));
+          }
+        }, {
+          key: "getXScales",
+          value: function () {
+            var g = this.state.xAxisMap;
+            return g ? Object.entries(g).reduce(function (x, v) {
+              var S = zR(v, 2),
+                A = S[0],
+                M = S[1];
+              return W(W({}, x), {}, ot({}, A, M.scale));
+            }, {}) : null;
+          }
+        }, {
+          key: "getYScales",
+          value: function () {
+            var g = this.state.yAxisMap;
+            return g ? Object.entries(g).reduce(function (x, v) {
+              var S = zR(v, 2),
+                A = S[0],
+                M = S[1];
+              return W(W({}, x), {}, ot({}, A, M.scale));
+            }, {}) : null;
+          }
+        }, {
+          key: "getXScaleByAxisId",
+          value: function (g) {
+            var x;
+            return (x = this.state.xAxisMap) === null || x === void 0 || (x = x[g]) === null || x === void 0 ? void 0 : x.scale;
+          }
+        }, {
+          key: "getYScaleByAxisId",
+          value: function (g) {
+            var x;
+            return (x = this.state.yAxisMap) === null || x === void 0 || (x = x[g]) === null || x === void 0 ? void 0 : x.scale;
+          }
+        }, {
+          key: "getItemByXY",
+          value: function (g) {
+            var x = this.state,
+              {
+                formattedGraphicalItems: v,
+                activeItem: S
+              } = x;
+            if (v && v.length) for (var A = 0, M = v.length; A < M; A++) {
+              var N = v[A],
+                {
+                  props: R,
+                  item: H
+                } = N,
+                L = H.type.defaultProps !== void 0 ? W(W({}, H.type.defaultProps), H.props) : H.props,
+                z = kr(H.type);
+              if (z === "Bar") {
+                var X = (R.data || []).find(function (D) {
+                  return o5(g, D);
+                });
+                if (X) return {
+                  graphicalItem: N,
+                  payload: X
+                };
+              } else if (z === "RadialBar") {
+                var Y = (R.data || []).find(function (D) {
+                  return r1(g, D);
+                });
+                if (Y) return {
+                  graphicalItem: N,
+                  payload: Y
+                };
+              } else if (Wc(N, S) || Gc(N, S) || Fl(N, S)) {
+                var O = S5({
+                    graphicalItem: N,
+                    activeTooltipItem: S,
+                    itemData: L.data
+                  }),
+                  T = L.activeIndex === void 0 ? O : L.activeIndex;
+                return {
+                  graphicalItem: W(W({}, N), {}, {
+                    childIndex: T
+                  }),
+                  payload: Fl(N, S) ? L.data[O] : N.props.data[O]
+                };
+              }
+            }
+            return null;
+          }
+        }, {
+          key: "render",
+          value: function () {
+            var g = this;
+            if (!K0(this)) return null;
+            var x = this.props,
+              {
+                children: v,
+                className: S,
+                width: A,
+                height: M,
+                style: N,
+                compact: R,
+                title: H,
+                desc: L
+              } = x,
+              z = qR(x, Qat),
+              X = at(z, !1);
+            if (R) return U(v1, {
+              state: this.state,
+              width: this.props.width,
+              height: this.props.height,
+              clipPathId: this.clipPathId
+            }, U(hc, fu({}, X, {
+              width: A,
+              height: M,
+              title: H,
+              desc: L
+            }), this.renderClipPath(), V0(v, this.renderMap)));
+            if (this.props.accessibilityLayer) {
+              var Y, O;
+              X.tabIndex = (Y = this.props.tabIndex) !== null && Y !== void 0 ? Y : 0, X.role = (O = this.props.role) !== null && O !== void 0 ? O : "application", X.onKeyDown = function (D) {
+                g.accessibilityManager.keyboardEvent(D);
+              }, X.onFocus = function () {
+                g.accessibilityManager.focus();
+              };
+            }
+            var T = this.parseEventsOfWrapper();
+            return U(v1, {
+              state: this.state,
+              width: this.props.width,
+              height: this.props.height,
+              clipPathId: this.clipPathId
+            }, U("div", fu({
+              className: nt("recharts-wrapper", S),
+              style: W({
+                position: "relative",
+                cursor: "default",
+                width: A,
+                height: M
+              }, N)
+            }, T, {
+              ref: function (_) {
+                g.container = _;
+              }
+            }), U(hc, fu({}, X, {
+              width: A,
+              height: M,
+              title: H,
+              desc: L,
+              style: sit
+            }), this.renderClipPath(), V0(v, this.renderMap)), this.renderLegend(), this.renderTooltip()));
+          }
+        }]);
+      }(Hr);
+    ot(b, "displayName", r), ot(b, "defaultProps", W({
+      layout: "horizontal",
+      stackOffset: "none",
+      barCategoryGap: "10%",
+      barGap: 4,
+      margin: {
+        top: 5,
+        right: 5,
+        bottom: 5,
+        left: 5
+      },
+      reverseStackOrder: !1,
+      syncMethod: "index"
+    }, c)), ot(b, "getDerivedStateFromProps", function (w, m) {
+      var {
+          dataKey: h,
+          data: g,
+          children: x,
+          width: v,
+          height: S,
+          layout: A,
+          stackOffset: M,
+          margin: N
+        } = w,
+        {
+          dataStartIndex: R,
+          dataEndIndex: H
+        } = m;
+      if (m.updateId === void 0) {
+        var L = UR(w);
+        return W(W(W({}, L), {}, {
+          updateId: 0
+        }, d(W(W({
+          props: w
+        }, L), {}, {
+          updateId: 0
+        }), m)), {}, {
+          prevDataKey: h,
+          prevData: g,
+          prevWidth: v,
+          prevHeight: S,
+          prevLayout: A,
+          prevStackOffset: M,
+          prevMargin: N,
+          prevChildren: x
+        });
+      }
+      if (h !== m.prevDataKey || g !== m.prevData || v !== m.prevWidth || S !== m.prevHeight || A !== m.prevLayout || M !== m.prevStackOffset || !Fn(N, m.prevMargin)) {
+        var z = UR(w),
+          X = {
+            chartX: m.chartX,
+            chartY: m.chartY,
+            isTooltipActive: m.isTooltipActive
+          },
+          Y = W(W({}, IR(m, g, A)), {}, {
+            updateId: m.updateId + 1
+          }),
+          O = W(W(W({}, z), X), Y);
+        return W(W(W({}, O), d(W({
+          props: w
+        }, O), m)), {}, {
+          prevDataKey: h,
+          prevData: g,
+          prevWidth: v,
+          prevHeight: S,
+          prevLayout: A,
+          prevStackOffset: M,
+          prevMargin: N,
+          prevChildren: x
+        });
+      }
+      if (!Ed(x, m.prevChildren)) {
+        var T,
+          D,
+          _,
+          j,
+          C = je(x, no),
+          q = C ? (T = (D = C.props) === null || D === void 0 ? void 0 : D.startIndex) !== null && T !== void 0 ? T : R : R,
+          B = C ? (_ = (j = C.props) === null || j === void 0 ? void 0 : j.endIndex) !== null && _ !== void 0 ? _ : H : H,
+          Q = q !== R || B !== H,
+          Z = !pu.default(g),
+          J = Z && !Q ? m.updateId : m.updateId + 1;
+        return W(W({
+          updateId: J
+        }, d(W(W({
+          props: w
+        }, m), {}, {
+          updateId: J,
+          dataStartIndex: q,
+          dataEndIndex: B
+        }), m)), {}, {
+          prevChildren: x,
+          dataStartIndex: q,
+          dataEndIndex: B
+        });
+      }
+      return null;
+    }), ot(b, "renderActiveDot", function (w, m, h) {
+      var g;
+      if (_t(w)) g = mt(w, m);else if (nn.default(w)) g = w(m);else g = U(vm, m);
+      return U(Rt, {
+        className: "recharts-active-dot",
+        key: h
+      }, g);
+    });
+    var y = po(function (m, h) {
+      return U(b, fu({}, m, {
+        ref: h
+      }));
+    });
+    return y.displayName = b.displayName, y;
+  };
+var Y1 = FR({
+  chartName: "BarChart",
+  GraphicalChild: en,
+  defaultTooltipEventType: "axis",
+  validateTooltipEventTypes: ["axis", "item"],
+  axisComponents: [{
+    axisType: "xAxis",
+    AxisComp: eo
+  }, {
+    axisType: "yAxis",
+    AxisComp: ro
+  }],
+  formatAxisMap: q5
+});
+var an = $w();
+var ZR = {
+  prompts: [{
+    date: "01-01",
+    prompt: "What is one word you want to define this year, and why does it matter to you right now?"
+  }, {
+    date: "01-02",
+    prompt: "Describe the version of yourself you're walking toward this year. What does a Tuesday look like for them?"
+  }, {
+    date: "01-03",
+    prompt: "What is something you tolerated last year that you refuse to tolerate this year?"
+  }, {
+    date: "01-04",
+    prompt: "Write about a small habit that quietly changed your life for the better."
+  }, {
+    date: "01-05",
+    prompt: "If you could send a letter to yourself last January, what would it say?"
+  }, {
+    date: "01-06",
+    prompt: "What does starting fresh actually feel like to you â exciting, scary, or something else?"
+  }, {
+    date: "01-07",
+    prompt: "Name three things you're carrying into this year that you want to set down."
+  }, {
+    date: "01-08",
+    prompt: "Describe your ideal morning routine. What's stopping you from starting it tomorrow?"
+  }, {
+    date: "01-09",
+    prompt: "What is a fear you've outgrown? How do you know?"
+  }, {
+    date: "01-10",
+    prompt: "Write about someone who believed in you before you believed in yourself."
+  }, {
+    date: "01-11",
+    prompt: "If money were no object, how would you spend next Tuesday?"
+  }, {
+    date: "01-12",
+    prompt: "What is one thing you know now that you wish you'd known five years ago?"
+  }, {
+    date: "01-13",
+    prompt: "Describe a moment when you felt completely at peace. What made it possible?"
+  }, {
+    date: "01-14",
+    prompt: "What would you attempt if you knew you couldn't fail?"
+  }, {
+    date: "01-15",
+    prompt: "Write about a book, song, or movie that changed how you see the world."
+  }, {
+    date: "01-16",
+    prompt: "What is the best compliment you've ever received? Why did it stick?"
+  }, {
+    date: "01-17",
+    prompt: "Describe the kind of friend you try to be. Are you succeeding?"
+  }, {
+    date: "01-18",
+    prompt: "What is something you've been avoiding? What's the smallest first step?"
+  }, {
+    date: "01-19",
+    prompt: "If your life had a theme song right now, what would it be and why?"
+  }, {
+    date: "01-20",
+    prompt: "Write about a time you surprised yourself."
+  }, {
+    date: "01-21",
+    prompt: "What does success look like to you â not to your parents, not to social media, to you?"
+  }, {
+    date: "01-22",
+    prompt: "Describe a place where you feel most like yourself."
+  }, {
+    date: "01-23",
+    prompt: "What is one thing you'd do differently if nobody would ever know?"
+  }, {
+    date: "01-24",
+    prompt: "Write a thank-you note to someone who will never read it."
+  }, {
+    date: "01-25",
+    prompt: "What is the hardest lesson life has taught you so far?"
+  }, {
+    date: "01-26",
+    prompt: "If you had an extra hour every day, how would you spend it?"
+  }, {
+    date: "01-27",
+    prompt: "Describe your relationship with your phone. Is it serving you?"
+  }, {
+    date: "01-28",
+    prompt: "What is something you're good at that you take for granted?"
+  }, {
+    date: "01-29",
+    prompt: "Write about a stranger who left an impression on you."
+  }, {
+    date: "01-30",
+    prompt: "What would your 80-year-old self tell you about this exact moment?"
+  }, {
+    date: "01-31",
+    prompt: "Look back at January. What's one thing you're proud of already?"
+  }, {
+    date: "02-01",
+    prompt: "What does love look like in action â not in movies, but in your real life?"
+  }, {
+    date: "02-02",
+    prompt: "Write about a friendship that changed you."
+  }, {
+    date: "02-03",
+    prompt: "What is the kindest thing someone has done for you without being asked?"
+  }, {
+    date: "02-04",
+    prompt: "Describe how you show love. Is it how you want to be loved back?"
+  }, {
+    date: "02-05",
+    prompt: "What is something you love about yourself that has nothing to do with how you look?"
+  }, {
+    date: "02-06",
+    prompt: "Write about a time someone forgave you. How did it feel?"
+  }, {
+    date: "02-07",
+    prompt: "Who do you need to forgive â including yourself?"
+  }, {
+    date: "02-08",
+    prompt: "What is your love language, and when did you first realize it?"
+  }, {
+    date: "02-09",
+    prompt: "Describe the best conversation you've ever had. What made it special?"
+  }, {
+    date: "02-10",
+    prompt: "What do you wish people understood about you?"
+  }, {
+    date: "02-11",
+    prompt: "Write about someone you miss. What would you tell them today?"
+  }, {
+    date: "02-12",
+    prompt: "When do you feel most loved?"
+  }, {
+    date: "02-13",
+    prompt: "What is a small act of kindness you could do tomorrow?"
+  }, {
+    date: "02-14",
+    prompt: "Write a love letter â to a person, a place, a version of yourself, or even a sandwich. No rules."
+  }, {
+    date: "02-15",
+    prompt: "What have your past relationships taught you about what you actually need?"
+  }, {
+    date: "02-16",
+    prompt: "Describe what home feels like to you."
+  }, {
+    date: "02-17",
+    prompt: "What is something you do alone that brings you genuine joy?"
+  }, {
+    date: "02-18",
+    prompt: "Write about a time you felt truly seen by another person."
+  }, {
+    date: "02-19",
+    prompt: "If you could have dinner with anyone, living or dead, who and why?"
+  }, {
+    date: "02-20",
+    prompt: "What boundaries do you need to set â or keep â to protect your peace?"
+  }, {
+    date: "02-21",
+    prompt: "Describe your ideal way to spend a rainy day with someone you love."
+  }, {
+    date: "02-22",
+    prompt: "What is the bravest thing you've ever done for someone else?"
+  }, {
+    date: "02-23",
+    prompt: "Write about a family tradition you want to keep â or start."
+  }, {
+    date: "02-24",
+    prompt: "When was the last time you told someone how much they mean to you?"
+  }, {
+    date: "02-25",
+    prompt: "What does self-compassion look like on your hardest days?"
+  }, {
+    date: "02-26",
+    prompt: "Describe a moment when a stranger's kindness caught you off guard."
+  }, {
+    date: "02-27",
+    prompt: "If you could relive one day with someone you love, which day and why?"
+  }, {
+    date: "02-28",
+    prompt: "What have you learned about love this month â giving it, receiving it, or both?"
+  }, {
+    date: "03-01",
+    prompt: "What is something you're growing into right now, even if it's uncomfortable?"
+  }, {
+    date: "03-02",
+    prompt: "Describe a risk you took that paid off â or taught you something worth the cost."
+  }, {
+    date: "03-03",
+    prompt: "What would you do if you were 10% braver?"
+  }, {
+    date: "03-04",
+    prompt: "Write about a season of your life that felt like spring â everything blooming at once."
+  }, {
+    date: "03-05",
+    prompt: "What is a belief you held strongly that you've since changed your mind about?"
+  }, {
+    date: "03-06",
+    prompt: "If you could master any skill in 30 days, what would it be?"
+  }, {
+    date: "03-07",
+    prompt: "Describe the last time you did something that scared you."
+  }, {
+    date: "03-08",
+    prompt: "Who is a woman or mentor figure who shaped who you are? What did they teach you?"
+  }, {
+    date: "03-09",
+    prompt: "What does courage look like in everyday life â not in movies, but in yours?"
+  }, {
+    date: "03-10",
+    prompt: "Write about something you're in the messy middle of right now."
+  }, {
+    date: "03-11",
+    prompt: "If your comfort zone had walls, what would they be made of?"
+  }, {
+    date: "03-12",
+    prompt: "What is one thing you've been meaning to learn? What's stopping you?"
+  }, {
+    date: "03-13",
+    prompt: "Describe a failure that turned out to be a gift."
+  }, {
+    date: "03-14",
+    prompt: "What would you tell a friend who is afraid to start something new?"
+  }, {
+    date: "03-15",
+    prompt: "Write about the best advice you've ever received. Did you follow it?"
+  }, {
+    date: "03-16",
+    prompt: "What is growing in your life right now â a project, a relationship, a version of you?"
+  }, {
+    date: "03-17",
+    prompt: "If you found a pot of gold, what's the first non-responsible thing you'd do with it?"
+  }, {
+    date: "03-18",
+    prompt: "What habit are you trying to build? How's it really going?"
+  }, {
+    date: "03-19",
+    prompt: "Describe what the first day of spring feels like to you."
+  }, {
+    date: "03-20",
+    prompt: "What is something new you want to try before summer?"
+  }, {
+    date: "03-21",
+    prompt: "Write about a teacher â formal or informal â who changed your trajectory."
+  }, {
+    date: "03-22",
+    prompt: "What does growth actually require of you right now?"
+  }, {
+    date: "03-23",
+    prompt: "If you could go back to school for one subject, what would you study?"
+  }, {
+    date: "03-24",
+    prompt: "Describe a time you had to start over. What did you carry forward?"
+  }, {
+    date: "03-25",
+    prompt: "What is the most useful thing you've learned in the last year?"
+  }, {
+    date: "03-26",
+    prompt: "Write about something you're getting better at, slowly but surely."
+  }, {
+    date: "03-27",
+    prompt: "If you wrote a how-to guide for your own life, what would chapter one be?"
+  }, {
+    date: "03-28",
+    prompt: "What small win can you celebrate today?"
+  }, {
+    date: "03-29",
+    prompt: "Describe the person you were three years ago. What would surprise them about you now?"
+  }, {
+    date: "03-30",
+    prompt: "What are you planting â literally or metaphorically â this season?"
+  }, {
+    date: "03-31",
+    prompt: "What does this month's version of you know that last month's didn't?"
+  }, {
+    date: "04-01",
+    prompt: "What's the biggest harmless prank you've ever pulled â or had pulled on you?"
+  }, {
+    date: "04-02",
+    prompt: "What is a truth about yourself you've been avoiding?"
+  }, {
+    date: "04-03",
+    prompt: "Describe a time when being honest was harder than lying would have been."
+  }, {
+    date: "04-04",
+    prompt: "What would you do with a completely free, unscheduled day?"
+  }, {
+    date: "04-05",
+    prompt: "Write about something you need to let go of."
+  }, {
+    date: "04-06",
+    prompt: "What does a clear mind feel like to you? When did you last have one?"
+  }, {
+    date: "04-07",
+    prompt: "If you could ask your future self one question, what would it be?"
+  }, {
+    date: "04-08",
+    prompt: "Describe your relationship with money in one paragraph â be brutally honest."
+  }, {
+    date: "04-09",
+    prompt: "What is something you pretend to understand but actually don't?"
+  }, {
+    date: "04-10",
+    prompt: "Write about a sibling, cousin, or chosen family member who shaped you."
+  }, {
+    date: "04-11",
+    prompt: "What would you put in a time capsule to represent your life right now?"
+  }, {
+    date: "04-12",
+    prompt: "Describe the last dream you remember. What do you think it meant?"
+  }, {
+    date: "04-13",
+    prompt: "What is one thing you're certain about? What is one thing you're not?"
+  }, {
+    date: "04-14",
+    prompt: "Write about a rainy day that turned out to be perfect."
+  }, {
+    date: "04-15",
+    prompt: "If you had to give a TED talk with no preparation, what would it be about?"
+  }, {
+    date: "04-16",
+    prompt: "What is draining your energy right now? What is restoring it?"
+  }, {
+    date: "04-17",
+    prompt: "Describe the best meal you've ever had â where were you, who were you with?"
+  }, {
+    date: "04-18",
+    prompt: "What do you want to be remembered for?"
+  }, {
+    date: "04-19",
+    prompt: "Write about a moment when everything suddenly made sense."
+  }, {
+    date: "04-20",
+    prompt: "If you could only keep five possessions, what would they be?"
+  }, {
+    date: "04-21",
+    prompt: "What is a question you wish people would ask you more often?"
+  }, {
+    date: "04-22",
+    prompt: "Describe your favorite place in nature. What does it give you?"
+  }, {
+    date: "04-23",
+    prompt: "What book do you wish everyone would read?"
+  }, {
+    date: "04-24",
+    prompt: "Write about something beautiful you noticed this week."
+  }, {
+    date: "04-25",
+    prompt: "If you could have any superpower for 24 hours, what would you do with it?"
+  }, {
+    date: "04-26",
+    prompt: "What is the most important thing on your to-do list that isn't on it?"
+  }, {
+    date: "04-27",
+    prompt: "Describe a time you changed someone's mind â or they changed yours."
+  }, {
+    date: "04-28",
+    prompt: "What would you do if you weren't afraid of looking foolish?"
+  }, {
+    date: "04-29",
+    prompt: "Write about the last time you laughed until it hurt."
+  }, {
+    date: "04-30",
+    prompt: "What clarity have you gained this month?"
+  }, {
+    date: "05-01",
+    prompt: "What are you looking forward to most this month?"
+  }, {
+    date: "05-02",
+    prompt: "Describe your perfect adventure â realistic or wildly unrealistic."
+  }, {
+    date: "05-03",
+    prompt: "What is something that always gives you energy, no matter how tired you are?"
+  }, {
+    date: "05-04",
+    prompt: "If you were a character in a movie, what genre would your life be right now?"
+  }, {
+    date: "05-05",
+    prompt: "Write about a celebration that meant a lot to you."
+  }, {
+    date: "05-06",
+    prompt: "What is a dream you've never told anyone about?"
+  }, {
+    date: "05-07",
+    prompt: "Describe the best road trip you've ever taken â or want to take."
+  }, {
+    date: "05-08",
+    prompt: "What does freedom feel like to you?"
+  }, {
+    date: "05-09",
+    prompt: "Write about your mom, or someone who mothers you, and what they've taught you."
+  }, {
+    date: "05-10",
+    prompt: "If you could teleport anywhere right now, where would you go?"
+  }, {
+    date: "05-11",
+    prompt: "What is something you're curious about but have never explored?"
+  }, {
+    date: "05-12",
+    prompt: "Describe a sunrise or sunset that stopped you in your tracks."
+  }, {
+    date: "05-13",
+    prompt: "What would your ideal Saturday look like from wake-up to bedtime?"
+  }, {
+    date: "05-14",
+    prompt: "Write about a time you got completely lost â literally or figuratively â and what you found."
+  }, {
+    date: "05-15",
+    prompt: "What is the most spontaneous thing you've ever done?"
+  }, {
+    date: "05-16",
+    prompt: "If you could have dinner with your 15-year-old self, what would you talk about?"
+  }, {
+    date: "05-17",
+    prompt: "Describe something you're grateful for that you once took for granted."
+  }, {
+    date: "05-18",
+    prompt: "What is a skill you have that would surprise people?"
+  }, {
+    date: "05-19",
+    prompt: "Write about the ocean, mountains, desert, or forest â whichever calls to you â and why."
+  }, {
+    date: "05-20",
+    prompt: "If you won a free plane ticket to anywhere, where are you going and who's coming?"
+  }, {
+    date: "05-21",
+    prompt: "What is the best piece of advice your dad â or a father figure â gave you?"
+  }, {
+    date: "05-22
