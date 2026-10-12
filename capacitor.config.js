@@ -1,1 +1,33 @@
-LyoqIEB0eXBlIHtpbXBvcnQoJ0BjYXBhY2l0b3IvY2xpJykuQ2FwYWNpdG9yQ29uZmlnfSAqLwpjb25zdCBjb25maWcgPSB7CiAgYXBwSWQ6ICdjb20uYW5kcmV3Y2FyZG9uLndlbGxuZXNzcXVlc3QnLAogIGFwcE5hbWU6ICdXZWxsbmVzcyBRdWVzdCcsCiAgd2ViRGlyOiAnd3d3JywKICAvLyBObyBzZXJ2ZXIudXJsIOKAlCB0aGUgYXBwIGlzIGZ1bGx5IGJ1bmRsZWQgbG9jYWxseSB3aXRoIG9uLWRldmljZSBTUUxpdGUuCiAgLy8gQWxsIC4vYWN0aW9ucyBjYWxscyBhcmUgaW50ZXJjZXB0ZWQgYnkgbmF0aXZlLWJyaWRnZS5qcyBhbmQgcm91dGVkCiAgLy8gdG8gdGhlIG5hdGl2ZS1hY3Rpb25zLmpzIFNRTGl0ZSBpbXBsZW1lbnRhdGlvbi4KICBpb3M6IHsKICAgIGNvbnRlbnRJbnNldDogJ2Fsd2F5cycsCiAgICBzY3JvbGxFbmFibGVkOiBmYWxzZSwKICB9LAogIHBsdWdpbnM6IHsKICAgIFNwbGFzaFNjcmVlbjogewogICAgICBsYXVuY2hTaG93RHVyYXRpb246IDIwMDAsCiAgICAgIGJhY2tncm91bmRDb2xvcjogJyMwYTBhMTInLAogICAgICBzaG93U3Bpbm5lcjogZmFsc2UsCiAgICB9LAogICAgU3RhdHVzQmFyOiB7CiAgICAgIHN0eWxlOiAnZGFyaycsCiAgICAgIGJhY2tncm91bmRDb2xvcjogJyMwYTBhMTInLAogICAgfSwKICAgIEtleWJvYXJkOiB7CiAgICAgIHJlc2l6ZTogJ2JvZHknLAogICAgICByZXNpemVPbkZ1bGxTY3JlZW46IHRydWUsCiAgICB9LAogICAgQ2FwYWNpdG9yU1FMaXRlOiB7CiAgICAgIGlvc0RhdGFiYXNlTG9jYXRpb246ICdMaWJyYXJ5L0NhcGFjaXRvckRhdGFiYXNlJywKICAgIH0sCiAgfSwKfTsKCm1vZHVsZS5leHBvcnRzID0gY29uZmlnOwo=
+/** @type {import('@capacitor/cli').CapacitorConfig} */
+const config = {
+  appId: 'com.andrewcardon.wellnessquest',
+  appName: 'Wellness Quest',
+  webDir: 'www',
+  // No server.url — the app is fully bundled locally with on-device SQLite.
+  // All ./actions calls are intercepted by native-bridge.js and routed
+  // to the native-actions.js SQLite implementation.
+  ios: {
+    contentInset: 'always',
+    scrollEnabled: false,
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: '#0a0a12',
+      showSpinner: false,
+    },
+    StatusBar: {
+      style: 'dark',
+      backgroundColor: '#0a0a12',
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true,
+    },
+    CapacitorSQLite: {
+      iosDatabaseLocation: 'Library/CapacitorDatabase',
+    },
+  },
+};
+
+module.exports = config;
