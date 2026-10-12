@@ -1,1 +1,33 @@
-Ly8gRGVjb2RlcyB0aGUgYmFzZTY0LWVuY29kZWQgMTAyNHB4IGFwcCBpY29uIGludG8gdGhlIGFzc2V0IGNhdGFsb2cuCi8vIE5lZWRlZCBiZWNhdXNlIGJpbmFyeSBQTkdzIGNhbid0IGJlIHB1c2hlZCB2aWEgdGhlIEdpdEh1YiBBUEkgdGV4dCB0b29sczsKLy8gWGNvZGUgYXV0by1nZW5lcmF0ZXMgYWxsIGRldmljZSBpY29uIHNpemVzIGZyb20gdGhpcyBzaW5nbGUgMTAyNHB4IHNvdXJjZS4KaW1wb3J0IHsgcmVhZEZpbGVTeW5jLCB3cml0ZUZpbGVTeW5jLCBleGlzdHNTeW5jIH0gZnJvbSAnZnMnOwppbXBvcnQgeyBqb2luLCBkaXJuYW1lIH0gZnJvbSAncGF0aCc7CmltcG9ydCB7IGZpbGVVUkxUb1BhdGggfSBmcm9tICd1cmwnOwoKY29uc3Qgcm9vdCA9IGpvaW4oZGlybmFtZShmaWxlVVJMVG9QYXRoKGltcG9ydC5tZXRhLnVybCkpLCAnLi4nKTsKY29uc3Qgb3V0UGF0aCA9IGpvaW4ocm9vdCwgJ2lvcy9BcHAvQXBwL0Fzc2V0cy54Y2Fzc2V0cy9BcHBJY29uLmFwcGljb25zZXQvQXBwSWNvbi01MTJAMngucG5nJyk7CgovLyBTa2lwIGlmIGEgdmFsaWQgUE5HIGFscmVhZHkgZXhpc3RzIChlLmcuIGxvY2FsIGRldiBtYWNoaW5lcykKaWYgKGV4aXN0c1N5bmMob3V0UGF0aCkpIHsKICBjb25zdCBoZWFkID0gcmVhZEZpbGVTeW5jKG91dFBhdGgpLnN1YmFycmF5KDAsIDgpOwogIGlmIChoZWFkLmVxdWFscyhCdWZmZXIuZnJvbShbMHg4OSwgMHg1MCwgMHg0ZSwgMHg0NywgMHgwZCwgMHgwYSwgMHgxYSwgMHgwYV0pKSkgewogICAgY29uc29sZS5sb2coJ1tkZWNvZGUtYXBwaWNvbl0gQXBwSWNvbi01MTJAMngucG5nIGFscmVhZHkgdmFsaWQsIHNraXBwaW5nLicpOwogICAgcHJvY2Vzcy5leGl0KDApOwogIH0KICBjb25zb2xlLmxvZygnW2RlY29kZS1hcHBpY29uXSBleGlzdGluZyBmaWxlIGlzIG5vdCBhIHZhbGlkIFBORywgb3ZlcndyaXRpbmcuJyk7Cn0KCmNvbnN0IGI2NFBhcnRzID0gW107CmZvciAobGV0IGkgPSAxOyA7IGkrKykgewogIGNvbnN0IHBhcnRQYXRoID0gam9pbihyb290LCBgc2NyaXB0cy9hcHBpY29uLTEwMjQuYjY0LnBhcnQke2l9YCk7CiAgaWYgKCFleGlzdHNTeW5jKHBhcnRQYXRoKSkgYnJlYWs7CiAgYjY0UGFydHMucHVzaChyZWFkRmlsZVN5bmMocGFydFBhdGgsICd1dGY4JykpOwp9CmlmIChiNjRQYXJ0cy5sZW5ndGggPT09IDApIHsKICBjb25zb2xlLmVycm9yKCdbZGVjb2RlLWFwcGljb25dIG5vIGJhc2U2NCBwYXJ0cyBmb3VuZCEnKTsKICBwcm9jZXNzLmV4aXQoMSk7Cn0KY29uc3QgYjY0ID0gYjY0UGFydHMuam9pbignJykucmVwbGFjZSgvXHMrL2csICcnKTsKd3JpdGVGaWxlU3luYyhvdXRQYXRoLCBCdWZmZXIuZnJvbShiNjQsICdiYXNlNjQnKSk7CmNvbnNvbGUubG9nKCdbZGVjb2RlLWFwcGljb25dIHdyb3RlJywgb3V0UGF0aCk7Cg==
+// Decodes the base64-encoded 1024px app icon into the asset catalog.
+// Needed because binary PNGs can't be pushed via the GitHub API text tools;
+// Xcode auto-generates all device icon sizes from this single 1024px source.
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const outPath = join(root, 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png');
+
+// Skip if a valid PNG already exists (e.g. local dev machines)
+if (existsSync(outPath)) {
+  const head = readFileSync(outPath).subarray(0, 8);
+  if (head.equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    console.log('[decode-appicon] AppIcon-512@2x.png already valid, skipping.');
+    process.exit(0);
+  }
+  console.log('[decode-appicon] existing file is not a valid PNG, overwriting.');
+}
+
+const b64Parts = [];
+for (let i = 1; ; i++) {
+  const partPath = join(root, `scripts/appicon-1024.b64.part${i}`);
+  if (!existsSync(partPath)) break;
+  b64Parts.push(readFileSync(partPath, 'utf8'));
+}
+if (b64Parts.length === 0) {
+  console.error('[decode-appicon] no base64 parts found!');
+  process.exit(1);
+}
+const b64 = b64Parts.join('').replace(/\s+/g, '');
+writeFileSync(outPath, Buffer.from(b64, 'base64'));
+console.log('[decode-appicon] wrote', outPath);
