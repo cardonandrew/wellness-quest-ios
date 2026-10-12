@@ -1,0 +1,3830 @@
+sin(u / f) / kc,
+      p = s ? i : i + o * c,
+      d = Zt(r, n, f, p),
+      b = Zt(r, n, a, p),
+      y = s ? i - o * c : i,
+      w = Zt(r, n, f * Math.cos(c * kc), y);
+    return {
+      center: d,
+      circleTangency: b,
+      lineTangency: w,
+      theta: c
+    };
+  },
+  h5 = function (e) {
+    var {
+        cx: r,
+        cy: n,
+        innerRadius: a,
+        outerRadius: i,
+        startAngle: o,
+        endAngle: l
+      } = e,
+      u = Aet(o, l),
+      s = o + u,
+      f = Zt(r, n, i, o),
+      c = Zt(r, n, i, s),
+      p = "M ".concat(f.x, ",").concat(f.y, `
+    A `).concat(i, ",").concat(i, `,0,
+    `).concat(+(Math.abs(u) > 180), ",").concat(+(o > s), `,
+    `).concat(c.x, ",").concat(c.y, `
+  `);
+    if (a > 0) {
+      var d = Zt(r, n, a, o),
+        b = Zt(r, n, a, s);
+      p += "L ".concat(b.x, ",").concat(b.y, `
+            A `).concat(a, ",").concat(a, `,0,
+            `).concat(+(Math.abs(u) > 180), ",").concat(+(o <= s), `,
+            `).concat(d.x, ",").concat(d.y, " Z");
+    } else p += "L ".concat(r, ",").concat(n, " Z");
+    return p;
+  },
+  Tet = function (e) {
+    var {
+        cx: r,
+        cy: n,
+        innerRadius: a,
+        outerRadius: i,
+        cornerRadius: o,
+        forceCornerRadius: l,
+        cornerIsExternal: u,
+        startAngle: s,
+        endAngle: f
+      } = e,
+      c = Ce(f - s),
+      p = nm({
+        cx: r,
+        cy: n,
+        radius: i,
+        angle: s,
+        sign: c,
+        cornerRadius: o,
+        cornerIsExternal: u
+      }),
+      {
+        circleTangency: d,
+        lineTangency: b,
+        theta: y
+      } = p,
+      w = nm({
+        cx: r,
+        cy: n,
+        radius: i,
+        angle: f,
+        sign: -c,
+        cornerRadius: o,
+        cornerIsExternal: u
+      }),
+      {
+        circleTangency: m,
+        lineTangency: h,
+        theta: g
+      } = w,
+      x = u ? Math.abs(s - f) : Math.abs(s - f) - y - g;
+    if (x < 0) {
+      if (l) return "M ".concat(b.x, ",").concat(b.y, `
+        a`).concat(o, ",").concat(o, ",0,0,1,").concat(o * 2, `,0
+        a`).concat(o, ",").concat(o, ",0,0,1,").concat(-o * 2, `,0
+      `);
+      return h5({
+        cx: r,
+        cy: n,
+        innerRadius: a,
+        outerRadius: i,
+        startAngle: s,
+        endAngle: f
+      });
+    }
+    var v = "M ".concat(b.x, ",").concat(b.y, `
+    A`).concat(o, ",").concat(o, ",0,0,").concat(+(c < 0), ",").concat(d.x, ",").concat(d.y, `
+    A`).concat(i, ",").concat(i, ",0,").concat(+(x > 180), ",").concat(+(c < 0), ",").concat(m.x, ",").concat(m.y, `
+    A`).concat(o, ",").concat(o, ",0,0,").concat(+(c < 0), ",").concat(h.x, ",").concat(h.y, `
+  `);
+    if (a > 0) {
+      var S = nm({
+          cx: r,
+          cy: n,
+          radius: a,
+          angle: s,
+          sign: c,
+          isExternal: !0,
+          cornerRadius: o,
+          cornerIsExternal: u
+        }),
+        {
+          circleTangency: A,
+          lineTangency: M,
+          theta: N
+        } = S,
+        R = nm({
+          cx: r,
+          cy: n,
+          radius: a,
+          angle: f,
+          sign: -c,
+          isExternal: !0,
+          cornerRadius: o,
+          cornerIsExternal: u
+        }),
+        {
+          circleTangency: H,
+          lineTangency: L,
+          theta: z
+        } = R,
+        X = u ? Math.abs(s - f) : Math.abs(s - f) - N - z;
+      if (X < 0 && o === 0) return "".concat(v, "L").concat(r, ",").concat(n, "Z");
+      v += "L".concat(L.x, ",").concat(L.y, `
+      A`).concat(o, ",").concat(o, ",0,0,").concat(+(c < 0), ",").concat(H.x, ",").concat(H.y, `
+      A`).concat(a, ",").concat(a, ",0,").concat(+(X > 180), ",").concat(+(c > 0), ",").concat(A.x, ",").concat(A.y, `
+      A`).concat(o, ",").concat(o, ",0,0,").concat(+(c < 0), ",").concat(M.x, ",").concat(M.y, "Z");
+    } else v += "L".concat(r, ",").concat(n, "Z");
+    return v;
+  },
+  Eet = {
+    cx: 0,
+    cy: 0,
+    innerRadius: 0,
+    outerRadius: 0,
+    startAngle: 0,
+    endAngle: 0,
+    cornerRadius: 0,
+    forceCornerRadius: !1,
+    cornerIsExternal: !1
+  },
+  am = function (e) {
+    var r = d5(d5({}, Eet), e),
+      {
+        cx: n,
+        cy: a,
+        innerRadius: i,
+        outerRadius: o,
+        cornerRadius: l,
+        forceCornerRadius: u,
+        cornerIsExternal: s,
+        startAngle: f,
+        endAngle: c,
+        className: p
+      } = r;
+    if (o < i || f === c) return null;
+    var d = nt("recharts-sector", p),
+      b = o - i,
+      y = Vr(l, b, 0, !0),
+      w;
+    if (y > 0 && Math.abs(f - c) < 360) w = Tet({
+      cx: n,
+      cy: a,
+      innerRadius: i,
+      outerRadius: o,
+      cornerRadius: Math.min(y, b / 2),
+      forceCornerRadius: u,
+      cornerIsExternal: s,
+      startAngle: f,
+      endAngle: c
+    });else w = h5({
+      cx: n,
+      cy: a,
+      innerRadius: i,
+      outerRadius: o,
+      startAngle: f,
+      endAngle: c
+    });
+    return U("path", o1({}, at(r, !0), {
+      className: d,
+      d: w,
+      role: "img"
+    }));
+  };
+var _et = ["option", "shapeType", "propTransformer", "activeClassName", "isActive"];
+function Hc(t) {
+  return Hc = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Hc(t);
+}
+function Met(t, e) {
+  if (t == null) return {};
+  var r = Cet(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Cet(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+function m5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function im(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? m5(Object(r), !0).forEach(function (n) {
+      jet(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : m5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function jet(t, e, r) {
+  if (e = Det(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Det(t) {
+  var e = Net(t, "string");
+  return Hc(e) == "symbol" ? e : e + "";
+}
+function Net(t, e) {
+  if (Hc(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Hc(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function ket(t, e) {
+  return im(im({}, e), t);
+}
+function Pet(t, e) {
+  return t === "symbols";
+}
+function y5(t) {
+  var {
+    shapeType: e,
+    elementProps: r
+  } = t;
+  switch (e) {
+    case "rectangle":
+      return U(Vl, r);
+    case "trapezoid":
+      return U(f5, r);
+    case "sector":
+      return U(am, r);
+    case "symbols":
+      if (Pet(e, r)) return U(yc, r);
+      break;
+    default:
+      return null;
+  }
+}
+function Ret(t) {
+  if (_t(t)) return t.props;
+  return t;
+}
+function w5(t) {
+  var {
+      option: e,
+      shapeType: r,
+      propTransformer: n
+    } = t,
+    a = n === void 0 ? ket : n,
+    i = t.activeClassName,
+    o = i === void 0 ? "recharts-active-shape" : i,
+    l = t.isActive,
+    u = Met(t, _et),
+    s;
+  if (_t(e)) s = mt(e, im(im({}, u), Ret(e)));else if (g5.default(e)) s = e(u);else if (v5.default(e) && !b5.default(e)) {
+    var f = a(e, u);
+    s = U(y5, {
+      shapeType: r,
+      elementProps: f
+    });
+  } else {
+    var c = u;
+    s = U(y5, {
+      shapeType: r,
+      elementProps: c
+    });
+  }
+  if (l) return U(Rt, {
+    className: o
+  }, s);
+  return s;
+}
+function Wc(t, e) {
+  return e != null && "trapezoids" in t.props;
+}
+function Gc(t, e) {
+  return e != null && "sectors" in t.props;
+}
+function Fl(t, e) {
+  return e != null && "points" in t.props;
+}
+function zet(t, e) {
+  var r,
+    n,
+    a = t.x === (e === null || e === void 0 || (r = e.labelViewBox) === null || r === void 0 ? void 0 : r.x) || t.x === e.x,
+    i = t.y === (e === null || e === void 0 || (n = e.labelViewBox) === null || n === void 0 ? void 0 : n.y) || t.y === e.y;
+  return a && i;
+}
+function qet(t, e) {
+  var r = t.endAngle === e.endAngle,
+    n = t.startAngle === e.startAngle;
+  return r && n;
+}
+function Bet(t, e) {
+  var r = t.x === e.x,
+    n = t.y === e.y,
+    a = t.z === e.z;
+  return r && n && a;
+}
+function Let(t, e) {
+  var r;
+  if (Wc(t, e)) r = zet;else if (Gc(t, e)) r = qet;else if (Fl(t, e)) r = Bet;
+  return r;
+}
+function Iet(t, e) {
+  var r;
+  if (Wc(t, e)) r = "trapezoids";else if (Gc(t, e)) r = "sectors";else if (Fl(t, e)) r = "points";
+  return r;
+}
+function Uet(t, e) {
+  if (Wc(t, e)) {
+    var r;
+    return (r = e.tooltipPayload) === null || r === void 0 || (r = r[0]) === null || r === void 0 || (r = r.payload) === null || r === void 0 ? void 0 : r.payload;
+  }
+  if (Gc(t, e)) {
+    var n;
+    return (n = e.tooltipPayload) === null || n === void 0 || (n = n[0]) === null || n === void 0 || (n = n.payload) === null || n === void 0 ? void 0 : n.payload;
+  }
+  if (Fl(t, e)) return e.payload;
+  return {};
+}
+function S5(t) {
+  var {
+      activeTooltipItem: e,
+      graphicalItem: r,
+      itemData: n
+    } = t,
+    a = Iet(r, e),
+    i = Uet(r, e),
+    o = n.filter(function (u, s) {
+      var f = x5.default(i, u),
+        c = r.props[a].filter(function (b) {
+          var y = Let(r, e);
+          return y(b, e);
+        }),
+        p = r.props[a].indexOf(c[c.length - 1]),
+        d = s === p;
+      return f && d;
+    }),
+    l = n.indexOf(o[o.length - 1]);
+  return l;
+}
+var Het = ["x", "y"];
+function Xc(t) {
+  return Xc = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Xc(t);
+}
+function l1() {
+  return l1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, l1.apply(this, arguments);
+}
+function O5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function Yc(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? O5(Object(r), !0).forEach(function (n) {
+      Wet(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : O5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function Wet(t, e, r) {
+  if (e = Get(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Get(t) {
+  var e = Yet(t, "string");
+  return Xc(e) == "symbol" ? e : e + "";
+}
+function Yet(t, e) {
+  if (Xc(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Xc(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function Xet(t, e) {
+  if (t == null) return {};
+  var r = Qet(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Qet(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+function Ket(t, e) {
+  var {
+      x: r,
+      y: n
+    } = t,
+    a = Xet(t, Het),
+    i = "".concat(r),
+    o = parseInt(i, 10),
+    l = "".concat(n),
+    u = parseInt(l, 10),
+    s = "".concat(e.height || a.height),
+    f = parseInt(s, 10),
+    c = "".concat(e.width || a.width),
+    p = parseInt(c, 10);
+  return Yc(Yc(Yc(Yc(Yc({}, e), a), o ? {
+    x: o
+  } : {}), u ? {
+    y: u
+  } : {}), {}, {
+    height: f,
+    width: p,
+    name: e.name,
+    radius: e.radius
+  });
+}
+function u1(t) {
+  return U(w5, l1({
+    shapeType: "rectangle",
+    propTransformer: Ket,
+    activeClassName: "recharts-active-bar"
+  }, t));
+}
+var A5 = function (e) {
+  var r = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
+  return function (n, a) {
+    if (typeof e === "number") return e;
+    var i = typeof n === "number";
+    if (i) return e(n, a);
+    return !i && Jr(!1), r;
+  };
+};
+var Vet = ["value", "background"],
+  _5;
+function Zl(t) {
+  return Zl = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Zl(t);
+}
+function Fet(t, e) {
+  if (t == null) return {};
+  var r = Zet(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Zet(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+function om() {
+  return om = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, om.apply(this, arguments);
+}
+function T5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function se(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? T5(Object(r), !0).forEach(function (n) {
+      Qa(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : T5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function $et(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function E5(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, C5(n.key), n);
+  }
+}
+function Jet(t, e, r) {
+  if (e) E5(t.prototype, e);
+  if (r) E5(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function trt(t, e, r) {
+  return e = lm(e), ert(t, M5() ? Reflect.construct(e, r || [], lm(t).constructor) : e.apply(t, r));
+}
+function ert(t, e) {
+  if (e && (Zl(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return rrt(t);
+}
+function rrt(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function M5() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (M5 = function () {
+    return !!t;
+  })();
+}
+function lm(t) {
+  return lm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, lm(t);
+}
+function nrt(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) s1(t, e);
+}
+function s1(t, e) {
+  return s1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, s1(t, e);
+}
+function Qa(t, e, r) {
+  if (e = C5(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function C5(t) {
+  var e = art(t, "string");
+  return Zl(e) == "symbol" ? e : e + "";
+}
+function art(t, e) {
+  if (Zl(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Zl(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var en = function (t) {
+  function e() {
+    var r;
+    $et(this, e);
+    for (var n = arguments.length, a = Array(n), i = 0; i < n; i++) a[i] = arguments[i];
+    return r = trt(this, e, [].concat(a)), Qa(r, "state", {
+      isAnimationFinished: !1
+    }), Qa(r, "id", Pa("recharts-bar-")), Qa(r, "handleAnimationEnd", function () {
+      var o = r.props.onAnimationEnd;
+      if (r.setState({
+        isAnimationFinished: !0
+      }), o) o();
+    }), Qa(r, "handleAnimationStart", function () {
+      var o = r.props.onAnimationStart;
+      if (r.setState({
+        isAnimationFinished: !1
+      }), o) o();
+    }), r;
+  }
+  return nrt(e, t), Jet(e, [{
+    key: "renderRectanglesStatically",
+    value: function (n) {
+      var a = this,
+        i = this.props,
+        {
+          shape: o,
+          dataKey: l,
+          activeIndex: u,
+          activeBar: s
+        } = i,
+        f = at(this.props, !1);
+      return n && n.map(function (c, p) {
+        var d = p === u,
+          b = d ? s : o,
+          y = se(se(se({}, f), c), {}, {
+            isActive: d,
+            option: b,
+            index: p,
+            dataKey: l,
+            onAnimationStart: a.handleAnimationStart,
+            onAnimationEnd: a.handleAnimationEnd
+          });
+        return U(Rt, om({
+          className: "recharts-bar-rectangle"
+        }, Di(a.props, c, p), {
+          key: "rectangle-".concat(c === null || c === void 0 ? void 0 : c.x, "-").concat(c === null || c === void 0 ? void 0 : c.y, "-").concat(c === null || c === void 0 ? void 0 : c.value, "-").concat(p)
+        }), U(u1, y));
+      });
+    }
+  }, {
+    key: "renderRectanglesWithAnimation",
+    value: function () {
+      var n = this,
+        a = this.props,
+        {
+          data: i,
+          layout: o,
+          isAnimationActive: l,
+          animationBegin: u,
+          animationDuration: s,
+          animationEasing: f,
+          animationId: c
+        } = a,
+        p = this.state.prevData;
+      return U(Ya, {
+        begin: u,
+        duration: s,
+        isActive: l,
+        easing: f,
+        from: {
+          t: 0
+        },
+        to: {
+          t: 1
+        },
+        key: "bar-".concat(c),
+        onAnimationEnd: this.handleAnimationEnd,
+        onAnimationStart: this.handleAnimationStart
+      }, function (d) {
+        var b = d.t,
+          y = i.map(function (w, m) {
+            var h = p && p[m];
+            if (h) {
+              var g = Ci(h.x, w.x),
+                x = Ci(h.y, w.y),
+                v = Ci(h.width, w.width),
+                S = Ci(h.height, w.height);
+              return se(se({}, w), {}, {
+                x: g(b),
+                y: x(b),
+                width: v(b),
+                height: S(b)
+              });
+            }
+            if (o === "horizontal") {
+              var A = Ci(0, w.height),
+                M = A(b);
+              return se(se({}, w), {}, {
+                y: w.y + w.height - M,
+                height: M
+              });
+            }
+            var N = Ci(0, w.width),
+              R = N(b);
+            return se(se({}, w), {}, {
+              width: R
+            });
+          });
+        return U(Rt, null, n.renderRectanglesStatically(y));
+      });
+    }
+  }, {
+    key: "renderRectangles",
+    value: function () {
+      var n = this.props,
+        {
+          data: a,
+          isAnimationActive: i
+        } = n,
+        o = this.state.prevData;
+      if (i && a && a.length && (!o || !j5.default(o, a))) return this.renderRectanglesWithAnimation();
+      return this.renderRectanglesStatically(a);
+    }
+  }, {
+    key: "renderBackground",
+    value: function () {
+      var n = this,
+        a = this.props,
+        {
+          data: i,
+          dataKey: o,
+          activeIndex: l
+        } = a,
+        u = at(this.props.background, !1);
+      return i.map(function (s, f) {
+        var {
+            value: c,
+            background: p
+          } = s,
+          d = Fet(s, Vet);
+        if (!p) return null;
+        var b = se(se(se(se(se({}, d), {}, {
+          fill: "#eee"
+        }, p), u), Di(n.props, s, f)), {}, {
+          onAnimationStart: n.handleAnimationStart,
+          onAnimationEnd: n.handleAnimationEnd,
+          dataKey: o,
+          index: f,
+          className: "recharts-bar-background-rectangle"
+        });
+        return U(u1, om({
+          key: "background-bar-".concat(f),
+          option: n.props.background,
+          isActive: f === l
+        }, b));
+      });
+    }
+  }, {
+    key: "renderErrorBar",
+    value: function (n, a) {
+      if (this.props.isAnimationActive && !this.state.isAnimationFinished) return null;
+      var i = this.props,
+        {
+          data: o,
+          xAxis: l,
+          yAxis: u,
+          layout: s,
+          children: f
+        } = i,
+        c = Ae(f, ql);
+      if (!c) return null;
+      var p = s === "vertical" ? o[0].height / 2 : o[0].width / 2,
+        d = function (w, m) {
+          var h = Array.isArray(w.value) ? w.value[1] : w.value;
+          return {
+            x: w.x,
+            y: w.y,
+            value: h,
+            errorVal: yr(w, m)
+          };
+        },
+        b = {
+          clipPath: n ? "url(#clipPath-".concat(a, ")") : null
+        };
+      return U(Rt, b, c.map(function (y) {
+        return mt(y, {
+          key: "error-bar-".concat(a, "-").concat(y.props.dataKey),
+          data: o,
+          xAxis: l,
+          yAxis: u,
+          layout: s,
+          offset: p,
+          dataPointFormatter: d
+        });
+      }));
+    }
+  }, {
+    key: "render",
+    value: function () {
+      var n = this.props,
+        {
+          hide: a,
+          data: i,
+          className: o,
+          xAxis: l,
+          yAxis: u,
+          left: s,
+          top: f,
+          width: c,
+          height: p,
+          isAnimationActive: d,
+          background: b,
+          id: y
+        } = n;
+      if (a || !i || !i.length) return null;
+      var w = this.state.isAnimationFinished,
+        m = nt("recharts-bar", o),
+        h = l && l.allowDataOverflow,
+        g = u && u.allowDataOverflow,
+        x = h || g,
+        v = D5.default(y) ? this.id : y;
+      return U(Rt, {
+        className: m
+      }, h || g ? U("defs", null, U("clipPath", {
+        id: "clipPath-".concat(v)
+      }, U("rect", {
+        x: h ? s : s - c / 2,
+        y: g ? f : f - p / 2,
+        width: h ? c : c * 2,
+        height: g ? p : p * 2
+      }))) : null, U(Rt, {
+        className: "recharts-bar-rectangles",
+        clipPath: x ? "url(#clipPath-".concat(v, ")") : null
+      }, b ? this.renderBackground() : null, this.renderRectangles()), this.renderErrorBar(x, v), (!d || w) && Xa.renderCallByParent(this.props, i));
+    }
+  }], [{
+    key: "getDerivedStateFromProps",
+    value: function (n, a) {
+      if (n.animationId !== a.prevAnimationId) return {
+        prevAnimationId: n.animationId,
+        curData: n.data,
+        prevData: a.curData
+      };
+      if (n.data !== a.curData) return {
+        curData: n.data
+      };
+      return null;
+    }
+  }]);
+}(ze);
+_5 = en;
+Qa(en, "displayName", "Bar");
+Qa(en, "defaultProps", {
+  xAxisId: 0,
+  yAxisId: 0,
+  legendType: "rect",
+  minPointSize: 0,
+  hide: !1,
+  data: [],
+  layout: "vertical",
+  activeBar: !1,
+  isAnimationActive: !fr.isSsr,
+  animationBegin: 0,
+  animationDuration: 400,
+  animationEasing: "ease"
+});
+Qa(en, "getComposedData", function (t) {
+  var {
+      props: e,
+      item: r,
+      barPosition: n,
+      bandSize: a,
+      xAxis: i,
+      yAxis: o,
+      xAxisTicks: l,
+      yAxisTicks: u,
+      stackedData: s,
+      dataStartIndex: f,
+      displayedData: c,
+      offset: p
+    } = t,
+    d = wk(n, r);
+  if (!d) return null;
+  var b = e.layout,
+    y = r.type.defaultProps,
+    w = y !== void 0 ? se(se({}, y), r.props) : r.props,
+    {
+      dataKey: m,
+      children: h,
+      minPointSize: g
+    } = w,
+    x = b === "horizontal" ? o : i,
+    v = s ? x.scale.domain() : null,
+    S = Tk({
+      numericAxis: x
+    }),
+    A = Ae(h, Jx),
+    M = c.map(function (N, R) {
+      var H, L, z, X, Y, O;
+      if (s) H = Sk(s[f + R], v);else if (H = yr(N, m), !Array.isArray(H)) H = [S, H];
+      var T = A5(g, _5.defaultProps.minPointSize)(H[1], R);
+      if (b === "horizontal") {
+        var D,
+          _ = [o.scale(H[0]), o.scale(H[1])],
+          j = _[0],
+          C = _[1];
+        L = Rx({
+          axis: i,
+          ticks: l,
+          bandSize: a,
+          offset: d.offset,
+          entry: N,
+          index: R
+        }), z = (D = C !== null && C !== void 0 ? C : j) !== null && D !== void 0 ? D : void 0, X = d.size;
+        var q = j - C;
+        if (Y = Number.isNaN(q) ? 0 : q, O = {
+          x: L,
+          y: o.y,
+          width: X,
+          height: o.height
+        }, Math.abs(T) > 0 && Math.abs(Y) < Math.abs(T)) {
+          var B = Ce(Y || T) * (Math.abs(T) - Math.abs(Y));
+          z -= B, Y += B;
+        }
+      } else {
+        var Q = [i.scale(H[0]), i.scale(H[1])],
+          Z = Q[0],
+          J = Q[1];
+        if (L = Z, z = Rx({
+          axis: o,
+          ticks: u,
+          bandSize: a,
+          offset: d.offset,
+          entry: N,
+          index: R
+        }), X = J - Z, Y = d.size, O = {
+          x: i.x,
+          y: z,
+          width: i.width,
+          height: Y
+        }, Math.abs(T) > 0 && Math.abs(X) < Math.abs(T)) {
+          var tt = Ce(X || T) * (Math.abs(T) - Math.abs(X));
+          X += tt;
+        }
+      }
+      return se(se(se({}, N), {}, {
+        x: L,
+        y: z,
+        width: X,
+        height: Y,
+        value: s ? H : H[1],
+        payload: N,
+        background: O
+      }, A && A[R] && A[R].props), {}, {
+        tooltipPayload: [Wh(r, N)],
+        tooltipPosition: {
+          x: L + X / 2,
+          y: z + Y / 2
+        }
+      });
+    });
+  return se({
+    data: M,
+    layout: b
+  }, p);
+});
+function Qc(t) {
+  return Qc = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Qc(t);
+}
+function irt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function N5(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, P5(n.key), n);
+  }
+}
+function ort(t, e, r) {
+  if (e) N5(t.prototype, e);
+  if (r) N5(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function k5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function rn(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? k5(Object(r), !0).forEach(function (n) {
+      um(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : k5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function um(t, e, r) {
+  if (e = P5(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function P5(t) {
+  var e = lrt(t, "string");
+  return Qc(e) == "symbol" ? e : e + "";
+}
+function lrt(t, e) {
+  if (Qc(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Qc(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var q5 = function (e, r, n, a, i) {
+    var {
+        width: o,
+        height: l,
+        layout: u,
+        children: s
+      } = e,
+      f = Object.keys(r),
+      c = {
+        left: n.left,
+        leftMirror: n.left,
+        right: o - n.right,
+        rightMirror: o - n.right,
+        top: n.top,
+        topMirror: n.top,
+        bottom: l - n.bottom,
+        bottomMirror: l - n.bottom
+      },
+      p = !!je(s, en);
+    return f.reduce(function (d, b) {
+      var y = r[b],
+        {
+          orientation: w,
+          domain: m,
+          padding: h
+        } = y,
+        g = h === void 0 ? {} : h,
+        {
+          mirror: x,
+          reversed: v
+        } = y,
+        S = "".concat(w).concat(x ? "Mirror" : ""),
+        A,
+        M,
+        N,
+        R,
+        H;
+      if (y.type === "number" && (y.padding === "gap" || y.padding === "no-gap")) {
+        var L = m[1] - m[0],
+          z = 1 / 0,
+          X = y.categoricalDomain.sort(mj);
+        if (X.forEach(function (Q, Z) {
+          if (Z > 0) z = Math.min((Q || 0) - (X[Z - 1] || 0), z);
+        }), Number.isFinite(z)) {
+          var Y = z / L,
+            O = y.layout === "vertical" ? n.height : n.width;
+          if (y.padding === "gap") A = Y * O / 2;
+          if (y.padding === "no-gap") {
+            var T = Vr(e.barCategoryGap, Y * O),
+              D = Y * O / 2;
+            A = D - T - (D - T) / O * T;
+          }
+        }
+      }
+      if (a === "xAxis") M = [n.left + (g.left || 0) + (A || 0), n.left + n.width - (g.right || 0) - (A || 0)];else if (a === "yAxis") M = u === "horizontal" ? [n.top + n.height - (g.bottom || 0), n.top + (g.top || 0)] : [n.top + (g.top || 0) + (A || 0), n.top + n.height - (g.bottom || 0) - (A || 0)];else M = y.range;
+      if (v) M = [M[1], M[0]];
+      var _ = bk(y, i, p),
+        {
+          scale: j,
+          realScaleType: C
+        } = _;
+      j.domain(m).range(M), xk(j);
+      var q = Ak(j, rn(rn({}, y), {}, {
+        realScaleType: C
+      }));
+      if (a === "xAxis") H = w === "top" && !x || w === "bottom" && x, N = n.left, R = c[S] - H * y.height;else if (a === "yAxis") H = w === "left" && !x || w === "right" && x, N = c[S] - H * y.width, R = n.top;
+      var B = rn(rn(rn({}, y), q), {}, {
+        realScaleType: C,
+        x: N,
+        y: R,
+        scale: j,
+        width: a === "xAxis" ? n.width : y.width,
+        height: a === "yAxis" ? n.height : y.height
+      });
+      if (B.bandSize = Wl(B, q), !y.hide && a === "xAxis") c[S] += (H ? -1 : 1) * B.height;else if (!y.hide) c[S] += (H ? -1 : 1) * B.width;
+      return rn(rn({}, d), {}, um({}, b, B));
+    }, {});
+  },
+  c1 = function (e, r) {
+    var {
+        x: n,
+        y: a
+      } = e,
+      {
+        x: i,
+        y: o
+      } = r;
+    return {
+      x: Math.min(n, i),
+      y: Math.min(a, o),
+      width: Math.abs(i - n),
+      height: Math.abs(o - a)
+    };
+  },
+  B5 = function (e) {
+    var {
+      x1: r,
+      y1: n,
+      x2: a,
+      y2: i
+    } = e;
+    return c1({
+      x: r,
+      y: n
+    }, {
+      x: a,
+      y: i
+    });
+  },
+  L5 = function () {
+    function t(e) {
+      irt(this, t), this.scale = e;
+    }
+    return ort(t, [{
+      key: "domain",
+      get: function () {
+        return this.scale.domain;
+      }
+    }, {
+      key: "range",
+      get: function () {
+        return this.scale.range;
+      }
+    }, {
+      key: "rangeMin",
+      get: function () {
+        return this.range()[0];
+      }
+    }, {
+      key: "rangeMax",
+      get: function () {
+        return this.range()[1];
+      }
+    }, {
+      key: "bandwidth",
+      get: function () {
+        return this.scale.bandwidth;
+      }
+    }, {
+      key: "apply",
+      value: function (r) {
+        var n = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {},
+          {
+            bandAware: a,
+            position: i
+          } = n;
+        if (r === void 0) return;
+        if (i) switch (i) {
+          case "start":
+            return this.scale(r);
+          case "middle":
+            {
+              var o = this.bandwidth ? this.bandwidth() / 2 : 0;
+              return this.scale(r) + o;
+            }
+          case "end":
+            {
+              var l = this.bandwidth ? this.bandwidth() : 0;
+              return this.scale(r) + l;
+            }
+          default:
+            return this.scale(r);
+        }
+        if (a) {
+          var u = this.bandwidth ? this.bandwidth() / 2 : 0;
+          return this.scale(r) + u;
+        }
+        return this.scale(r);
+      }
+    }, {
+      key: "isInRange",
+      value: function (r) {
+        var n = this.range(),
+          a = n[0],
+          i = n[n.length - 1];
+        return a <= i ? r >= a && r <= i : r >= i && r <= a;
+      }
+    }], [{
+      key: "create",
+      value: function (r) {
+        return new t(r);
+      }
+    }]);
+  }();
+um(L5, "EPS", 0.0001);
+var $l = function (e) {
+  var r = Object.keys(e).reduce(function (n, a) {
+    return rn(rn({}, n), {}, um({}, a, L5.create(e[a])));
+  }, {});
+  return rn(rn({}, r), {}, {
+    apply: function (a) {
+      var i = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {},
+        {
+          bandAware: o,
+          position: l
+        } = i;
+      return R5.default(a, function (u, s) {
+        return r[s].apply(u, {
+          bandAware: o,
+          position: l
+        });
+      });
+    },
+    isInRange: function (a) {
+      return z5.default(a, function (i, o) {
+        return r[o].isInRange(i);
+      });
+    }
+  });
+};
+function urt(t) {
+  return (t % 180 + 180) % 180;
+}
+var I5 = function (e) {
+  var {
+      width: r,
+      height: n
+    } = e,
+    a = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0,
+    i = urt(a),
+    o = i * Math.PI / 180,
+    l = Math.atan(n / r),
+    u = o > l && o < Math.PI - l ? n / Math.sin(o) : r / Math.cos(o);
+  return Math.abs(u);
+};
+function sm(t, e, r) {
+  if (e < 1) return [];
+  if (e === 1 && r === void 0) return t;
+  var n = [];
+  for (var a = 0; a < t.length; a += e) if (r === void 0 || r(t[a]) === !0) n.push(t[a]);else return;
+  return n;
+}
+function U5(t, e, r) {
+  var n = {
+    width: t.width + e.width,
+    height: t.height + e.height
+  };
+  return I5(n, r);
+}
+function H5(t, e, r) {
+  var n = r === "width",
+    {
+      x: a,
+      y: i,
+      width: o,
+      height: l
+    } = t;
+  if (e === 1) return {
+    start: n ? a : i,
+    end: n ? a + o : i + l
+  };
+  return {
+    start: n ? a + o : i + l,
+    end: n ? a : i
+  };
+}
+function Jl(t, e, r, n, a) {
+  if (t * e < t * n || t * e > t * a) return !1;
+  var i = r();
+  return t * (e - t * i / 2 - n) >= 0 && t * (e + t * i / 2 - a) <= 0;
+}
+function W5(t, e) {
+  return sm(t, e + 1);
+}
+function G5(t, e, r, n, a) {
+  var i = (n || []).slice(),
+    {
+      start: o,
+      end: l
+    } = e,
+    u = 0,
+    s = 1,
+    f = o,
+    c = function () {
+      var b = n === null || n === void 0 ? void 0 : n[u];
+      if (b === void 0) return {
+        v: sm(n, s)
+      };
+      var y = u,
+        w,
+        m = function () {
+          if (w === void 0) w = r(b, y);
+          return w;
+        },
+        h = b.coordinate,
+        g = u === 0 || Jl(t, h, m, f, l);
+      if (!g) u = 0, f = o, s += 1;
+      if (g) f = h + t * (m() / 2 + a), u += s;
+    },
+    p;
+  while (s <= i.length) if (p = c(), p) return p.v;
+  return [];
+}
+function Kc(t) {
+  return Kc = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Kc(t);
+}
+function Y5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function Ne(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? Y5(Object(r), !0).forEach(function (n) {
+      srt(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : Y5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function srt(t, e, r) {
+  if (e = crt(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function crt(t) {
+  var e = frt(t, "string");
+  return Kc(e) == "symbol" ? e : e + "";
+}
+function frt(t, e) {
+  if (Kc(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Kc(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function prt(t, e, r, n, a) {
+  var i = (n || []).slice(),
+    o = i.length,
+    {
+      start: l,
+      end: u
+    } = e,
+    s = function (p) {
+      var d = i[p],
+        b,
+        y = function () {
+          if (b === void 0) b = r(d, p);
+          return b;
+        };
+      if (p === o - 1) {
+        var w = t * (d.coordinate + t * y() / 2 - u);
+        i[p] = d = Ne(Ne({}, d), {}, {
+          tickCoord: w > 0 ? d.coordinate - w * t : d.coordinate
+        });
+      } else i[p] = d = Ne(Ne({}, d), {}, {
+        tickCoord: d.coordinate
+      });
+      var m = Jl(t, d.tickCoord, y, l, u);
+      if (m) u = d.tickCoord - t * (y() / 2 + a), i[p] = Ne(Ne({}, d), {}, {
+        isShow: !0
+      });
+    };
+  for (var f = o - 1; f >= 0; f--) s(f);
+  return i;
+}
+function drt(t, e, r, n, a, i) {
+  var o = (n || []).slice(),
+    l = o.length,
+    {
+      start: u,
+      end: s
+    } = e;
+  if (i) {
+    var f = n[l - 1],
+      c = r(f, l - 1),
+      p = t * (f.coordinate + t * c / 2 - s);
+    o[l - 1] = f = Ne(Ne({}, f), {}, {
+      tickCoord: p > 0 ? f.coordinate - p * t : f.coordinate
+    });
+    var d = Jl(t, f.tickCoord, function () {
+      return c;
+    }, u, s);
+    if (d) s = f.tickCoord - t * (c / 2 + a), o[l - 1] = Ne(Ne({}, f), {}, {
+      isShow: !0
+    });
+  }
+  var b = i ? l - 1 : l,
+    y = function (h) {
+      var g = o[h],
+        x,
+        v = function () {
+          if (x === void 0) x = r(g, h);
+          return x;
+        };
+      if (h === 0) {
+        var S = t * (g.coordinate - t * v() / 2 - u);
+        o[h] = g = Ne(Ne({}, g), {}, {
+          tickCoord: S < 0 ? g.coordinate - S * t : g.coordinate
+        });
+      } else o[h] = g = Ne(Ne({}, g), {}, {
+        tickCoord: g.coordinate
+      });
+      var A = Jl(t, g.tickCoord, v, u, s);
+      if (A) u = g.tickCoord + t * (v() / 2 + a), o[h] = Ne(Ne({}, g), {}, {
+        isShow: !0
+      });
+    };
+  for (var w = 0; w < b; w++) y(w);
+  return o;
+}
+function Vc(t, e, r) {
+  var {
+    tick: n,
+    ticks: a,
+    viewBox: i,
+    minTickGap: o,
+    orientation: l,
+    interval: u,
+    tickFormatter: s,
+    unit: f,
+    angle: c
+  } = t;
+  if (!a || !a.length || !n) return [];
+  if (F(u) || fr.isSsr) return W5(a, typeof u === "number" && F(u) ? u : 0);
+  var p = [],
+    d = l === "top" || l === "bottom" ? "width" : "height",
+    b = f && d === "width" ? Fi(f, {
+      fontSize: e,
+      letterSpacing: r
+    }) : {
+      width: 0,
+      height: 0
+    },
+    y = function (g, x) {
+      var v = X5.default(s) ? s(g.value, x) : g.value;
+      return d === "width" ? U5(Fi(v, {
+        fontSize: e,
+        letterSpacing: r
+      }), b, c) : Fi(v, {
+        fontSize: e,
+        letterSpacing: r
+      })[d];
+    },
+    w = a.length >= 2 ? Ce(a[1].coordinate - a[0].coordinate) : 1,
+    m = H5(i, w, d);
+  if (u === "equidistantPreserveStart") return G5(w, m, y, a, o);
+  if (u === "preserveStart" || u === "preserveStartEnd") p = drt(w, m, y, a, o, u === "preserveStartEnd");else p = prt(w, m, y, a, o);
+  return p.filter(function (h) {
+    return h.isShow;
+  });
+}
+var cm = rt(ue()),
+  d1 = rt(_i());
+var hrt = ["viewBox"],
+  mrt = ["viewBox"],
+  yrt = ["ticks"];
+function eu(t) {
+  return eu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, eu(t);
+}
+function tu() {
+  return tu = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, tu.apply(this, arguments);
+}
+function Q5(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function We(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? Q5(Object(r), !0).forEach(function (n) {
+      h1(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : Q5(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function f1(t, e) {
+  if (t == null) return {};
+  var r = grt(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function grt(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+function vrt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function K5(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, F5(n.key), n);
+  }
+}
+function brt(t, e, r) {
+  if (e) K5(t.prototype, e);
+  if (r) K5(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function xrt(t, e, r) {
+  return e = fm(e), wrt(t, V5() ? Reflect.construct(e, r || [], fm(t).constructor) : e.apply(t, r));
+}
+function wrt(t, e) {
+  if (e && (eu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return Srt(t);
+}
+function Srt(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function V5() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (V5 = function () {
+    return !!t;
+  })();
+}
+function fm(t) {
+  return fm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, fm(t);
+}
+function Ort(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) p1(t, e);
+}
+function p1(t, e) {
+  return p1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, p1(t, e);
+}
+function h1(t, e, r) {
+  if (e = F5(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function F5(t) {
+  var e = Art(t, "string");
+  return eu(e) == "symbol" ? e : e + "";
+}
+function Art(t, e) {
+  if (eu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (eu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var aa = function (t) {
+  function e(r) {
+    var n;
+    return vrt(this, e), n = xrt(this, e, [r]), n.state = {
+      fontSize: "",
+      letterSpacing: ""
+    }, n;
+  }
+  return Ort(e, t), brt(e, [{
+    key: "shouldComponentUpdate",
+    value: function (n, a) {
+      var i = n.viewBox,
+        o = f1(n, hrt),
+        l = this.props,
+        u = l.viewBox,
+        s = f1(l, mrt);
+      return !Fn(i, u) || !Fn(o, s) || !Fn(a, this.state);
+    }
+  }, {
+    key: "componentDidMount",
+    value: function () {
+      var n = this.layerReference;
+      if (!n) return;
+      var a = n.getElementsByClassName("recharts-cartesian-axis-tick-value")[0];
+      if (a) this.setState({
+        fontSize: window.getComputedStyle(a).fontSize,
+        letterSpacing: window.getComputedStyle(a).letterSpacing
+      });
+    }
+  }, {
+    key: "getTickLineCoord",
+    value: function (n) {
+      var a = this.props,
+        {
+          x: i,
+          y: o,
+          width: l,
+          height: u,
+          orientation: s,
+          tickSize: f,
+          mirror: c,
+          tickMargin: p
+        } = a,
+        d,
+        b,
+        y,
+        w,
+        m,
+        h,
+        g = c ? -1 : 1,
+        x = n.tickSize || f,
+        v = F(n.tickCoord) ? n.tickCoord : n.coordinate;
+      switch (s) {
+        case "top":
+          d = b = n.coordinate, w = o + +!c * u, y = w - g * x, h = y - g * p, m = v;
+          break;
+        case "left":
+          y = w = n.coordinate, b = i + +!c * l, d = b - g * x, m = d - g * p, h = v;
+          break;
+        case "right":
+          y = w = n.coordinate, b = i + +c * l, d = b + g * x, m = d + g * p, h = v;
+          break;
+        default:
+          d = b = n.coordinate, w = o + +c * u, y = w + g * x, h = y + g * p, m = v;
+          break;
+      }
+      return {
+        line: {
+          x1: d,
+          y1: y,
+          x2: b,
+          y2: w
+        },
+        tick: {
+          x: m,
+          y: h
+        }
+      };
+    }
+  }, {
+    key: "getTickTextAnchor",
+    value: function () {
+      var n = this.props,
+        {
+          orientation: a,
+          mirror: i
+        } = n,
+        o;
+      switch (a) {
+        case "left":
+          o = i ? "start" : "end";
+          break;
+        case "right":
+          o = i ? "end" : "start";
+          break;
+        default:
+          o = "middle";
+          break;
+      }
+      return o;
+    }
+  }, {
+    key: "getTickVerticalAnchor",
+    value: function () {
+      var n = this.props,
+        {
+          orientation: a,
+          mirror: i
+        } = n,
+        o = "end";
+      switch (a) {
+        case "left":
+        case "right":
+          o = "middle";
+          break;
+        case "top":
+          o = i ? "start" : "end";
+          break;
+        default:
+          o = i ? "end" : "start";
+          break;
+      }
+      return o;
+    }
+  }, {
+    key: "renderAxisLine",
+    value: function () {
+      var n = this.props,
+        {
+          x: a,
+          y: i,
+          width: o,
+          height: l,
+          orientation: u,
+          mirror: s,
+          axisLine: f
+        } = n,
+        c = We(We(We({}, at(this.props, !1)), at(f, !1)), {}, {
+          fill: "none"
+        });
+      if (u === "top" || u === "bottom") {
+        var p = +(u === "top" && !s || u === "bottom" && s);
+        c = We(We({}, c), {}, {
+          x1: a,
+          y1: i + p * l,
+          x2: a + o,
+          y2: i + p * l
+        });
+      } else {
+        var d = +(u === "left" && !s || u === "right" && s);
+        c = We(We({}, c), {}, {
+          x1: a + d * o,
+          y1: i,
+          x2: a + d * o,
+          y2: i + l
+        });
+      }
+      return U("line", tu({}, c, {
+        className: nt("recharts-cartesian-axis-line", d1.default(f, "className"))
+      }));
+    }
+  }, {
+    key: "renderTicks",
+    value: function (n, a, i) {
+      var o = this,
+        l = this.props,
+        {
+          tickLine: u,
+          stroke: s,
+          tick: f,
+          tickFormatter: c,
+          unit: p
+        } = l,
+        d = Vc(We(We({}, this.props), {}, {
+          ticks: n
+        }), a, i),
+        b = this.getTickTextAnchor(),
+        y = this.getTickVerticalAnchor(),
+        w = at(this.props, !1),
+        m = at(f, !1),
+        h = We(We({}, w), {}, {
+          fill: "none"
+        }, at(u, !1)),
+        g = d.map(function (x, v) {
+          var S = o.getTickLineCoord(x),
+            {
+              line: A,
+              tick: M
+            } = S,
+            N = We(We(We(We({
+              textAnchor: b,
+              verticalAnchor: y
+            }, w), {}, {
+              stroke: "none",
+              fill: s
+            }, m), M), {}, {
+              index: v,
+              payload: x,
+              visibleTicksCount: d.length,
+              tickFormatter: c
+            });
+          return U(Rt, tu({
+            className: "recharts-cartesian-axis-tick",
+            key: "tick-".concat(x.value, "-").concat(x.coordinate, "-").concat(x.tickCoord)
+          }, Di(o.props, x, v)), u && U("line", tu({}, h, A, {
+            className: nt("recharts-cartesian-axis-tick-line", d1.default(u, "className"))
+          })), f && e.renderTickItem(f, N, "".concat(cm.default(c) ? c(x.value, v) : x.value).concat(p || "")));
+        });
+      return U("g", {
+        className: "recharts-cartesian-axis-ticks"
+      }, g);
+    }
+  }, {
+    key: "render",
+    value: function () {
+      var n = this,
+        a = this.props,
+        {
+          axisLine: i,
+          width: o,
+          height: l,
+          ticksGenerator: u,
+          className: s,
+          hide: f
+        } = a;
+      if (f) return null;
+      var c = this.props,
+        p = c.ticks,
+        d = f1(c, yrt),
+        b = p;
+      if (cm.default(u)) b = p && p.length > 0 ? u(this.props) : u(d);
+      if (o <= 0 || l <= 0 || !b || !b.length) return null;
+      return U(Rt, {
+        className: nt("recharts-cartesian-axis", s),
+        ref: function (w) {
+          n.layerReference = w;
+        }
+      }, i && this.renderAxisLine(), this.renderTicks(b, this.state.fontSize, this.state.letterSpacing), re.renderCallByParent(this.props));
+    }
+  }], [{
+    key: "renderTickItem",
+    value: function (n, a, i) {
+      var o;
+      if (_t(n)) o = mt(n, a);else if (cm.default(n)) o = n(a);else o = U($i, tu({}, a, {
+        className: "recharts-cartesian-axis-tick-value"
+      }), i);
+      return o;
+    }
+  }]);
+}(Hr);
+h1(aa, "displayName", "CartesianAxis");
+h1(aa, "defaultProps", {
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+  viewBox: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0
+  },
+  orientation: "bottom",
+  ticks: [],
+  stroke: "#666",
+  tickLine: !0,
+  axisLine: !0,
+  tick: !0,
+  mirror: !1,
+  minTickGap: 5,
+  tickSize: 6,
+  tickMargin: 2,
+  interval: "preserveEnd"
+});
+var s4 = rt(o4()),
+  c4 = rt(Lx());
+var l4 = rt(t0()),
+  u4 = l4.default(function (t) {
+    return {
+      x: t.left,
+      y: t.top,
+      width: t.width,
+      height: t.height
+    };
+  }, function (t) {
+    return ["l", t.left, "t", t.top, "w", t.width, "h", t.height].join("");
+  });
+var y1 = qe(void 0),
+  g1 = qe(void 0),
+  f4 = qe(void 0),
+  p4 = qe({}),
+  d4 = qe(void 0),
+  h4 = qe(0),
+  m4 = qe(0),
+  v1 = function (e) {
+    var r = e.state,
+      {
+        xAxisMap: n,
+        yAxisMap: a,
+        offset: i
+      } = r,
+      {
+        clipPathId: o,
+        children: l,
+        width: u,
+        height: s
+      } = e,
+      f = u4(i);
+    return U(y1.Provider, {
+      value: n
+    }, U(g1.Provider, {
+      value: a
+    }, U(p4.Provider, {
+      value: i
+    }, U(f4.Provider, {
+      value: f
+    }, U(d4.Provider, {
+      value: o
+    }, U(h4.Provider, {
+      value: s
+    }, U(m4.Provider, {
+      value: u
+    }, l)))))));
+  },
+  y4 = function () {
+    return ve(d4);
+  };
+var pm = function (e) {
+    var r = ve(y1);
+    r == null && Jr(!1);
+    var n = r[e];
+    return n == null && Jr(!1), n;
+  },
+  g4 = function () {
+    var e = ve(y1);
+    return xn(e);
+  };
+var v4 = function () {
+    var e = ve(g1),
+      r = s4.default(e, function (n) {
+        return c4.default(n.domain, Number.isFinite);
+      });
+    return r || xn(e);
+  },
+  dm = function (e) {
+    var r = ve(g1);
+    r == null && Jr(!1);
+    var n = r[e];
+    return n == null && Jr(!1), n;
+  },
+  b4 = function () {
+    var e = ve(f4);
+    return e;
+  },
+  x4 = function () {
+    return ve(p4);
+  },
+  ru = function () {
+    return ve(m4);
+  },
+  nu = function () {
+    return ve(h4);
+  };
+var Hrt = ["x1", "y1", "x2", "y2", "key"],
+  Wrt = ["offset"];
+function to(t) {
+  return to = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, to(t);
+}
+function w4(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function ke(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? w4(Object(r), !0).forEach(function (n) {
+      Grt(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : w4(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function Grt(t, e, r) {
+  if (e = Yrt(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Yrt(t) {
+  var e = Xrt(t, "string");
+  return to(e) == "symbol" ? e : e + "";
+}
+function Xrt(t, e) {
+  if (to(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (to(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function Ji() {
+  return Ji = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, Ji.apply(this, arguments);
+}
+function S4(t, e) {
+  if (t == null) return {};
+  var r = Qrt(t, e),
+    n,
+    a;
+  if (Object.getOwnPropertySymbols) {
+    var i = Object.getOwnPropertySymbols(t);
+    for (a = 0; a < i.length; a++) {
+      if (n = i[a], e.indexOf(n) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(t, n)) continue;
+      r[n] = t[n];
+    }
+  }
+  return r;
+}
+function Qrt(t, e) {
+  if (t == null) return {};
+  var r = {};
+  for (var n in t) if (Object.prototype.hasOwnProperty.call(t, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    r[n] = t[n];
+  }
+  return r;
+}
+var Krt = function (e) {
+  var r = e.fill;
+  if (!r || r === "none") return null;
+  var {
+    fillOpacity: n,
+    x: a,
+    y: i,
+    width: o,
+    height: l,
+    ry: u
+  } = e;
+  return U("rect", {
+    x: a,
+    y: i,
+    ry: u,
+    width: o,
+    height: l,
+    stroke: "none",
+    fill: r,
+    fillOpacity: n,
+    className: "recharts-cartesian-grid-bg"
+  });
+};
+function O4(t, e) {
+  var r;
+  if (_t(t)) r = mt(t, e);else if (hm.default(t)) r = t(e);else {
+    var {
+        x1: n,
+        y1: a,
+        x2: i,
+        y2: o,
+        key: l
+      } = e,
+      u = S4(e, Hrt),
+      s = at(u, !1),
+      f = s.offset,
+      c = S4(s, Wrt);
+    r = U("line", Ji({}, c, {
+      x1: n,
+      y1: a,
+      x2: i,
+      y2: o,
+      fill: "none",
+      key: l
+    }));
+  }
+  return r;
+}
+function Vrt(t) {
+  var {
+      x: e,
+      width: r,
+      horizontal: n
+    } = t,
+    a = n === void 0 ? !0 : n,
+    i = t.horizontalPoints;
+  if (!a || !i || !i.length) return null;
+  var o = i.map(function (l, u) {
+    var s = ke(ke({}, t), {}, {
+      x1: e,
+      y1: l,
+      x2: e + r,
+      y2: l,
+      key: "line-".concat(u),
+      index: u
+    });
+    return O4(a, s);
+  });
+  return U("g", {
+    className: "recharts-cartesian-grid-horizontal"
+  }, o);
+}
+function Frt(t) {
+  var {
+      y: e,
+      height: r,
+      vertical: n
+    } = t,
+    a = n === void 0 ? !0 : n,
+    i = t.verticalPoints;
+  if (!a || !i || !i.length) return null;
+  var o = i.map(function (l, u) {
+    var s = ke(ke({}, t), {}, {
+      x1: l,
+      y1: e,
+      x2: l,
+      y2: e + r,
+      key: "line-".concat(u),
+      index: u
+    });
+    return O4(a, s);
+  });
+  return U("g", {
+    className: "recharts-cartesian-grid-vertical"
+  }, o);
+}
+function Zrt(t) {
+  var {
+      horizontalFill: e,
+      fillOpacity: r,
+      x: n,
+      y: a,
+      width: i,
+      height: o,
+      horizontalPoints: l,
+      horizontal: u
+    } = t,
+    s = u === void 0 ? !0 : u;
+  if (!s || !e || !e.length) return null;
+  var f = l.map(function (p) {
+    return Math.round(p + a - a);
+  }).sort(function (p, d) {
+    return p - d;
+  });
+  if (a !== f[0]) f.unshift(0);
+  var c = f.map(function (p, d) {
+    var b = !f[d + 1],
+      y = b ? a + o - p : f[d + 1] - p;
+    if (y <= 0) return null;
+    var w = d % e.length;
+    return U("rect", {
+      key: "react-".concat(d),
+      y: p,
+      x: n,
+      height: y,
+      width: i,
+      stroke: "none",
+      fill: e[w],
+      fillOpacity: r,
+      className: "recharts-cartesian-grid-bg"
+    });
+  });
+  return U("g", {
+    className: "recharts-cartesian-gridstripes-horizontal"
+  }, c);
+}
+function $rt(t) {
+  var e = t.vertical,
+    r = e === void 0 ? !0 : e,
+    {
+      verticalFill: n,
+      fillOpacity: a,
+      x: i,
+      y: o,
+      width: l,
+      height: u,
+      verticalPoints: s
+    } = t;
+  if (!r || !n || !n.length) return null;
+  var f = s.map(function (p) {
+    return Math.round(p + i - i);
+  }).sort(function (p, d) {
+    return p - d;
+  });
+  if (i !== f[0]) f.unshift(0);
+  var c = f.map(function (p, d) {
+    var b = !f[d + 1],
+      y = b ? i + l - p : f[d + 1] - p;
+    if (y <= 0) return null;
+    var w = d % n.length;
+    return U("rect", {
+      key: "react-".concat(d),
+      x: p,
+      y: o,
+      width: y,
+      height: u,
+      stroke: "none",
+      fill: n[w],
+      fillOpacity: a,
+      className: "recharts-cartesian-grid-bg"
+    });
+  });
+  return U("g", {
+    className: "recharts-cartesian-gridstripes-vertical"
+  }, c);
+}
+var Jrt = function (e, r) {
+    var {
+      xAxis: n,
+      width: a,
+      height: i,
+      offset: o
+    } = e;
+    return Px(Vc(ke(ke(ke({}, aa.defaultProps), n), {}, {
+      ticks: gr(n, !0),
+      viewBox: {
+        x: 0,
+        y: 0,
+        width: a,
+        height: i
+      }
+    })), o.left, o.left + o.width, r);
+  },
+  tnt = function (e, r) {
+    var {
+      yAxis: n,
+      width: a,
+      height: i,
+      offset: o
+    } = e;
+    return Px(Vc(ke(ke(ke({}, aa.defaultProps), n), {}, {
+      ticks: gr(n, !0),
+      viewBox: {
+        x: 0,
+        y: 0,
+        width: a,
+        height: i
+      }
+    })), o.top, o.top + o.height, r);
+  },
+  au = {
+    horizontal: !0,
+    vertical: !0,
+    horizontalPoints: [],
+    verticalPoints: [],
+    stroke: "#ccc",
+    fill: "none",
+    verticalFill: [],
+    horizontalFill: []
+  };
+function mm(t) {
+  var e,
+    r,
+    n,
+    a,
+    i,
+    o,
+    l = ru(),
+    u = nu(),
+    s = x4(),
+    f = ke(ke({}, t), {}, {
+      stroke: (e = t.stroke) !== null && e !== void 0 ? e : au.stroke,
+      fill: (r = t.fill) !== null && r !== void 0 ? r : au.fill,
+      horizontal: (n = t.horizontal) !== null && n !== void 0 ? n : au.horizontal,
+      horizontalFill: (a = t.horizontalFill) !== null && a !== void 0 ? a : au.horizontalFill,
+      vertical: (i = t.vertical) !== null && i !== void 0 ? i : au.vertical,
+      verticalFill: (o = t.verticalFill) !== null && o !== void 0 ? o : au.verticalFill,
+      x: F(t.x) ? t.x : s.left,
+      y: F(t.y) ? t.y : s.top,
+      width: F(t.width) ? t.width : s.width,
+      height: F(t.height) ? t.height : s.height
+    }),
+    {
+      x: c,
+      y: p,
+      width: d,
+      height: b,
+      syncWithTicks: y,
+      horizontalValues: w,
+      verticalValues: m
+    } = f,
+    h = g4(),
+    g = v4();
+  if (!F(d) || d <= 0 || !F(b) || b <= 0 || !F(c) || c !== +c || !F(p) || p !== +p) return null;
+  var x = f.verticalCoordinatesGenerator || Jrt,
+    v = f.horizontalCoordinatesGenerator || tnt,
+    {
+      horizontalPoints: S,
+      verticalPoints: A
+    } = f;
+  if ((!S || !S.length) && hm.default(v)) {
+    var M = w && w.length,
+      N = v({
+        yAxis: g ? ke(ke({}, g), {}, {
+          ticks: M ? w : g.ticks
+        }) : void 0,
+        width: l,
+        height: u,
+        offset: s
+      }, M ? !0 : y);
+    if (Ie(Array.isArray(N), "horizontalCoordinatesGenerator should return Array but instead it returned [".concat(to(N), "]")), Array.isArray(N)) S = N;
+  }
+  if ((!A || !A.length) && hm.default(x)) {
+    var R = m && m.length,
+      H = x({
+        xAxis: h ? ke(ke({}, h), {}, {
+          ticks: R ? m : h.ticks
+        }) : void 0,
+        width: l,
+        height: u,
+        offset: s
+      }, R ? !0 : y);
+    if (Ie(Array.isArray(H), "verticalCoordinatesGenerator should return Array but instead it returned [".concat(to(H), "]")), Array.isArray(H)) A = H;
+  }
+  return U("g", {
+    className: "recharts-cartesian-grid"
+  }, U(Krt, {
+    fill: f.fill,
+    fillOpacity: f.fillOpacity,
+    x: f.x,
+    y: f.y,
+    width: f.width,
+    height: f.height,
+    ry: f.ry
+  }), U(Vrt, Ji({}, f, {
+    offset: s,
+    horizontalPoints: S,
+    xAxis: h,
+    yAxis: g
+  })), U(Frt, Ji({}, f, {
+    offset: s,
+    verticalPoints: A,
+    xAxis: h,
+    yAxis: g
+  })), U(Zrt, Ji({}, f, {
+    horizontalPoints: S
+  })), U($rt, Ji({}, f, {
+    verticalPoints: A
+  })));
+}
+mm.displayName = "CartesianGrid";
+function iu(t) {
+  return iu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, iu(t);
+}
+function ent(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function A4(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, _4(n.key), n);
+  }
+}
+function rnt(t, e, r) {
+  if (e) A4(t.prototype, e);
+  if (r) A4(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function nnt(t, e, r) {
+  return e = ym(e), ant(t, T4() ? Reflect.construct(e, r || [], ym(t).constructor) : e.apply(t, r));
+}
+function ant(t, e) {
+  if (e && (iu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return int(t);
+}
+function int(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function T4() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (T4 = function () {
+    return !!t;
+  })();
+}
+function ym(t) {
+  return ym = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, ym(t);
+}
+function ont(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) b1(t, e);
+}
+function b1(t, e) {
+  return b1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, b1(t, e);
+}
+function E4(t, e, r) {
+  if (e = _4(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function _4(t) {
+  var e = lnt(t, "string");
+  return iu(e) == "symbol" ? e : e + "";
+}
+function lnt(t, e) {
+  if (iu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (iu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function x1() {
+  return x1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, x1.apply(this, arguments);
+}
+function unt(t) {
+  var e = t.xAxisId,
+    r = ru(),
+    n = nu(),
+    a = pm(e);
+  if (a == null) return null;
+  return U(aa, x1({}, a, {
+    className: nt("recharts-".concat(a.axisType, " ").concat(a.axisType), a.className),
+    viewBox: {
+      x: 0,
+      y: 0,
+      width: r,
+      height: n
+    },
+    ticksGenerator: function (o) {
+      return gr(o, !0);
+    }
+  }));
+}
+var eo = function (t) {
+  function e() {
+    return ent(this, e), nnt(this, e, arguments);
+  }
+  return ont(e, t), rnt(e, [{
+    key: "render",
+    value: function () {
+      return U(unt, this.props);
+    }
+  }]);
+}(Hr);
+E4(eo, "displayName", "XAxis");
+E4(eo, "defaultProps", {
+  allowDecimals: !0,
+  hide: !1,
+  orientation: "bottom",
+  width: 0,
+  height: 30,
+  mirror: !1,
+  xAxisId: 0,
+  tickCount: 5,
+  type: "category",
+  padding: {
+    left: 0,
+    right: 0
+  },
+  allowDataOverflow: !1,
+  scale: "auto",
+  reversed: !1,
+  allowDuplicatedCategory: !0
+});
+function ou(t) {
+  return ou = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, ou(t);
+}
+function snt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function M4(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, D4(n.key), n);
+  }
+}
+function cnt(t, e, r) {
+  if (e) M4(t.prototype, e);
+  if (r) M4(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function fnt(t, e, r) {
+  return e = gm(e), pnt(t, C4() ? Reflect.construct(e, r || [], gm(t).constructor) : e.apply(t, r));
+}
+function pnt(t, e) {
+  if (e && (ou(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return dnt(t);
+}
+function dnt(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function C4() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (C4 = function () {
+    return !!t;
+  })();
+}
+function gm(t) {
+  return gm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, gm(t);
+}
+function hnt(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) w1(t, e);
+}
+function w1(t, e) {
+  return w1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, w1(t, e);
+}
+function j4(t, e, r) {
+  if (e = D4(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function D4(t) {
+  var e = mnt(t, "string");
+  return ou(e) == "symbol" ? e : e + "";
+}
+function mnt(t, e) {
+  if (ou(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (ou(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+function S1() {
+  return S1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, S1.apply(this, arguments);
+}
+var ynt = function (e) {
+    var r = e.yAxisId,
+      n = ru(),
+      a = nu(),
+      i = dm(r);
+    if (i == null) return null;
+    return U(aa, S1({}, i, {
+      className: nt("recharts-".concat(i.axisType, " ").concat(i.axisType), i.className),
+      viewBox: {
+        x: 0,
+        y: 0,
+        width: n,
+        height: a
+      },
+      ticksGenerator: function (l) {
+        return gr(l, !0);
+      }
+    }));
+  },
+  ro = function (t) {
+    function e() {
+      return snt(this, e), fnt(this, e, arguments);
+    }
+    return hnt(e, t), cnt(e, [{
+      key: "render",
+      value: function () {
+        return U(ynt, this.props);
+      }
+    }]);
+  }(Hr);
+j4(ro, "displayName", "YAxis");
+j4(ro, "defaultProps", {
+  allowDuplicatedCategory: !0,
+  allowDecimals: !0,
+  hide: !1,
+  orientation: "left",
+  width: 60,
+  height: 0,
+  mirror: !1,
+  yAxisId: 0,
+  tickCount: 5,
+  type: "number",
+  padding: {
+    top: 0,
+    bottom: 0
+  },
+  allowDataOverflow: !1,
+  scale: "auto",
+  reversed: !1
+});
+var pu = rt(bn()),
+  nn = rt(ue()),
+  zm = rt(A1()),
+  du = rt(_i()),
+  XR = rt(vd()),
+  QR = rt(U0());
+function T1() {
+  return T1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, T1.apply(this, arguments);
+}
+var vm = function (e) {
+  var {
+      cx: r,
+      cy: n,
+      r: a,
+      className: i
+    } = e,
+    o = nt("recharts-dot", i);
+  if (r === +r && n === +n && a === +a) return U("circle", T1({}, at(e, !1), ji(e), {
+    className: o,
+    cx: r,
+    cy: n,
+    r: a
+  }));
+  return null;
+};
+var M1 = rt(ue()),
+  X4 = rt(A1());
+function Fc(t) {
+  return Fc = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, Fc(t);
+}
+function q4(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function B4(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? q4(Object(r), !0).forEach(function (n) {
+      L4(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : q4(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function L4(t, e, r) {
+  if (e = Tnt(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Tnt(t) {
+  var e = Ent(t, "string");
+  return Fc(e) == "symbol" ? e : e + "";
+}
+function Ent(t, e) {
+  if (Fc(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (Fc(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var _nt = ["Webkit", "Moz", "O", "ms"],
+  I4 = function (e, r) {
+    if (!e) return null;
+    var n = e.replace(/(\w)/, function (i) {
+        return i.toUpperCase();
+      }),
+      a = _nt.reduce(function (i, o) {
+        return B4(B4({}, i), {}, L4({}, o + n, r));
+      }, {});
+    return a[e] = r, a;
+  };
+function lu(t) {
+  return lu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, lu(t);
+}
+function bm() {
+  return bm = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, bm.apply(this, arguments);
+}
+function U4(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function E1(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? U4(Object(r), !0).forEach(function (n) {
+      vr(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : U4(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function Mnt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function H4(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, Y4(n.key), n);
+  }
+}
+function Cnt(t, e, r) {
+  if (e) H4(t.prototype, e);
+  if (r) H4(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function jnt(t, e, r) {
+  return e = xm(e), Dnt(t, G4() ? Reflect.construct(e, r || [], xm(t).constructor) : e.apply(t, r));
+}
+function Dnt(t, e) {
+  if (e && (lu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return Nnt(t);
+}
+function Nnt(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function G4() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (G4 = function () {
+    return !!t;
+  })();
+}
+function xm(t) {
+  return xm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, xm(t);
+}
+function knt(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) _1(t, e);
+}
+function _1(t, e) {
+  return _1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, _1(t, e);
+}
+function vr(t, e, r) {
+  if (e = Y4(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Y4(t) {
+  var e = Pnt(t, "string");
+  return lu(e) == "symbol" ? e : e + "";
+}
+function Pnt(t, e) {
+  if (lu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (lu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var Rnt = function (e) {
+    var {
+      data: r,
+      startIndex: n,
+      endIndex: a,
+      x: i,
+      width: o,
+      travellerWidth: l
+    } = e;
+    if (!r || !r.length) return {};
+    var u = r.length,
+      s = za().domain(X4.default(0, u)).range([i, i + o - l]),
+      f = s.domain().map(function (c) {
+        return s(c);
+      });
+    return {
+      isTextActive: !1,
+      isSlideMoving: !1,
+      isTravellerMoving: !1,
+      isTravellerFocused: !1,
+      startX: s(n),
+      endX: s(a),
+      scale: s,
+      scaleValues: f
+    };
+  },
+  W4 = function (e) {
+    return e.changedTouches && !!e.changedTouches.length;
+  },
+  no = function (t) {
+    function e(r) {
+      var n;
+      return Mnt(this, e), n = jnt(this, e, [r]), vr(n, "handleDrag", function (a) {
+        if (n.leaveTimer) clearTimeout(n.leaveTimer), n.leaveTimer = null;
+        if (n.state.isTravellerMoving) n.handleTravellerMove(a);else if (n.state.isSlideMoving) n.handleSlideDrag(a);
+      }), vr(n, "handleTouchMove", function (a) {
+        if (a.changedTouches != null && a.changedTouches.length > 0) n.handleDrag(a.changedTouches[0]);
+      }), vr(n, "handleDragEnd", function () {
+        n.setState({
+          isTravellerMoving: !1,
+          isSlideMoving: !1
+        }, function () {
+          var a = n.props,
+            {
+              endIndex: i,
+              onDragEnd: o,
+              startIndex: l
+            } = a;
+          o === null || o === void 0 || o({
+            endIndex: i,
+            startIndex: l
+          });
+        }), n.detachDragEndListener();
+      }), vr(n, "handleLeaveWrapper", function () {
+        if (n.state.isTravellerMoving || n.state.isSlideMoving) n.leaveTimer = window.setTimeout(n.handleDragEnd, n.props.leaveTimeOut);
+      }), vr(n, "handleEnterSlideOrTraveller", function () {
+        n.setState({
+          isTextActive: !0
+        });
+      }), vr(n, "handleLeaveSlideOrTraveller", function () {
+        n.setState({
+          isTextActive: !1
+        });
+      }), vr(n, "handleSlideDragStart", function (a) {
+        var i = W4(a) ? a.changedTouches[0] : a;
+        n.setState({
+          isTravellerMoving: !1,
+          isSlideMoving: !0,
+          slideMoveStartX: i.pageX
+        }), n.attachDragEndListener();
+      }), n.travellerDragStartHandlers = {
+        startX: n.handleTravellerDragStart.bind(n, "startX"),
+        endX: n.handleTravellerDragStart.bind(n, "endX")
+      }, n.state = {}, n;
+    }
+    return knt(e, t), Cnt(e, [{
+      key: "componentWillUnmount",
+      value: function () {
+        if (this.leaveTimer) clearTimeout(this.leaveTimer), this.leaveTimer = null;
+        this.detachDragEndListener();
+      }
+    }, {
+      key: "getIndex",
+      value: function (n) {
+        var {
+            startX: a,
+            endX: i
+          } = n,
+          o = this.state.scaleValues,
+          l = this.props,
+          {
+            gap: u,
+            data: s
+          } = l,
+          f = s.length - 1,
+          c = Math.min(a, i),
+          p = Math.max(a, i),
+          d = e.getIndexInRange(o, c),
+          b = e.getIndexInRange(o, p);
+        return {
+          startIndex: d - d % u,
+          endIndex: b === f ? f : b - b % u
+        };
+      }
+    }, {
+      key: "getTextOfTick",
+      value: function (n) {
+        var a = this.props,
+          {
+            data: i,
+            tickFormatter: o,
+            dataKey: l
+          } = a,
+          u = yr(i[n], l, n);
+        return M1.default(o) ? o(u, n) : u;
+      }
+    }, {
+      key: "attachDragEndListener",
+      value: function () {
+        window.addEventListener("mouseup", this.handleDragEnd, !0), window.addEventListener("touchend", this.handleDragEnd, !0), window.addEventListener("mousemove", this.handleDrag, !0);
+      }
+    }, {
+      key: "detachDragEndListener",
+      value: function () {
+        window.removeEventListener("mouseup", this.handleDragEnd, !0), window.removeEventListener("touchend", this.handleDragEnd, !0), window.removeEventListener("mousemove", this.handleDrag, !0);
+      }
+    }, {
+      key: "handleSlideDrag",
+      value: function (n) {
+        var a = this.state,
+          {
+            slideMoveStartX: i,
+            startX: o,
+            endX: l
+          } = a,
+          u = this.props,
+          {
+            x: s,
+            width: f,
+            travellerWidth: c,
+            startIndex: p,
+            endIndex: d,
+            onChange: b
+          } = u,
+          y = n.pageX - i;
+        if (y > 0) y = Math.min(y, s + f - c - l, s + f - c - o);else if (y < 0) y = Math.max(y, s - o, s - l);
+        var w = this.getIndex({
+          startX: o + y,
+          endX: l + y
+        });
+        if ((w.startIndex !== p || w.endIndex !== d) && b) b(w);
+        this.setState({
+          startX: o + y,
+          endX: l + y,
+          slideMoveStartX: n.pageX
+        });
+      }
+    }, {
+      key: "handleTravellerDragStart",
+      value: function (n, a) {
+        var i = W4(a) ? a.changedTouches[0] : a;
+        this.setState({
+          isSlideMoving: !1,
+          isTravellerMoving: !0,
+          movingTravellerId: n,
+          brushMoveStartX: i.pageX
+        }), this.attachDragEndListener();
+      }
+    }, {
+      key: "handleTravellerMove",
+      value: function (n) {
+        var a = this.state,
+          {
+            brushMoveStartX: i,
+            movingTravellerId: o,
+            endX: l,
+            startX: u
+          } = a,
+          s = this.state[o],
+          f = this.props,
+          {
+            x: c,
+            width: p,
+            travellerWidth: d,
+            onChange: b,
+            gap: y,
+            data: w
+          } = f,
+          m = {
+            startX: this.state.startX,
+            endX: this.state.endX
+          },
+          h = n.pageX - i;
+        if (h > 0) h = Math.min(h, c + p - d - s);else if (h < 0) h = Math.max(h, c - s);
+        m[o] = s + h;
+        var g = this.getIndex(m),
+          {
+            startIndex: x,
+            endIndex: v
+          } = g,
+          S = function () {
+            var M = w.length - 1;
+            if (o === "startX" && (l > u ? x % y === 0 : v % y === 0) || l < u && v === M || o === "endX" && (l > u ? v % y === 0 : x % y === 0) || l > u && v === M) return !0;
+            return !1;
+          };
+        this.setState(vr(vr({}, o, s + h), "brushMoveStartX", n.pageX), function () {
+          if (b) {
+            if (S()) b(g);
+          }
+        });
+      }
+    }, {
+      key: "handleTravellerMoveKeyboard",
+      value: function (n, a) {
+        var i = this,
+          o = this.state,
+          {
+            scaleValues: l,
+            startX: u,
+            endX: s
+          } = o,
+          f = this.state[a],
+          c = l.indexOf(f);
+        if (c === -1) return;
+        var p = c + n;
+        if (p === -1 || p >= l.length) return;
+        var d = l[p];
+        if (a === "startX" && d >= s || a === "endX" && d <= u) return;
+        this.setState(vr({}, a, d), function () {
+          i.props.onChange(i.getIndex({
+            startX: i.state.startX,
+            endX: i.state.endX
+          }));
+        });
+      }
+    }, {
+      key: "renderBackground",
+      value: function () {
+        var n = this.props,
+          {
+            x: a,
+            y: i,
+            width: o,
+            height: l,
+            fill: u,
+            stroke: s
+          } = n;
+        return U("rect", {
+          stroke: s,
+          fill: u,
+          x: a,
+          y: i,
+          width: o,
+          height: l
+        });
+      }
+    }, {
+      key: "renderPanorama",
+      value: function () {
+        var n = this.props,
+          {
+            x: a,
+            y: i,
+            width: o,
+            height: l,
+            data: u,
+            children: s,
+            padding: f
+          } = n,
+          c = er.only(s);
+        if (!c) return null;
+        return mt(c, {
+          x: a,
+          y: i,
+          width: o,
+          height: l,
+          margin: f,
+          compact: !0,
+          data: u
+        });
+      }
+    }, {
+      key: "renderTravellerLayer",
+      value: function (n, a) {
+        var i,
+          o,
+          l = this,
+          u = this.props,
+          {
+            y: s,
+            travellerWidth: f,
+            height: c,
+            traveller: p,
+            ariaLabel: d,
+            data: b,
+            startIndex: y,
+            endIndex: w
+          } = u,
+          m = Math.max(n, this.props.x),
+          h = E1(E1({}, at(this.props, !1)), {}, {
+            x: m,
+            y: s,
+            width: f,
+            height: c
+          }),
+          g = d || "Min value: ".concat((i = b[y]) === null || i === void 0 ? void 0 : i.name, ", Max value: ").concat((o = b[w]) === null || o === void 0 ? void 0 : o.name);
+        return U(Rt, {
+          tabIndex: 0,
+          role: "slider",
+          "aria-label": g,
+          "aria-valuenow": n,
+          className: "recharts-brush-traveller",
+          onMouseEnter: this.handleEnterSlideOrTraveller,
+          onMouseLeave: this.handleLeaveSlideOrTraveller,
+          onMouseDown: this.travellerDragStartHandlers[a],
+          onTouchStart: this.travellerDragStartHandlers[a],
+          onKeyDown: function (v) {
+            if (!["ArrowLeft", "ArrowRight"].includes(v.key)) return;
+            v.preventDefault(), v.stopPropagation(), l.handleTravellerMoveKeyboard(v.key === "ArrowRight" ? 1 : -1, a);
+          },
+          onFocus: function () {
+            l.setState({
+              isTravellerFocused: !0
+            });
+          },
+          onBlur: function () {
+            l.setState({
+              isTravellerFocused: !1
+            });
+          },
+          style: {
+            cursor: "col-resize"
+          }
+        }, e.renderTraveller(p, h));
+      }
+    }, {
+      key: "renderSlide",
+      value: function (n, a) {
+        var i = this.props,
+          {
+            y: o,
+            height: l,
+            stroke: u,
+            travellerWidth: s
+          } = i,
+          f = Math.min(n, a) + s,
+          c = Math.max(Math.abs(a - n) - s, 0);
+        return U("rect", {
+          className: "recharts-brush-slide",
+          onMouseEnter: this.handleEnterSlideOrTraveller,
+          onMouseLeave: this.handleLeaveSlideOrTraveller,
+          onMouseDown: this.handleSlideDragStart,
+          onTouchStart: this.handleSlideDragStart,
+          style: {
+            cursor: "move"
+          },
+          stroke: "none",
+          fill: u,
+          fillOpacity: 0.2,
+          x: f,
+          y: o,
+          width: c,
+          height: l
+        });
+      }
+    }, {
+      key: "renderText",
+      value: function () {
+        var n = this.props,
+          {
+            startIndex: a,
+            endIndex: i,
+            y: o,
+            height: l,
+            travellerWidth: u,
+            stroke: s
+          } = n,
+          f = this.state,
+          {
+            startX: c,
+            endX: p
+          } = f,
+          d = 5,
+          b = {
+            pointerEvents: "none",
+            fill: s
+          };
+        return U(Rt, {
+          className: "recharts-brush-texts"
+        }, U($i, bm({
+          textAnchor: "end",
+          verticalAnchor: "middle",
+          x: Math.min(c, p) - d,
+          y: o + l / 2
+        }, b), this.getTextOfTick(a)), U($i, bm({
+          textAnchor: "start",
+          verticalAnchor: "middle",
+          x: Math.max(c, p) + u + d,
+          y: o + l / 2
+        }, b), this.getTextOfTick(i)));
+      }
+    }, {
+      key: "render",
+      value: function () {
+        var n = this.props,
+          {
+            data: a,
+            className: i,
+            children: o,
+            x: l,
+            y: u,
+            width: s,
+            height: f,
+            alwaysShowText: c
+          } = n,
+          p = this.state,
+          {
+            startX: d,
+            endX: b,
+            isTextActive: y,
+            isSlideMoving: w,
+            isTravellerMoving: m,
+            isTravellerFocused: h
+          } = p;
+        if (!a || !a.length || !F(l) || !F(u) || !F(s) || !F(f) || s <= 0 || f <= 0) return null;
+        var g = nt("recharts-brush", i),
+          x = er.count(o) === 1,
+          v = I4("userSelect", "none");
+        return U(Rt, {
+          className: g,
+          onMouseLeave: this.handleLeaveWrapper,
+          onTouchMove: this.handleTouchMove,
+          style: v
+        }, this.renderBackground(), x && this.renderPanorama(), this.renderSlide(d, b), this.renderTravellerLayer(d, "startX"), this.renderTravellerLayer(b, "endX"), (y || w || m || h || c) && this.renderText());
+      }
+    }], [{
+      key: "renderDefaultTraveller",
+      value: function (n) {
+        var {
+            x: a,
+            y: i,
+            width: o,
+            height: l,
+            stroke: u
+          } = n,
+          s = Math.floor(i + l / 2) - 1;
+        return U(Ow, null, U("rect", {
+          x: a,
+          y: i,
+          width: o,
+          height: l,
+          fill: u,
+          stroke: "none"
+        }), U("line", {
+          x1: a + 1,
+          y1: s,
+          x2: a + o - 1,
+          y2: s,
+          fill: "none",
+          stroke: "#fff"
+        }), U("line", {
+          x1: a + 1,
+          y1: s + 2,
+          x2: a + o - 1,
+          y2: s + 2,
+          fill: "none",
+          stroke: "#fff"
+        }));
+      }
+    }, {
+      key: "renderTraveller",
+      value: function (n, a) {
+        var i;
+        if (_t(n)) i = mt(n, a);else if (M1.default(n)) i = n(a);else i = e.renderDefaultTraveller(a);
+        return i;
+      }
+    }, {
+      key: "getDerivedStateFromProps",
+      value: function (n, a) {
+        var {
+          data: i,
+          width: o,
+          x: l,
+          travellerWidth: u,
+          updateId: s,
+          startIndex: f,
+          endIndex: c
+        } = n;
+        if (i !== a.prevData || s !== a.prevUpdateId) return E1({
+          prevData: i,
+          prevTravellerWidth: u,
+          prevUpdateId: s,
+          prevX: l,
+          prevWidth: o
+        }, i && i.length ? Rnt({
+          data: i,
+          width: o,
+          x: l,
+          travellerWidth: u,
+          startIndex: f,
+          endIndex: c
+        }) : {
+          scale: null,
+          scaleValues: null
+        });
+        if (a.scale && (o !== a.prevWidth || l !== a.prevX || u !== a.prevTravellerWidth)) {
+          a.scale.range([l, l + o - u]);
+          var p = a.scale.domain().map(function (d) {
+            return a.scale(d);
+          });
+          return {
+            prevData: i,
+            prevTravellerWidth: u,
+            prevUpdateId: s,
+            prevX: l,
+            prevWidth: o,
+            startX: a.scale(n.startIndex),
+            endX: a.scale(n.endIndex),
+            scaleValues: p
+          };
+        }
+        return null;
+      }
+    }, {
+      key: "getIndexInRange",
+      value: function (n, a) {
+        var i = n.length,
+          o = 0,
+          l = i - 1;
+        while (l - o > 1) {
+          var u = Math.floor((o + l) / 2);
+          if (n[u] > a) l = u;else o = u;
+        }
+        return a >= n[l] ? l : o;
+      }
+    }]);
+  }(ze);
+vr(no, "displayName", "Brush");
+vr(no, "defaultProps", {
+  height: 40,
+  travellerWidth: 5,
+  gap: 1,
+  fill: "#fff",
+  stroke: "#666",
+  padding: {
+    top: 1,
+    right: 1,
+    bottom: 1,
+    left: 1
+  },
+  leaveTimeOut: 1000,
+  alwaysShowText: !1
+});
+var $4 = rt(ue());
+var tr = function (e, r) {
+  var {
+    alwaysShow: n,
+    ifOverflow: a
+  } = e;
+  if (n) a = "extendDomain";
+  return a === r;
+};
+function C1() {
+  return C1 = Object.assign ? Object.assign.bind() : function (t) {
+    for (var e = 1; e < arguments.length; e++) {
+      var r = arguments[e];
+      for (var n in r) if (Object.prototype.hasOwnProperty.call(r, n)) t[n] = r[n];
+    }
+    return t;
+  }, C1.apply(this, arguments);
+}
+function uu(t) {
+  return uu = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, uu(t);
+}
+function Q4(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function K4(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? Q4(Object(r), !0).forEach(function (n) {
+      Sm(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(r)) : Q4(Object(r)).forEach(function (n) {
+      Object.defineProperty(t, n, Object.getOwnPropertyDescriptor(r, n));
+    });
+  }
+  return t;
+}
+function znt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function V4(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, Z4(n.key), n);
+  }
+}
+function qnt(t, e, r) {
+  if (e) V4(t.prototype, e);
+  if (r) V4(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function Bnt(t, e, r) {
+  return e = wm(e), Lnt(t, F4() ? Reflect.construct(e, r || [], wm(t).constructor) : e.apply(t, r));
+}
+function Lnt(t, e) {
+  if (e && (uu(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return Int(t);
+}
+function Int(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function F4() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (F4 = function () {
+    return !!t;
+  })();
+}
+function wm(t) {
+  return wm = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, wm(t);
+}
+function Unt(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) j1(t, e);
+}
+function j1(t, e) {
+  return j1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, j1(t, e);
+}
+function Sm(t, e, r) {
+  if (e = Z4(e), e in t) Object.defineProperty(t, e, {
+    value: r,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  });else t[e] = r;
+  return t;
+}
+function Z4(t) {
+  var e = Hnt(t, "string");
+  return uu(e) == "symbol" ? e : e + "";
+}
+function Hnt(t, e) {
+  if (uu(t) != "object" || !t) return t;
+  var r = t[Symbol.toPrimitive];
+  if (r !== void 0) {
+    var n = r.call(t, e || "default");
+    if (uu(n) != "object") return n;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (e === "string" ? String : Number)(t);
+}
+var Wnt = function (e) {
+    var {
+        x: r,
+        y: n,
+        xAxis: a,
+        yAxis: i
+      } = e,
+      o = $l({
+        x: a.scale,
+        y: i.scale
+      }),
+      l = o.apply({
+        x: r,
+        y: n
+      }, {
+        bandAware: !0
+      });
+    if (tr(e, "discard") && !o.isInRange(l)) return null;
+    return l;
+  },
+  Zc = function (t) {
+    function e() {
+      return znt(this, e), Bnt(this, e, arguments);
+    }
+    return Unt(e, t), qnt(e, [{
+      key: "render",
+      value: function () {
+        var n = this.props,
+          {
+            x: a,
+            y: i,
+            r: o,
+            alwaysShow: l,
+            clipPathId: u
+          } = n,
+          s = It(a),
+          f = It(i);
+        if (Ie(l === void 0, 'The alwaysShow prop is deprecated. Please use ifOverflow="extendDomain" instead.'), !s || !f) return null;
+        var c = Wnt(this.props);
+        if (!c) return null;
+        var {
+            x: p,
+            y: d
+          } = c,
+          b = this.props,
+          {
+            shape: y,
+            className: w
+          } = b,
+          m = tr(this.props, "hidden") ? "url(#".concat(u, ")") : void 0,
+          h = K4(K4({
+            clipPath: m
+          }, at(this.props, !0)), {}, {
+            cx: p,
+            cy: d
+          });
+        return U(Rt, {
+          className: nt("recharts-reference-dot", w)
+        }, e.renderDot(y, h), re.renderCallByParent(this.props, {
+          x: p - o,
+          y: d - o,
+          width: 2 * o,
+          height: 2 * o
+        }));
+      }
+    }]);
+  }(Hr);
+Sm(Zc, "displayName", "ReferenceDot");
+Sm(Zc, "defaultProps", {
+  isFront: !1,
+  ifOverflow: "discard",
+  xAxisId: 0,
+  yAxisId: 0,
+  r: 10,
+  fill: "#fff",
+  stroke: "#ccc",
+  fillOpacity: 1,
+  strokeWidth: 1
+});
+Sm(Zc, "renderDot", function (t, e) {
+  var r;
+  if (_t(t)) r = mt(t, e);else if ($4.default(t)) r = t(e);else r = U(vm, C1({}, e, {
+    cx: e.cx,
+    cy: e.cy,
+    className: "recharts-reference-dot-dot"
+  }));
+  return r;
+});
+var sR = rt(ue()),
+  cR = rt(rR());
+function su(t) {
+  return su = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (e) {
+    return typeof e;
+  } : function (e) {
+    return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+  }, su(t);
+}
+function $nt(t, e) {
+  if (!(t instanceof e)) throw TypeError("Cannot call a class as a function");
+}
+function nR(t, e) {
+  for (var r = 0; r < e.length; r++) {
+    var n = e[r];
+    if (n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n) n.writable = !0;
+    Object.defineProperty(t, uR(n.key), n);
+  }
+}
+function Jnt(t, e, r) {
+  if (e) nR(t.prototype, e);
+  if (r) nR(t, r);
+  return Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), t;
+}
+function tat(t, e, r) {
+  return e = Om(e), eat(t, lR() ? Reflect.construct(e, r || [], Om(t).constructor) : e.apply(t, r));
+}
+function eat(t, e) {
+  if (e && (su(e) === "object" || typeof e === "function")) return e;else if (e !== void 0) throw TypeError("Derived constructors may only return object or undefined");
+  return rat(t);
+}
+function rat(t) {
+  if (t === void 0) throw ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return t;
+}
+function lR() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (e) {}
+  return (lR = function () {
+    return !!t;
+  })();
+}
+function Om(t) {
+  return Om = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (r) {
+    return r.__proto__ || Object.getPrototypeOf(r);
+  }, Om(t);
+}
+function nat(t, e) {
+  if (typeof e !== "function" && e !== null) throw TypeError("Super expression must either be null or a function");
+  if (t.prototype = Object.create(e && e.prototype, {
+    constructor: {
+      value: t,
+      writable: !0,
+      configurable: !0
+    }
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e) D1(t, e);
+}
+function D1(t, e) {
+  return D1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (n, a) {
+    return n.__proto__ = a, n;
+  }, D1(t, e);
+}
+function aR(t, e) {
+  var r = Object.keys(t);
+  if (Object.getOwnPropertySymbols) {
+    var n = Object.getOwnPropertySymbols(t);
+    e && (n = n.filter(function (a) {
+      return Object.getOwnPropertyDescriptor(t, a).enumerable;
+    })), r.push.apply(r, n);
+  }
+  return r;
+}
+function iR(t) {
+  for (var e = 1; e < arguments.length; e++) {
+    var r = arguments[e] != null ? arguments[e] : {};
+    e % 2 ? aR(Object(r), !0).forEach(function (n) {
+      k1(t, n, r[n]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(
