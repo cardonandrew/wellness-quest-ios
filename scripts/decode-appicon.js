@@ -2,11 +2,10 @@
 // Needed because binary PNGs can't be pushed via the GitHub API text tools;
 // Xcode auto-generates all device icon sizes from this single 1024px source.
 // Also reconstructs www/index.html from parts (too large for GitHub API).
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+const { readFileSync, writeFileSync, existsSync, readdirSync } = require('fs');
+const { join, dirname } = require('path');
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const root = join(__dirname, '..');
 
 // --- Reconstruct www/index.html from parts if needed ---
 const indexPath = join(root, 'www/index.html');
