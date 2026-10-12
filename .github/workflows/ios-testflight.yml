@@ -70,8 +70,11 @@ jobs:
             -archivePath $PWD/build/App.xcarchive \
             -exportOptionsPlist $GITHUB_WORKSPACE/.github/ExportOptions.plist \
             -exportPath $PWD/build/export
+          mkdir -p ~/.private_keys
+          echo "${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}" | base64 --decode > ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
           xcrun altool --upload-app \
             -f $PWD/build/export/App.ipa \
             -t ios \
             --apiKey ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }} \
             --apiIssuer ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+
