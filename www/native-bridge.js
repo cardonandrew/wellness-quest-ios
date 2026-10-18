@@ -9,17 +9,51 @@
  *   1. native-actions.js  (defines window.WellnessQuestNative)
  *   2. native-bridge.js   (this file — installs the fetch interceptor)
  *   3. app bundle         (makes ./actions calls, transparently intercepted)
+ *
+ * Two rules this file must never break:
+ *   1. The interceptor is installed SYNCHRONOUSLY at script load. The app
+ *      bundle runs `var an = $w()` at module evaluation and captures
+ *      `globalThis.fetch` in a closure — if we waited for native init first
+ *      (as the old version did), the capture would grab the ORIGINAL fetch
+ *      and every ./actions call would bypass this bridge entirely.
+ *   2. Responses match the server actions protocol: success is
+ *      `{ data: result }`, failure is `{ error: message }`. The app client
+ *      unwraps `l.data`, so returning the raw result breaks every call.
  */
 (function () {
   'use strict';
 
-  // Wait for the native actions module to be ready
-  function whenReady(callback) {
-    if (window.WellnessQuestNative && window.WellnessQuestNative._initialized) {
-      callback();
-    } else {
-      setTimeout(() => whenReady(callback), 50);
+  // --- readiness -----------------------------------------------------------
+  // Resolves when native-actions.js has finished initializing the on-device
+  // SQLite database. Rejects after READY_TIMEOUT_MS so a missing or broken
+  // SQLite plugin surfaces as a clear error on the "Trail interrupted"
+  // screen instead of hanging the app on "Setting your trail…" forever.
+  // The promise is cached: after the first timeout, later calls fail fast.
+  var READY_TIMEOUT_MS = 15000;
+  var readyPromise = null;
+
+  function whenReady() {
+    if (!readyPromise) {
+      readyPromise = new Promise(function (resolve, reject) {
+        var started = Date.now();
+        (function poll() {
+          var native = window.WellnessQuestNative;
+          if (native && native._initialized) {
+            resolve();
+          } else if (Date.now() - started > READY_TIMEOUT_MS) {
+            var initErr = native && native._initError;
+            reject(new Error(
+              'WellnessQuest native layer did not initialize within ' + (READY_TIMEOUT_MS / 1000) + 's. ' +
+              'The on-device SQLite plugin may be missing from the native build.' +
+              (initErr ? ' Init error: ' + (initErr.message || initErr) : '')
+            ));
+          } else {
+            setTimeout(poll, 100);
+          }
+        })();
+      });
     }
+    return readyPromise;
   }
 
   // Check if a URL is an ./actions call
@@ -33,82 +67,99 @@
            url.endsWith('./actions');
   }
 
-  whenReady(() => {
-    console.log('[native-bridge] Installing ./actions interceptor');
+  function successResponse(result) {
+    return new Response(JSON.stringify({ data: result }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-    const originalFetch = window.fetch.bind(window);
+  function errorResponse(err) {
+    return new Response(JSON.stringify({
+      error: (err && err.message) || 'Action failed',
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-    window.fetch = async function (url, options) {
-      const urlStr = typeof url === 'string' ? url : (url && url.url) || '';
+  // Install the fetch interceptor synchronously — see rule 1 above.
+  var originalFetch = window.fetch.bind(window);
 
-      if (isActionsCall(urlStr) && options && options.method === 'POST') {
+  window.fetch = async function (url, options) {
+    var urlStr = typeof url === 'string' ? url : (url && url.url) || '';
+
+    if (isActionsCall(urlStr) && options && options.method === 'POST') {
+      try {
+        await whenReady();
+
+        var body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+        var action = body.action;
+        var args = body.args;
+
+        console.log('[native-bridge] Routing action: ' + action);
+
+        var result = await window.WellnessQuestNative.callAction(action, args);
+
+        // Return a Response matching what the app client expects ({ data })
+        return successResponse(result);
+      } catch (err) {
+        console.error('[native-bridge] Action failed:', err);
+        return errorResponse(err);
+      }
+    }
+
+    // Not an actions call — pass through normally
+    return originalFetch(url, options);
+  };
+
+  // Also intercept XMLHttpRequest for robustness.
+  // Prototype-level patching applies regardless of capture timing.
+  var originalXHROpen = XMLHttpRequest.prototype.open;
+  var originalXHRSend = XMLHttpRequest.prototype.send;
+
+  XMLHttpRequest.prototype.open = function (method, url) {
+    var rest = Array.prototype.slice.call(arguments, 2);
+    this._isActionsCall = isActionsCall(url) && method === 'POST';
+    this._actionsUrl = url;
+    return originalXHROpen.apply(this, [method, url].concat(rest));
+  };
+
+  XMLHttpRequest.prototype.send = function (body) {
+    if (this._isActionsCall) {
+      var xhr = this;
+      (async function () {
         try {
-          const body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
-          const { action, args } = body;
+          await whenReady();
 
-          console.log(`[native-bridge] Routing action: ${action}`);
+          var parsed = typeof body === 'string' ? JSON.parse(body) : body;
+          var result = await window.WellnessQuestNative.callAction(parsed.action, parsed.args);
 
-          const result = await window.WellnessQuestNative.callAction(action, args);
+          // Simulate a successful XHR response ({ data } shape)
+          var text = JSON.stringify({ data: result });
+          Object.defineProperty(xhr, 'status', { value: 200, writable: false });
+          Object.defineProperty(xhr, 'responseText', { value: text, writable: false });
+          Object.defineProperty(xhr, 'response', { value: text, writable: false });
+          Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
 
-          // Return a Response-like object matching what the SDK expects
-          return new Response(JSON.stringify(result), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          });
+          if (xhr.onreadystatechange) xhr.onreadystatechange();
+          if (xhr.onload) xhr.onload();
         } catch (err) {
-          console.error(`[native-bridge] Action failed:`, err);
-          return new Response(JSON.stringify({
-            error: err.message || 'Action failed',
-          }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
+          console.error('[native-bridge] XHR action failed:', err);
+          Object.defineProperty(xhr, 'status', { value: 500, writable: false });
+          Object.defineProperty(xhr, 'responseText', {
+            value: JSON.stringify({ error: (err && err.message) || 'Action failed' }),
+            writable: false,
           });
+          Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
+          if (xhr.onreadystatechange) xhr.onreadystatechange();
+          if (xhr.onerror) xhr.onerror(err);
         }
-      }
+      })();
+      return;
+    }
+    return originalXHRSend.call(this, body);
+  };
 
-      // Not an actions call — pass through normally
-      return originalFetch(url, options);
-    };
-
-    // Also intercept XMLHttpRequest for robustness
-    const originalXHROpen = XMLHttpRequest.prototype.open;
-    const originalXHRSend = XMLHttpRequest.prototype.send;
-
-    XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-      this._isActionsCall = isActionsCall(url) && method === 'POST';
-      this._actionsUrl = url;
-      return originalXHROpen.call(this, method, url, ...rest);
-    };
-
-    XMLHttpRequest.prototype.send = function (body) {
-      if (this._isActionsCall) {
-        const xhr = this;
-        (async () => {
-          try {
-            const parsed = typeof body === 'string' ? JSON.parse(body) : body;
-            const result = await window.WellnessQuestNative.callAction(parsed.action, parsed.args);
-
-            // Simulate a successful XHR response
-            Object.defineProperty(xhr, 'status', { value: 200, writable: false });
-            Object.defineProperty(xhr, 'responseText', { value: JSON.stringify(result), writable: false });
-            Object.defineProperty(xhr, 'response', { value: JSON.stringify(result), writable: false });
-            Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
-
-            if (xhr.onreadystatechange) xhr.onreadystatechange();
-            if (xhr.onload) xhr.onload();
-          } catch (err) {
-            console.error(`[native-bridge] XHR action failed:`, err);
-            Object.defineProperty(xhr, 'status', { value: 500, writable: false });
-            Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
-            if (xhr.onreadystatechange) xhr.onreadystatechange();
-            if (xhr.onerror) xhr.onerror(err);
-          }
-        })();
-        return;
-      }
-      return originalXHRSend.call(this, body);
-    };
-
-    console.log('[native-bridge] Interceptor installed — app is now fully offline-capable');
-  });
+  console.log('[native-bridge] Interceptor installed synchronously — app is now fully offline-capable');
 })();
