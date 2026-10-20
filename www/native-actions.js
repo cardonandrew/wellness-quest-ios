@@ -817,8 +817,20 @@ async function resetData(args) {
   const now = Date.now();
   await run(`DELETE FROM task_completions`);
   await run(`DELETE FROM journal_entries`);
+  await run(`DELETE FROM quest_chain_awards`);
+  await run(`DELETE FROM weekly_recaps`);
   await run(`UPDATE category_settings SET intensity = 'balanced', updated_at = ?`, [now]);
-  await run(`UPDATE quest_tasks SET enabled = 1, updated_at = ?`, [now]);
+  // Restore the daily quest list to the original defaults: wipe every
+  // task row (custom tasks, disables, soft-deletes) and re-seed the
+  // factory set, so a reset truly returns the quests to original.
+  await run(`DELETE FROM quest_tasks`);
+  for (const task of DEFAULT_TASKS) {
+    await run(
+      `INSERT INTO quest_tasks (id, category_id, chill_title, balanced_title, beast_title, enabled, is_custom, deleted, sort_order, updated_at)
+       VALUES (?, ?, ?, ?, ?, 1, 0, 0, ?, ?)`,
+      [task.id, task.categoryId, task.chillTitle, task.balancedTitle, task.beastTitle, task.sortOrder, now]
+    );
+  }
   return { ok: true };
 }
 
