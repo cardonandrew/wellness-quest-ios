@@ -74,7 +74,15 @@ function plugin() {
 /** SELECT -> array of row objects */
 async function q(statement, values) {
   const res = await plugin().query({ database: DB_NAME, statement, values: values || [] });
-  return (res && res.values) || [];
+  const rows = (res && res.values) || [];
+  // @capacitor-community/sqlite on iOS prefixes every non-empty result
+  // with a metadata row { ios_columns: [...] } (see UtilsSQLCipher
+  // fetchColumnInfo in the plugin source). If it is not stripped, it is
+  // mistaken for a data row — profileRows[0] becomes the metadata object,
+  // so onboardingComplete read false forever and the app froze on the
+  // post-onboarding celebration screen. Drop any such row here so no
+  // caller can ever see it.
+  return rows.filter((row) => !(row && typeof row === 'object' && 'ios_columns' in row));
 }
 
 /** INSERT/UPDATE/DELETE */
