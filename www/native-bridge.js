@@ -21,16 +21,16 @@
  * ./actions requests from the on-device SQLite layer
  * (native-actions.js -> window.WellnessQuestNative).
  *
- * Build 111 additions:
- * - Splash floor: the first loadApp response is held until ~1.5 s after
- *   page start so the "Setting your trail…" screen reads as a proper
- *   splash instead of flashing past (or never appearing) on fast loads.
- * - Fixed-to-size CSS: once the tunnel attaches, the bundle adapts to
- *   its old hosted layout and lets the whole page scroll like a web
- *   page. Injected rules pin the app to the viewport; inner screens keep
- *   their own scrolling.
- * - Diagnostic badge (temporary): a tiny on-screen log of tunnel/native
- *   events so a screenshot shows exactly where the app is stuck.
+ * Build 112 additions:
+ * - Viewport lock v2: build 111's stylesheet lost to the bundle's own
+ *   runtime CSS adaptation. The lock is now applied as inline styles
+ *   with !important priority and re-asserted by a MutationObserver, so
+ *   the page itself can never scroll — tall screens scroll inside their
+ *   shell only, like a native app.
+ * - The badge also reports the onboardingComplete flag from each
+ *   loadApp result and, once, the raw profile row types (debugState),
+ *   which pinned the "You're all set" freeze on the mappers' strict
+ *   === 1 checks vs the iOS driver's string values.
  */
 (function () {
   'use strict';
@@ -46,7 +46,7 @@
   function diag(line, isError) {
     try {
       badgeLines.push({ text: line, isError: !!isError, at: Date.now() });
-      if (badgeLines.length > 6) badgeLines.shift();
+      if (badgeLines.length > 7) badgeLines.shift();
       renderBadge();
     } catch (e) { /* diagnostics must never break the app */ }
   }
@@ -59,11 +59,10 @@
         'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);' +
         'z-index:99999;pointer-events:none;font:9px/1.5 ui-monospace,Menlo,monospace;' +
         'color:#8dffa9;background:rgba(0,0,0,0.55);padding:4px 6px;border-radius:6px;' +
-        'max-width:78vw;white-space:pre-wrap;';
+        'max-width:82vw;white-space:pre-wrap;';
       document.body.appendChild(badgeEl);
     }
     badgeEl.textContent = badgeLines.map(function (l) { return l.text; }).join('\n');
-    badgeLines.forEach(function (l, i) { void i; });
     badgeEl.style.color = badgeLines.some(function (l) { return l.isError; }) ? '#ffb3b3' : '#8dffa9';
   }
   if (document.readyState === 'loading') {
@@ -77,21 +76,66 @@
     diag('UNHANDLED: ' + ((r && r.message) || String(r)), true);
   });
 
-  // --- fixed-to-size CSS ------------------------------------------------------
-  function injectCss() {
-    if (document.getElementById('wq-viewport-fix')) return;
-    var style = document.createElement('style');
-    style.id = 'wq-viewport-fix';
-    style.textContent =
-      'html,body{height:100%!important;overflow:hidden!important;overscroll-behavior:none!important;}' +
-      '[data-generated-space-root]{position:fixed!important;inset:0!important;height:100dvh!important;' +
-      'overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:none!important;}' +
-      '.hatch-space-root[data-hatch-space-root]{min-height:100dvh!important;}';
-    (document.head || document.documentElement).appendChild(style);
+  // --- viewport lock ------------------------------------------------------------
+  function setImp(el, prop, value) {
+    if (!el || !el.style) return;
+    if (el.style.getPropertyValue(prop) !== value ||
+        el.style.getPropertyPriority(prop) !== 'important') {
+      el.style.setProperty(prop, value, 'important');
+    }
   }
-  injectCss();
+  function lockViewport() {
+    try {
+      var html = document.documentElement;
+      setImp(html, 'height', '100%');
+      setImp(html, 'overflow', 'hidden');
+      setImp(html, 'overscroll-behavior', 'none');
+      var body = document.body;
+      if (body) {
+        setImp(body, 'height', '100%');
+        setImp(body, 'overflow', 'hidden');
+        setImp(body, 'overscroll-behavior', 'none');
+        setImp(body, 'margin', '0');
+      }
+      var root = document.querySelector('[data-generated-space-root]');
+      if (root) {
+        setImp(root, 'position', 'fixed');
+        setImp(root, 'inset', '0');
+        setImp(root, 'height', '100dvh');
+        setImp(root, 'overflow', 'hidden');
+        setImp(root, 'overscroll-behavior', 'none');
+      }
+      var wrap = document.querySelector('.hatch-space-root');
+      if (wrap) {
+        setImp(wrap, 'min-height', '0');
+        setImp(wrap, 'height', '100%');
+        setImp(wrap, 'overflow', 'hidden');
+      }
+      var shells = document.querySelectorAll('.app-shell, .onboarding-shell, .error-shell');
+      for (var i = 0; i < shells.length; i++) {
+        setImp(shells[i], 'height', '100%');
+        setImp(shells[i], 'min-height', '0');
+        setImp(shells[i], 'overflow-y', 'auto');
+        setImp(shells[i], 'overflow-x', 'hidden');
+        setImp(shells[i], 'overscroll-behavior', 'none');
+      }
+    } catch (e) { /* never break the app for layout */ }
+  }
+  lockViewport();
+  document.addEventListener('DOMContentLoaded', lockViewport);
+  var lockObserver = new MutationObserver(function () { lockViewport(); });
+  function startLockObserver() {
+    if (document.documentElement) {
+      lockObserver.observe(document.documentElement, {
+        subtree: true, childList: true, attributes: true, attributeFilter: ['style', 'class'],
+      });
+      // The layout settles quickly; don't observe forever.
+      setTimeout(function () { lockObserver.disconnect(); }, 60000);
+    }
+  }
+  startLockObserver();
 
-  // --- base64 helpers -----------------------------------------------------------
+  // --- base64 helpers -------------------------------------------------------------
   function bytesToB64(bytes) {
     var binary = '';
     var chunk = 0x8000;
@@ -113,7 +157,7 @@
     return new TextDecoder().decode(b64ToBytes(b64));
   }
 
-  // --- native readiness -----------------------------------------------------------
+  // --- native readiness ---------------------------------------------------------------
   var readyPromise = null;
   function whenReady() {
     if (!readyPromise) {
@@ -162,7 +206,7 @@
     );
   }
 
-  // --- http.req handling --------------------------------------------------------------
+  // --- http.req handling ------------------------------------------------------------------
   function isActionsPath(path) {
     if (typeof path !== 'string') return false;
     var p = path.split('?')[0].replace(/^\.\//, '').replace(/^\//, '');
@@ -170,6 +214,24 @@
   }
 
   var firstLoadSeen = false;
+  var loadCount = 0;
+  var debugShown = false;
+  function maybeDebug() {
+    if (debugShown || loadCount < 2) return;
+    debugShown = true;
+    callActionWithTimeout('debugState', {}).then(function (d) {
+      if (d && d.profile) {
+        diag('dbg oc=' + JSON.stringify(d.profile.onboarding_complete) +
+          '/' + d.profile.onboarding_type +
+          ' set=' + d.settingsCount + ' tasks=' + d.tasksCount);
+      } else {
+        diag('dbg: no profile row', true);
+      }
+    }).catch(function (e) {
+      diag('dbg failed: ' + (e && e.message), true);
+    });
+  }
+
   function handleHttpReq(msg, reply) {
     if (!isActionsPath(msg.path)) {
       reply({
@@ -193,12 +255,18 @@
           var remaining = SPLASH_MIN_MS - (Date.now() - PAGE_START);
           if (remaining > 0) await new Promise(function (r) { setTimeout(r, remaining); });
         }
-        diag('< ' + action + ' ok ' + (Date.now() - startedAt) + 'ms');
+        var extra = '';
+        if (action === 'loadApp') {
+          loadCount += 1;
+          extra = ' ob=' + (result && result.onboardingComplete ? '1' : '0');
+        }
+        diag('< ' + action + ' ok ' + (Date.now() - startedAt) + 'ms' + extra);
         reply({
           type: 'http.res', id: msg.id, status: 200,
           headers: [['content-type', 'application/json']],
           bodyB64: textToB64(JSON.stringify({ data: result })),
         });
+        if (action === 'loadApp') maybeDebug();
       } catch (err) {
         diag('! ' + ((err && err.message) || 'Action failed'), true);
         reply({
@@ -212,7 +280,7 @@
     })();
   }
 
-  // --- host handshake -----------------------------------------------------------------------
+  // --- host handshake ---------------------------------------------------------------------------
   var channel = null;
   window.addEventListener('message', function (ev) {
     var data = ev.data;
@@ -238,12 +306,12 @@
       };
       if (channel.port1.start) channel.port1.start();
       window.postMessage({ type: 'bundle:init-port' }, '*', [channel.port2]);
-      diag('WQ host b111 · port ok');
+      diag('WQ host b112 · port ok');
     } catch (err) {
       diag('port handoff failed: ' + (err && err.message), true);
       channel = null;
     }
   });
 
-  diag('WQ host b111 · waiting for app');
+  diag('WQ host b112 · waiting for app');
 })();
