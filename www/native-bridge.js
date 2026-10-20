@@ -111,13 +111,21 @@
         setImp(wrap, 'height', '100%');
         setImp(wrap, 'overflow', 'hidden');
       }
-      var shells = document.querySelectorAll('.app-shell, .onboarding-shell, .error-shell');
+      var shells = document.querySelectorAll('.app-shell, .error-shell');
       for (var i = 0; i < shells.length; i++) {
         setImp(shells[i], 'height', '100%');
         setImp(shells[i], 'min-height', '0');
         setImp(shells[i], 'overflow-y', 'auto');
         setImp(shells[i], 'overflow-x', 'hidden');
         setImp(shells[i], 'overscroll-behavior', 'none');
+      }
+      // Onboarding screens: fit exactly to size, no scrolling at all.
+      var obShells = document.querySelectorAll('.onboarding-shell');
+      for (var j = 0; j < obShells.length; j++) {
+        setImp(obShells[j], 'height', '100%');
+        setImp(obShells[j], 'min-height', '0');
+        setImp(obShells[j], 'overflow', 'hidden');
+        setImp(obShells[j], 'overscroll-behavior', 'none');
       }
     } catch (e) { /* never break the app for layout */ }
   }
@@ -306,12 +314,12 @@
       };
       if (channel.port1.start) channel.port1.start();
       window.postMessage({ type: 'bundle:init-port' }, '*', [channel.port2]);
-      diag('WQ host b112 · port ok');
+      diag('WQ host b114 · port ok');
     } catch (err) {
       diag('port handoff failed: ' + (err && err.message), true);
       channel = null;
     }
   });
 
-  diag('WQ host b112 · waiting for app');
+  diag('WQ host b114 · waiting for app');
 })();
