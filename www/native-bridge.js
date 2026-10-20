@@ -56,15 +56,39 @@
     return readyPromise;
   }
 
+  // Normalize a fetch URL (string or Request-like object) to a string
+  function normalizeUrl(url) {
+    if (typeof url === 'string') return url;
+    if (url && typeof url.url === 'string') return url.url;
+    return '';
+  }
+
   // Check if a URL is an ./actions call
   function isActionsCall(url) {
-    if (typeof url !== 'string') return false;
+    url = normalizeUrl(url);
+    if (typeof url !== 'string' || url === '') return false;
     // Matches: ./actions, /actions, actions, and absolute variants
     return url === './actions' ||
            url === '/actions' ||
            url === 'actions' ||
            url.endsWith('/actions') ||
            url.endsWith('./actions');
+  }
+
+  // Per-call timeout: a hanging native action (e.g. a SQLite promise that
+  // never settles) must surface as the visible "Trail interrupted" error
+  // instead of infinite loading. whenReady() already bounds initialization;
+  // this bounds each individual action call.
+  var CALL_TIMEOUT_MS = 20000;
+  function callActionWithTimeout(action, args) {
+    return Promise.race([
+      window.WellnessQuestNative.callAction(action, args),
+      new Promise(function (_, reject) {
+        setTimeout(function () {
+          reject(new Error('Action "' + action + '" timed out after 20s'));
+        }, CALL_TIMEOUT_MS);
+      }),
+    ]);
   }
 
   function successResponse(result) {
@@ -87,7 +111,7 @@
   var originalFetch = window.fetch.bind(window);
 
   window.fetch = async function (url, options) {
-    var urlStr = typeof url === 'string' ? url : (url && url.url) || '';
+    var urlStr = normalizeUrl(url);
 
     if (isActionsCall(urlStr) && options && options.method === 'POST') {
       try {
@@ -99,7 +123,7 @@
 
         console.log('[native-bridge] Routing action: ' + action);
 
-        var result = await window.WellnessQuestNative.callAction(action, args);
+        var result = await callActionWithTimeout(action, args);
 
         // Return a Response matching what the app client expects ({ data })
         return successResponse(result);
@@ -133,7 +157,7 @@
           await whenReady();
 
           var parsed = typeof body === 'string' ? JSON.parse(body) : body;
-          var result = await window.WellnessQuestNative.callAction(parsed.action, parsed.args);
+          var result = await callActionWithTimeout(parsed.action, parsed.args);
 
           // Simulate a successful XHR response ({ data } shape)
           var text = JSON.stringify({ data: result });
