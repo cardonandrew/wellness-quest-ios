@@ -186,15 +186,30 @@ function computeStreak(activeDates, today) {
 /* Normalize snake_case SQLite rows to the camelCase shapes the ported
  * business logic expects (mirrors drizzle's $inferSelect). */
 
+/* The iOS SQLite plugin does not guarantee JS types for column values:
+ * boolean-ish INTEGER columns can come back as numbers, strings, or
+ * booleans depending on platform/build. Normalize at this boundary —
+ * strict === 1 checks silently read every flag as false when the driver
+ * returns "1"/true, which froze onboarding completion on device. */
+function dbBool(v) {
+  return v === 1 || v === '1' || v === true;
+}
+function dbNum(v) {
+  if (typeof v === 'number') return v;
+  if (v == null) return v;
+  var n = Number(v);
+  return isNaN(n) ? v : n;
+}
+
 function mapProfileRow(r) {
   return {
     id: r.id,
     timezone: r.timezone,
-    onboardingComplete: r.onboarding_complete === 1,
+    onboardingComplete: dbBool(r.onboarding_complete),
     themeMode: r.theme_mode,
     accentColor: r.accent_color,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
+    createdAt: dbNum(r.created_at),
+    updatedAt: dbNum(r.updated_at),
   };
 }
 
@@ -205,11 +220,11 @@ function mapTaskRow(r) {
     chillTitle: r.chill_title,
     balancedTitle: r.balanced_title,
     beastTitle: r.beast_title,
-    enabled: r.enabled === 1,
-    isCustom: r.is_custom === 1,
-    deleted: r.deleted === 1,
-    sortOrder: r.sort_order,
-    updatedAt: r.updated_at,
+    enabled: dbBool(r.enabled),
+    isCustom: dbBool(r.is_custom),
+    deleted: dbBool(r.deleted),
+    sortOrder: dbNum(r.sort_order),
+    updatedAt: dbNum(r.updated_at),
   };
 }
 
@@ -219,8 +234,8 @@ function mapCompletionRow(r) {
     taskId: r.task_id,
     categoryId: r.category_id,
     dateKey: r.date_key,
-    xpAwarded: r.xp_awarded,
-    completedAt: r.completed_at,
+    xpAwarded: dbNum(r.xp_awarded),
+    completedAt: dbNum(r.completed_at),
   };
 }
 
@@ -230,8 +245,8 @@ function mapJournalRow(r) {
     dateKey: r.date_key,
     prompt: r.prompt,
     content: r.content,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
+    createdAt: dbNum(r.created_at),
+    updatedAt: dbNum(r.updated_at),
   };
 }
 
@@ -242,8 +257,8 @@ function mapAwardRow(r) {
     weekStart: r.week_start,
     title: r.title,
     badgeName: r.badge_name,
-    bonusXp: r.bonus_xp,
-    awardedAt: r.awarded_at,
+    bonusXp: dbNum(r.bonus_xp),
+    awardedAt: dbNum(r.awarded_at),
   };
 }
 
@@ -252,15 +267,15 @@ function mapRecapRow(r) {
     id: r.id,
     weekStart: r.week_start,
     weekEnd: r.week_end,
-    totalXp: r.total_xp,
-    tasksCompleted: r.tasks_completed,
+    totalXp: dbNum(r.total_xp),
+    tasksCompleted: dbNum(r.tasks_completed),
     bestDay: r.best_day,
-    bestDayCount: r.best_day_count,
-    longestStreak: r.longest_streak,
+    bestDayCount: dbNum(r.best_day_count),
+    longestStreak: dbNum(r.longest_streak),
     breakdownJson: r.breakdown_json,
     insight: r.insight,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
+    createdAt: dbNum(r.created_at),
+    updatedAt: dbNum(r.updated_at),
   };
 }
 
@@ -600,6 +615,28 @@ async function loadApp(args) {
   return buildAppSnapshot(args.timezone);
 }
 
+/** Temporary diagnostic (build 112): raw profile/settings state + value types,
+ * so the tunnel host's on-screen badge can show what the DB actually holds. */
+async function debugState() {
+  const rows = await q(`SELECT * FROM wellness_profile WHERE id = 1 LIMIT 1`);
+  const raw = rows[0] || null;
+  const settings = await q(`SELECT COUNT(*) AS n FROM category_settings`);
+  const tasks = await q(`SELECT COUNT(*) AS n FROM quest_tasks`);
+  return {
+    profile: raw
+      ? {
+          id: raw.id,
+          onboarding_complete: raw.onboarding_complete,
+          onboarding_type: typeof raw.onboarding_complete,
+          theme_mode: raw.theme_mode,
+          accent_color: raw.accent_color,
+        }
+      : null,
+    settingsCount: settings[0] ? settings[0].n : -1,
+    tasksCount: tasks[0] ? tasks[0].n : -1,
+  };
+}
+
 async function completeOnboarding(args) {
   await ensureDefaults(args.timezone);
   const settingsByCategory = new Map(args.settings.map((setting) => [setting.categoryId, setting.intensity]));
@@ -782,6 +819,7 @@ async function resetData(args) {
 const ACTIONS = {
   loadApp,
   completeOnboarding,
+  debugState,
   setTaskCompletion,
   setAppearance,
   setIntensity,
