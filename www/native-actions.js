@@ -623,28 +623,6 @@ async function loadApp(args) {
   return buildAppSnapshot(args.timezone);
 }
 
-/** Temporary diagnostic (build 112): raw profile/settings state + value types,
- * so the tunnel host's on-screen badge can show what the DB actually holds. */
-async function debugState() {
-  const rows = await q(`SELECT * FROM wellness_profile WHERE id = 1 LIMIT 1`);
-  const raw = rows[0] || null;
-  const settings = await q(`SELECT COUNT(*) AS n FROM category_settings`);
-  const tasks = await q(`SELECT COUNT(*) AS n FROM quest_tasks`);
-  return {
-    profile: raw
-      ? {
-          id: raw.id,
-          onboarding_complete: raw.onboarding_complete,
-          onboarding_type: typeof raw.onboarding_complete,
-          theme_mode: raw.theme_mode,
-          accent_color: raw.accent_color,
-        }
-      : null,
-    settingsCount: settings[0] ? settings[0].n : -1,
-    tasksCount: tasks[0] ? tasks[0].n : -1,
-  };
-}
-
 async function completeOnboarding(args) {
   await ensureDefaults(args.timezone);
   const settingsByCategory = new Map(args.settings.map((setting) => [setting.categoryId, setting.intensity]));
@@ -839,7 +817,6 @@ async function resetData(args) {
 const ACTIONS = {
   loadApp,
   completeOnboarding,
-  debugState,
   setTaskCompletion,
   setAppearance,
   setIntensity,

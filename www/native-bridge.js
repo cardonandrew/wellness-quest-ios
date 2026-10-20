@@ -27,10 +27,9 @@
  *   with !important priority and re-asserted by a MutationObserver, so
  *   the page itself can never scroll — tall screens scroll inside their
  *   shell only, like a native app.
- * - The badge also reports the onboardingComplete flag from each
- *   loadApp result and, once, the raw profile row types (debugState),
- *   which pinned the "You're all set" freeze on the mappers' strict
- *   === 1 checks vs the iOS driver's string values.
+ *
+ * Launch cleanup (2026-10-20): the on-screen diagnostics badge and all
+ * diag() error readouts are removed — the app stays silent in the UI.
  */
 (function () {
   'use strict';
@@ -40,41 +39,8 @@
   var SPLASH_MIN_MS = 1500;
   var PAGE_START = Date.now();
 
-  // --- diagnostics badge ------------------------------------------------------
-  var badgeEl = null;
-  var badgeLines = [];
-  function diag(line, isError) {
-    try {
-      badgeLines.push({ text: line, isError: !!isError, at: Date.now() });
-      if (badgeLines.length > 7) badgeLines.shift();
-      renderBadge();
-    } catch (e) { /* diagnostics must never break the app */ }
-  }
-  function renderBadge() {
-    if (!document.body) return;
-    if (!badgeEl) {
-      badgeEl = document.createElement('div');
-      badgeEl.id = 'wq-diag';
-      badgeEl.style.cssText =
-        'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);' +
-        'z-index:99999;pointer-events:none;font:9px/1.5 ui-monospace,Menlo,monospace;' +
-        'color:#8dffa9;background:rgba(0,0,0,0.55);padding:4px 6px;border-radius:6px;' +
-        'max-width:82vw;white-space:pre-wrap;';
-      document.body.appendChild(badgeEl);
-    }
-    badgeEl.textContent = badgeLines.map(function (l) { return l.text; }).join('\n');
-    badgeEl.style.color = badgeLines.some(function (l) { return l.isError; }) ? '#ffb3b3' : '#8dffa9';
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { renderBadge(); });
-  }
-  window.addEventListener('error', function (e) {
-    diag('JS ERROR: ' + (e.message || 'unknown'), true);
-  });
-  window.addEventListener('unhandledrejection', function (e) {
-    var r = e.reason;
-    diag('UNHANDLED: ' + ((r && r.message) || String(r)), true);
-  });
+  // On-screen diagnostics removed for launch: no badge, no error
+  // overlay. Failures surface only through the app's own error states.
 
   // --- viewport lock ------------------------------------------------------------
   // setImp writes inline styles with !important priority. Re-sets of the
@@ -166,27 +132,6 @@
   lockViewport();
   document.addEventListener('DOMContentLoaded', lockViewport);
 
-  // Layout probe: report real geometry so a screenshot shows where the
-  // onboarding primary button actually sits vs the visible height.
-  var lastLayoutLine = '';
-  function probeLayout() {
-    try {
-      var shell = document.querySelector('.onboarding-shell');
-      if (!shell) return;
-      var btn = document.querySelector('.onboarding-primary');
-      var r = btn ? btn.getBoundingClientRect() : null;
-      var line = 'L ih=' + window.innerHeight +
-        ' shell=' + Math.round(shell.getBoundingClientRect().height) +
-        ' btn=' + (r ? Math.round(r.top) + '/' + Math.round(r.height) : 'none');
-      if (line !== lastLayoutLine) {
-        lastLayoutLine = line;
-        diag(line);
-      }
-    } catch (e) { /* probe only */ }
-  }
-  setTimeout(probeLayout, 1200);
-  setTimeout(probeLayout, 3000);
-  setTimeout(probeLayout, 6000);
   var lockObserver = new MutationObserver(function () { lockViewport(); });
   function startLockObserver() {
     if (document.documentElement) {
@@ -278,23 +223,6 @@
   }
 
   var firstLoadSeen = false;
-  var loadCount = 0;
-  var debugShown = false;
-  function maybeDebug() {
-    if (debugShown || loadCount < 2) return;
-    debugShown = true;
-    callActionWithTimeout('debugState', {}).then(function (d) {
-      if (d && d.profile) {
-        diag('dbg oc=' + JSON.stringify(d.profile.onboarding_complete) +
-          '/' + d.profile.onboarding_type +
-          ' set=' + d.settingsCount + ' tasks=' + d.tasksCount);
-      } else {
-        diag('dbg: no profile row', true);
-      }
-    }).catch(function (e) {
-      diag('dbg failed: ' + (e && e.message), true);
-    });
-  }
 
   function handleHttpReq(msg, reply) {
     if (!isActionsPath(msg.path)) {
@@ -305,7 +233,6 @@
       return;
     }
     (async function () {
-      var startedAt = Date.now();
       try {
         var bodyText = msg.bodyB64 ? b64ToText(msg.bodyB64) : '';
         var payload = bodyText ? JSON.parse(bodyText) : {};
@@ -313,26 +240,17 @@
         var args = payload.args || {};
         var isFirstLoad = action === 'loadApp' && !firstLoadSeen;
         if (isFirstLoad) firstLoadSeen = true;
-        diag('> ' + action);
         var result = await callActionWithTimeout(action, args);
         if (isFirstLoad) {
           var remaining = SPLASH_MIN_MS - (Date.now() - PAGE_START);
           if (remaining > 0) await new Promise(function (r) { setTimeout(r, remaining); });
         }
-        var extra = '';
-        if (action === 'loadApp') {
-          loadCount += 1;
-          extra = ' ob=' + (result && result.onboardingComplete ? '1' : '0');
-        }
-        diag('< ' + action + ' ok ' + (Date.now() - startedAt) + 'ms' + extra);
         reply({
           type: 'http.res', id: msg.id, status: 200,
           headers: [['content-type', 'application/json']],
           bodyB64: textToB64(JSON.stringify({ data: result })),
         });
-        if (action === 'loadApp') maybeDebug();
       } catch (err) {
-        diag('! ' + ((err && err.message) || 'Action failed'), true);
         reply({
           type: 'http.res', id: msg.id, status: 500,
           headers: [['content-type', 'application/json']],
@@ -370,12 +288,8 @@
       };
       if (channel.port1.start) channel.port1.start();
       window.postMessage({ type: 'bundle:init-port' }, '*', [channel.port2]);
-      diag('WQ host b116 · port ok');
     } catch (err) {
-      diag('port handoff failed: ' + (err && err.message), true);
       channel = null;
     }
   });
-
-  diag('WQ host b116 · waiting for app');
 })();
