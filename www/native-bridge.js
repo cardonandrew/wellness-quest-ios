@@ -77,12 +77,21 @@
   });
 
   // --- viewport lock ------------------------------------------------------------
+  // setImp writes inline styles with !important priority. Re-sets of the
+  // same element+property are throttled to one per 2s: some shorthand
+  // properties serialize differently on readback (e.g. flex), and an
+  // unthrottled observer loop over a mismatched readback can spin.
+  var impLastSet = new WeakMap();
   function setImp(el, prop, value) {
     if (!el || !el.style) return;
-    if (el.style.getPropertyValue(prop) !== value ||
-        el.style.getPropertyPriority(prop) !== 'important') {
-      el.style.setProperty(prop, value, 'important');
-    }
+    var now = Date.now();
+    var perEl = impLastSet.get(el);
+    if (!perEl) { perEl = {}; impLastSet.set(el, perEl); }
+    if (el.style.getPropertyValue(prop) === value &&
+        el.style.getPropertyPriority(prop) === 'important') return;
+    if (perEl[prop] && now - perEl[prop] < 2000) return;
+    perEl[prop] = now;
+    el.style.setProperty(prop, value, 'important');
   }
   function lockViewport() {
     try {
@@ -110,6 +119,10 @@
         setImp(wrap, 'min-height', '0');
         setImp(wrap, 'height', '100%');
         setImp(wrap, 'overflow', 'hidden');
+        // Host-frame padding (host header + extra bottom inset) has no
+        // counterpart in the standalone app; it only shifts content.
+        setImp(wrap, 'padding-top', '0');
+        setImp(wrap, 'padding-bottom', '0');
       }
       var shells = document.querySelectorAll('.app-shell, .error-shell');
       for (var i = 0; i < shells.length; i++) {
@@ -119,18 +132,61 @@
         setImp(shells[i], 'overflow-x', 'hidden');
         setImp(shells[i], 'overscroll-behavior', 'none');
       }
-      // Onboarding screens: fit exactly to size, no scrolling at all.
+      // Onboarding: fit exactly to size, no scrolling. The shell becomes
+      // a full-height flex column and the stage flexes to fill it, so
+      // each step's section is exactly the visible height and its
+      // margin-top:auto primary button lands at the bottom of the
+      // screen (previously the stage's svh-based min-height overshot
+      // the shell and stranded the button below the fold).
       var obShells = document.querySelectorAll('.onboarding-shell');
       for (var j = 0; j < obShells.length; j++) {
         setImp(obShells[j], 'height', '100%');
         setImp(obShells[j], 'min-height', '0');
         setImp(obShells[j], 'overflow', 'hidden');
         setImp(obShells[j], 'overscroll-behavior', 'none');
+        if (!obShells[j].classList.contains('onboarding-celebration')) {
+          setImp(obShells[j], 'display', 'flex');
+          setImp(obShells[j], 'flex-direction', 'column');
+        }
+      }
+      var stages = document.querySelectorAll('.onboarding-stage');
+      for (var k = 0; k < stages.length; k++) {
+        setImp(stages[k], 'flex-grow', '1');
+        setImp(stages[k], 'flex-shrink', '1');
+        setImp(stages[k], 'flex-basis', 'auto');
+        setImp(stages[k], 'min-height', '0');
+        var section = stages[k].querySelector(':scope > section');
+        if (section) {
+          setImp(section, 'height', '100%');
+          setImp(section, 'min-height', '0');
+        }
       }
     } catch (e) { /* never break the app for layout */ }
   }
   lockViewport();
   document.addEventListener('DOMContentLoaded', lockViewport);
+
+  // Layout probe: report real geometry so a screenshot shows where the
+  // onboarding primary button actually sits vs the visible height.
+  var lastLayoutLine = '';
+  function probeLayout() {
+    try {
+      var shell = document.querySelector('.onboarding-shell');
+      if (!shell) return;
+      var btn = document.querySelector('.onboarding-primary');
+      var r = btn ? btn.getBoundingClientRect() : null;
+      var line = 'L ih=' + window.innerHeight +
+        ' shell=' + Math.round(shell.getBoundingClientRect().height) +
+        ' btn=' + (r ? Math.round(r.top) + '/' + Math.round(r.height) : 'none');
+      if (line !== lastLayoutLine) {
+        lastLayoutLine = line;
+        diag(line);
+      }
+    } catch (e) { /* probe only */ }
+  }
+  setTimeout(probeLayout, 1200);
+  setTimeout(probeLayout, 3000);
+  setTimeout(probeLayout, 6000);
   var lockObserver = new MutationObserver(function () { lockViewport(); });
   function startLockObserver() {
     if (document.documentElement) {
@@ -314,12 +370,12 @@
       };
       if (channel.port1.start) channel.port1.start();
       window.postMessage({ type: 'bundle:init-port' }, '*', [channel.port2]);
-      diag('WQ host b114 · port ok');
+      diag('WQ host b116 · port ok');
     } catch (err) {
       diag('port handoff failed: ' + (err && err.message), true);
       channel = null;
     }
   });
 
-  diag('WQ host b114 · waiting for app');
+  diag('WQ host b116 · waiting for app');
 })();
