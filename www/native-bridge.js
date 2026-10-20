@@ -21,18 +21,77 @@
  * ./actions requests from the on-device SQLite layer
  * (native-actions.js -> window.WellnessQuestNative).
  *
- * The previous bridge intercepted window.fetch, which the bundle's
- * prelude had already replaced — requests never reached it and hung
- * forever with no error. Do not reintroduce fetch/XHR interception as
- * the transport; the tunnel port is the only path the app uses.
+ * Build 111 additions:
+ * - Splash floor: the first loadApp response is held until ~1.5 s after
+ *   page start so the "Setting your trail…" screen reads as a proper
+ *   splash instead of flashing past (or never appearing) on fast loads.
+ * - Fixed-to-size CSS: once the tunnel attaches, the bundle adapts to
+ *   its old hosted layout and lets the whole page scroll like a web
+ *   page. Injected rules pin the app to the viewport; inner screens keep
+ *   their own scrolling.
+ * - Diagnostic badge (temporary): a tiny on-screen log of tunnel/native
+ *   events so a screenshot shows exactly where the app is stuck.
  */
 (function () {
   'use strict';
 
   var READY_TIMEOUT_MS = 15000;
   var CALL_TIMEOUT_MS = 20000;
+  var SPLASH_MIN_MS = 1500;
+  var PAGE_START = Date.now();
 
-  // --- base64 helpers -------------------------------------------------------
+  // --- diagnostics badge ------------------------------------------------------
+  var badgeEl = null;
+  var badgeLines = [];
+  function diag(line, isError) {
+    try {
+      badgeLines.push({ text: line, isError: !!isError, at: Date.now() });
+      if (badgeLines.length > 6) badgeLines.shift();
+      renderBadge();
+    } catch (e) { /* diagnostics must never break the app */ }
+  }
+  function renderBadge() {
+    if (!document.body) return;
+    if (!badgeEl) {
+      badgeEl = document.createElement('div');
+      badgeEl.id = 'wq-diag';
+      badgeEl.style.cssText =
+        'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);' +
+        'z-index:99999;pointer-events:none;font:9px/1.5 ui-monospace,Menlo,monospace;' +
+        'color:#8dffa9;background:rgba(0,0,0,0.55);padding:4px 6px;border-radius:6px;' +
+        'max-width:78vw;white-space:pre-wrap;';
+      document.body.appendChild(badgeEl);
+    }
+    badgeEl.textContent = badgeLines.map(function (l) { return l.text; }).join('\n');
+    badgeLines.forEach(function (l, i) { void i; });
+    badgeEl.style.color = badgeLines.some(function (l) { return l.isError; }) ? '#ffb3b3' : '#8dffa9';
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { renderBadge(); });
+  }
+  window.addEventListener('error', function (e) {
+    diag('JS ERROR: ' + (e.message || 'unknown'), true);
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason;
+    diag('UNHANDLED: ' + ((r && r.message) || String(r)), true);
+  });
+
+  // --- fixed-to-size CSS ------------------------------------------------------
+  function injectCss() {
+    if (document.getElementById('wq-viewport-fix')) return;
+    var style = document.createElement('style');
+    style.id = 'wq-viewport-fix';
+    style.textContent =
+      'html,body{height:100%!important;overflow:hidden!important;overscroll-behavior:none!important;}' +
+      '[data-generated-space-root]{position:fixed!important;inset:0!important;height:100dvh!important;' +
+      'overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:none!important;}' +
+      '.hatch-space-root[data-hatch-space-root]{min-height:100dvh!important;}';
+    (document.head || document.documentElement).appendChild(style);
+  }
+  injectCss();
+
+  // --- base64 helpers -----------------------------------------------------------
   function bytesToB64(bytes) {
     var binary = '';
     var chunk = 0x8000;
@@ -54,11 +113,7 @@
     return new TextDecoder().decode(b64ToBytes(b64));
   }
 
-  // --- native readiness -----------------------------------------------------
-  // Resolves once native-actions.js has initialized the on-device SQLite
-  // database. Rejects after READY_TIMEOUT_MS so a broken native layer
-  // surfaces as an error response (the app's "Trail interrupted" screen)
-  // instead of an endless "Setting your trail…" hang.
+  // --- native readiness -----------------------------------------------------------
   var readyPromise = null;
   function whenReady() {
     if (!readyPromise) {
@@ -107,13 +162,14 @@
     );
   }
 
-  // --- http.req handling ----------------------------------------------------
+  // --- http.req handling --------------------------------------------------------------
   function isActionsPath(path) {
     if (typeof path !== 'string') return false;
     var p = path.split('?')[0].replace(/^\.\//, '').replace(/^\//, '');
     return p === 'actions' || p.endsWith('/actions');
   }
 
+  var firstLoadSeen = false;
   function handleHttpReq(msg, reply) {
     if (!isActionsPath(msg.path)) {
       reply({
@@ -123,20 +179,28 @@
       return;
     }
     (async function () {
+      var startedAt = Date.now();
       try {
         var bodyText = msg.bodyB64 ? b64ToText(msg.bodyB64) : '';
         var payload = bodyText ? JSON.parse(bodyText) : {};
         var action = payload.action;
         var args = payload.args || {};
-        console.log('[wq-host] action: ' + action);
+        var isFirstLoad = action === 'loadApp' && !firstLoadSeen;
+        if (isFirstLoad) firstLoadSeen = true;
+        diag('> ' + action);
         var result = await callActionWithTimeout(action, args);
+        if (isFirstLoad) {
+          var remaining = SPLASH_MIN_MS - (Date.now() - PAGE_START);
+          if (remaining > 0) await new Promise(function (r) { setTimeout(r, remaining); });
+        }
+        diag('< ' + action + ' ok ' + (Date.now() - startedAt) + 'ms');
         reply({
           type: 'http.res', id: msg.id, status: 200,
           headers: [['content-type', 'application/json']],
           bodyB64: textToB64(JSON.stringify({ data: result })),
         });
       } catch (err) {
-        console.error('[wq-host] action failed:', err);
+        diag('! ' + ((err && err.message) || 'Action failed'), true);
         reply({
           type: 'http.res', id: msg.id, status: 500,
           headers: [['content-type', 'application/json']],
@@ -148,7 +212,7 @@
     })();
   }
 
-  // --- host handshake ---------------------------------------------------------
+  // --- host handshake -----------------------------------------------------------------------
   var channel = null;
   window.addEventListener('message', function (ev) {
     var data = ev.data;
@@ -171,16 +235,15 @@
             });
           } catch (e) { /* port gone */ }
         }
-        // Anything else (pings, telemetry) needs no host in the offline app.
       };
       if (channel.port1.start) channel.port1.start();
       window.postMessage({ type: 'bundle:init-port' }, '*', [channel.port2]);
-      console.log('[wq-host] tunnel port handed to bundle');
+      diag('WQ host b111 · port ok');
     } catch (err) {
-      console.error('[wq-host] failed to hand tunnel port:', err);
+      diag('port handoff failed: ' + (err && err.message), true);
       channel = null;
     }
   });
 
-  console.log('[wq-host] host listener installed — waiting for bundle announce');
+  diag('WQ host b111 · waiting for app');
 })();
